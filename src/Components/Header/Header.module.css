@@ -1,0 +1,73 @@
+.MainContainer {
+    display: flex;
+    align-items: center;
+    height: 127px;
+    width: 100%;
+    height: Hug (127px);
+    padding: 40px 80px 40px 80px;
+    justify-content: space-between;
+    background-color: transparent;
+    position: absolute;
+}
+
+.LogoContainer {
+    display: flex;
+    align-items: center;
+    width: max-content;
+}
+
+.LogoContainer img {
+    width: 47px;
+    height: 47px;
+}
+
+.LogoContainer h1 {
+    font-family: Urbanist;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 26px;
+    letter-spacing: 0em;
+    text-align: left;
+    padding: 15px;
+    color: white;
+}
+
+.ButtonContainer button {
+    font-family: Urbanist;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 0em;
+    text-align: center;
+    padding: 18px 24px;
+    border-radius: 23px;
+    border: none;
+    gap: 12px;
+}
+.ButtonContainer{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.LogInButton {
+    color: #ffff;
+    background-color: #000000;
+}
+
+.RegisterButton {
+    color: #1C1B1F;
+    background-color: #ffff !important;
+}
+
+.ButtonContainer {
+    width: max-content;
+}
+@media screen and (max-width: 676px) {
+    .MainContainer {
+        padding: 20px 30px;
+    }
+}
+.InlineMenuText{
+    font-size: 20px !important;
+    padding: 15px 20px !important;
+}
