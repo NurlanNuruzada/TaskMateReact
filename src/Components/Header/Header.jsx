@@ -15,6 +15,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 export default function Header() {
+  const [modalShow, setModalShow] = React.useState(false);
+  const handleSetModal = () => {setModalShow(!modalShow)}
+
   return (
     <Navbar className='navbar-custom' bg='dark' text expand="lg" >
       <Container fluid>
@@ -28,7 +31,7 @@ export default function Header() {
           >
             <NavDropdown className='navbar-workspaces' title="Workspaces" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">
-                <Card.Subtitle className='my-2 container-fluid'> Your Workspaces </Card.Subtitle> 
+                <Card.Subtitle className='my-2 container-fluid'> Your Workspaces </Card.Subtitle>
                 <div className='container-fluid navbar-workspace-link'>
                   <Row className='px-1 py-3 d-flex align-items-center'>
                     <Col xl={3}>
@@ -61,7 +64,7 @@ export default function Header() {
                   style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
                   className="mb-2"
                 >
-                  <div className='container-fluid'>
+                  <div onClick={() => handleSetModal()} className='container-fluid'>
                     <Card.Body className='create-button-option'>
                       <Card.Subtitle> Create Board </Card.Subtitle>
                       <Card.Text>
@@ -80,7 +83,7 @@ export default function Header() {
                   className="mb-2"
                 >
                   <div className='container-fluid'>
-                    <Card.Body className='create-button-option'>
+                    <Card.Body onClick={() => setModalShow(true)} className='create-button-option'>
                       <Card.Subtitle> Create Workspace </Card.Subtitle>
                       <Card.Text>
                         Some quick example text to build on the card title and make up the
@@ -109,6 +112,13 @@ export default function Header() {
           </Row>
         </Navbar.Collapse>
       </Container>
+      <>
+
+        <verticallyCenteredModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        />
+      </>
     </Navbar >
   );
 }
