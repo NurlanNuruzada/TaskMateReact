@@ -114,41 +114,59 @@ export default function Header() {
         <Modal
           show={modalShow}
           onHide={() => setModalShow(false)}
-          size="lg"
+          size="xl"
           aria-labelledby="contained-modal-title-vcenter"
           className='create-workspace-modal'
           centered
         >
-          <Modal.Body className='p-0' id="contained-modal-title-vcenter">
-            
+          <Modal.Body className='p-0 position-relative' id="contained-modal-title-vcenter">
+            <Button className='btn-close position-absolute top-0 end-0 mt-5 me-4' onClick={() => setModalShow(false)}></Button>
             <Row className='p-0 d-flex flex-nowrap'>
               <Col lg={6}>
-                <Modal.Title id="contained-modal-title-vcenter">
-                  Let's build a Workspace
-                </Modal.Title>
-                <p>Boost your productivity by making it easier for everyone to access boards in one location.</p>
-                <Form>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control
-                      type="email"
-                      placeholder="name@example.com"
-                      autoFocus
-                    />
-                  </Form.Group>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlTextarea1"
-                  >
-                    <Form.Label>Example textarea</Form.Label>
-                    <Form.Control as="textarea" rows={3} />
-                  </Form.Group>
-                </Form>
-                <p>
-                  Boost your productivity by making it easier for everyone to access boards in one location.
-                </p></Col>
-              <Col lg={6}>
-                <img src="https://trello.com/assets/df0d81969c6394b61c0d.svg" alt="" />
+                <div className='p-5'>
+                  <Modal.Title id="contained-modal-title-vcenter">
+                    Let's build a Workspace
+                  </Modal.Title>
+                  <p>Boost your productivity by making it easier for everyone to access boards in one location.</p>
+                  <Form>
+                    <Form.Group className="mb-3" controlId="create-workspace-name">
+                      <Form.Label className='fw-bold'>Workspace Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Taco's Co."
+                      />
+                      <p className='small mt-2'>
+                        This is the name of your company, team or organization.
+                      </p>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="create-workspace-type">
+                      <Form.Label className='fw-bold'>Workspace Type</Form.Label>
+                      <Form.Select aria-label="Default select example">
+                        <option>Choose...</option>
+                        <option value="1">Marketing</option>
+                        <option value="2">Operations</option>
+                        <option value="3">Sales CRM</option>
+                        <option value="4">Small Business</option>
+                        <option value="5">Engineering-IT</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group
+                      className="my-3"
+                      controlId="create-workspace-desc"
+                    >
+                      <Form.Label className='fw-bold'>Workspace Description <span className='fw-light small'>
+                        Optional
+                      </span></Form.Label>
+                      <Form.Control as="textarea" rows={5} />
+                    </Form.Group>
+                  </Form>
+                  <p>
+                    Boost your productivity by making it easier for everyone to access boards in one location.
+                  </p>
+                </div>
+              </Col>
+              <Col lg={6} className='create-workspace-right-wrapper d-flex justify-content-center align-items-center'>
+                <img src="https://trello.com/assets/d1f066971350650d3346.svg" alt="" />
               </Col>
             </Row>
           </Modal.Body>

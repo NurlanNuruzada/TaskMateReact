@@ -234,7 +234,43 @@ body {
     min-width: 65vw;
     min-height: 90vh;
 }
+
 .create-workspace-modal .modal-content {
+    overflow: hidden;
+    color: #7e8c9b;
+    background-color: #1d2125;
     width: 100%;
     height: 100%;
+    border: 1px solid #384148;
+    border-radius: 3px;
+}
+
+.create-workspace-right-wrapper{
+    background-image: url('https://trello.com/assets/df0d81969c6394b61c0d.svg');
+}
+
+#create-workspace-name,
+#create-workspace-type,
+#create-workspace-desc{
+    background-color: transparent;
+    border: 2px solid #384148;
+    color: #7e8c9b;
+    box-shadow: none;
+}
+
+#create-workspace-name:focus,
+#create-workspace-type:focus,
+#create-workspace-desc:focus{
+    border: 2px solid #388bff;
+}
+
+#create-workspace-name::placeholder{
+    color: #7e8c9b;
+}
+#create-workspace-type{
+    background-color: #1d2125;
+    --bs-form-select-bg-img: url(data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%237e8c9b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>);
+}
+#create-workspace-type option:hover{
+    background-color: #384148;
 }
