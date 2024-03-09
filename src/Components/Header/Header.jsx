@@ -9,12 +9,12 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell } from '@fortawesome/free-solid-svg-icons';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Modal from 'react-bootstrap/Modal';
 
 export default function Header() {
+  const [modalShow, setModalShow] = useState(false);
   return (
     <Navbar className='navbar-custom' bg='dark' text expand="lg" >
       <Container fluid>
@@ -28,7 +28,7 @@ export default function Header() {
           >
             <NavDropdown className='navbar-workspaces' title="Workspaces" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">
-                <Card.Subtitle className='my-2 container-fluid'> Your Workspaces </Card.Subtitle> 
+                <Card.Subtitle className='my-2 container-fluid'> Your Workspaces </Card.Subtitle>
                 <div className='container-fluid navbar-workspace-link'>
                   <Row className='px-1 py-3 d-flex align-items-center'>
                     <Col xl={3}>
@@ -62,8 +62,8 @@ export default function Header() {
                   className="mb-2"
                 >
                   <div className='container-fluid'>
-                    <Card.Body className='create-button-option'>
-                      <Card.Subtitle> Create Board </Card.Subtitle>
+                    <Card.Body  onClick={() => setModalShow(true)} className='create-button-option'>
+                      <Card.Subtitle > Create Board </Card.Subtitle>
                       <Card.Text>
                         Some quick example text to build on the card title and make up the
                         bulk of the card's content.
@@ -101,7 +101,7 @@ export default function Header() {
           </Form>
           <Row className='ms-1 d-flex align-items-center'>
             <Col>
-              <Button className='custom-notification'> <FontAwesomeIcon icon={faBell} style={{ color: "#cacaca", transform: 'rotate(45deg)' }} />  </Button>
+              {/* <Button className='custom-notification'> <FontAwesomeIcon icon={faBell} style={{ color: "#cacaca", transform: 'rotate(45deg)' }} />  </Button> */}
             </Col>
             <Col>
               <Image className='profile-pic' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" roundedCircle />
@@ -109,6 +109,33 @@ export default function Header() {
           </Row>
         </Navbar.Collapse>
       </Container>
+
+      <div>
+        <Modal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Modal heading
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h4>Centered Modal</h4>
+            <p>
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+              dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+              consectetur ac, vestibulum at eros.
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={() => setModalShow(false)}>Close</Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </Navbar >
   );
 }

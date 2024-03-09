@@ -30,6 +30,7 @@
     "react-router": "^6.15.0",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
+    "react-trello": "^2.2.11",
     "routes": "^2.1.0",
     "sass": "^1.69.5",
     "web-vitals": "^2.1.4",
