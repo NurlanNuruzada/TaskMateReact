@@ -156,8 +156,8 @@ body {
     --bs-btn-active-border-color: #579dff;
     --bs-btn-active-shadow: none;
     --bs-btn-disabled-color: #1d2125;
-    --bs-btn-disabled-bg: #78b0ff;
-    --bs-btn-disabled-border-color: #78b0ff;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
 }
 
 .create-dropdown button::after {
@@ -245,13 +245,13 @@ body {
     border-radius: 3px;
 }
 
-.create-workspace-right-wrapper{
+.create-workspace-right-wrapper {
     background-image: url('https://trello.com/assets/df0d81969c6394b61c0d.svg');
 }
 
 #create-workspace-name,
 #create-workspace-type,
-#create-workspace-desc{
+#create-workspace-desc {
     background-color: transparent;
     border: 2px solid #384148;
     color: #7e8c9b;
@@ -260,17 +260,50 @@ body {
 
 #create-workspace-name:focus,
 #create-workspace-type:focus,
-#create-workspace-desc:focus{
+#create-workspace-desc:focus {
     border: 2px solid #388bff;
 }
 
-#create-workspace-name::placeholder{
+#create-workspace-name::placeholder {
     color: #7e8c9b;
 }
-#create-workspace-type{
+
+#create-workspace-type {
     background-color: #1d2125;
     --bs-form-select-bg-img: url(data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%237e8c9b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>);
 }
-#create-workspace-type option:hover{
+
+#create-workspace-type option:hover {
     background-color: #384148;
+}
+
+.create-workspace-submit {
+    font-weight: bold;
+    --bs-btn-color: #1d2125;
+    --bs-btn-bg: #579dff;
+    --bs-btn-border-color: #579dff;
+    --bs-btn-hover-color: #1d2125;
+    --bs-btn-hover-bg: #78b0ff;
+    --bs-btn-hover-border-color: #78b0ff;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #1d2125;
+    --bs-btn-active-bg: #579dff;
+    --bs-btn-active-border-color: #579dff;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+}
+
+.create-workspace-close{
+    --bs-btn-hover-color: unset;
+    --bs-btn-hover-bg: none;
+    --bs-btn-hover-border-color: none;
+    --bs-btn-close-color: #000;
+    --bs-btn-close-opacity: 0.5;
+    --bs-btn-close-hover-opacity: 0.75;
+    --bs-btn-close-focus-shadow: 0;
+    --bs-btn-close-focus-opacity: 1;
+    --bs-btn-close-disabled-opacity: 0.25;
+    --bs-btn-close-white-filter: invert(1) grayscale(100%) brightness(200%);
 }

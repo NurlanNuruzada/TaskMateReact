@@ -120,7 +120,7 @@ export default function Header() {
           centered
         >
           <Modal.Body className='p-0 position-relative' id="contained-modal-title-vcenter">
-            <Button className='btn-close position-absolute top-0 end-0 mt-5 me-4' onClick={() => setModalShow(false)}></Button>
+            <Button className='create-workspace-close btn-close position-absolute top-0 end-0 mt-5 me-4' onClick={() => setModalShow(false)}></Button>
             <Row className='p-0 d-flex flex-nowrap'>
               <Col lg={6}>
                 <div className='p-5'>
@@ -160,9 +160,12 @@ export default function Header() {
                       <Form.Control as="textarea" rows={5} />
                     </Form.Group>
                   </Form>
-                  <p>
-                    Boost your productivity by making it easier for everyone to access boards in one location.
+                  <p className='small mt-2'>
+                    Get your members on board with a few words about your Workspace.
                   </p>
+                  <Button className='container create-workspace-submit' disabled variant="primary" size="lg">
+                    Continue
+                  </Button>
                 </div>
               </Col>
               <Col lg={6} className='create-workspace-right-wrapper d-flex justify-content-center align-items-center'>
