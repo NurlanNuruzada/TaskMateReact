@@ -12,6 +12,8 @@ import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBell, faBarsProgress, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 
 export default function Header() {
   const [modalShow, setModalShow] = useState(false);
@@ -27,64 +29,62 @@ export default function Header() {
             navbarScroll
           >
             <NavDropdown className='navbar-workspaces' title="Workspaces" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="#action3">
-                <Card.Subtitle className='my-2 container-fluid'> Your Workspaces </Card.Subtitle>
-                <div className='container-fluid navbar-workspace-link'>
+              <Card.Text className='ms-3 my-2 container-fluid'> Your Workspaces </Card.Text>
+              <NavDropdown.Item>
+                <Container className='navbar-workspace-link'>
                   <Row className='px-1 py-3 d-flex align-items-center'>
-                    <Col xl={3}>
+                    <Col lg={3}>
                       <Image className='workspace-pic' src="https://igvofficial.com/wp-content/uploads/2023/09/369992905_655289193002976_6442625660937886754_n.jpg" rounded />
                     </Col>
-                    <Col xl={6} className='p-0'>
+                    <Col className='p-0'>
                       Jhonny's Workspace
                     </Col>
                   </Row>
-                </div>
+                </Container>
               </NavDropdown.Item>
-              <NavDropdown.Item href="#action3">
-                <div className='container-fluid navbar-workspace-link'>
+              <NavDropdown.Item>
+                <Container className='navbar-workspace-link'>
                   <Row className='px-1 py-3 d-flex align-items-center'>
-                    <Col xl={3}>
+                    <Col lg={3}>
                       <Image className='workspace-pic' src="https://placehold.co/512x512/CDD3FF/1d2125?text=T" rounded />
                     </Col>
-                    <Col xl={6} className='p-0'>
+                    <Col className='p-0'>
                       Trello Workspace
                     </Col>
                   </Row>
-                </div>
+                </Container>
               </NavDropdown.Item>
             </NavDropdown>
-            <DropdownButton className='custom-dropdown ms-3' id="dropdown-basic-button" title="Create">
-              <Dropdown.Item className='p-0' href="#/action-1">
+            <DropdownButton className='create-dropdown ms-3' id="dropdown-basic-button" title="Create">
+              <Dropdown.Item className='p-0'>
                 <Card
                   bg={'dark'}
                   text={'white'}
                   style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
                   className="mb-2"
                 >
-                  <div className='container-fluid'>
-                    <Card.Body  onClick={() => setModalShow(true)} className='create-button-option'>
-                      <Card.Subtitle > Create Board </Card.Subtitle>
+                  <div className='container-fluid create-button-option-wrapper mt-2'>
+                    <Card.Body className='create-button-option p-0 py-3 px-1'>
+                      <Card.Subtitle className='mb-2' ><FontAwesomeIcon className='me-1' icon={faBarsProgress} /> Create Board </Card.Subtitle>
                       <Card.Text>
-                        Some quick example text to build on the card title and make up the
-                        bulk of the card's content.
+                        A board is made up of cards ordered on lists. Use it to manage projects, track information, or organize anything.
                       </Card.Text>
                     </Card.Body>
                   </div>
                 </Card>
               </Dropdown.Item>
-              <Dropdown.Item className='p-0' href="#/action-2">
+              <Dropdown.Item className='p-0'>
                 <Card
                   bg={'dark'}
                   text={'white'}
                   style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
                   className="mb-2"
                 >
-                  <div className='container-fluid'>
-                    <Card.Body className='create-button-option'>
-                      <Card.Subtitle> Create Workspace </Card.Subtitle>
+                  <div className='container-fluid create-button-option-wrapper'>
+                    <Card.Body onClick={() => setModalShow(true)} className='create-button-option p-0 py-3 px-1'>
+                      <Card.Subtitle className='mb-2'><FontAwesomeIcon className='me-1' icon={faUserGroup} /> Create Workspace </Card.Subtitle>
                       <Card.Text>
-                        Some quick example text to build on the card title and make up the
-                        bulk of the card's content.
+                        A Workspace is a group of boards and people. Use it to organize your company, side hustle, family, or friends.
                       </Card.Text>
                     </Card.Body>
                   </div>
@@ -101,7 +101,7 @@ export default function Header() {
           </Form>
           <Row className='ms-1 d-flex align-items-center'>
             <Col>
-              {/* <Button className='custom-notification'> <FontAwesomeIcon icon={faBell} style={{ color: "#cacaca", transform: 'rotate(45deg)' }} />  </Button> */}
+              <Button className='custom-notification'> <FontAwesomeIcon icon={faBell} style={{ color: "#cacaca", transform: 'rotate(45deg)' }} />  </Button>
             </Col>
             <Col>
               <Image className='profile-pic' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" roundedCircle />
@@ -116,24 +116,42 @@ export default function Header() {
           onHide={() => setModalShow(false)}
           size="lg"
           aria-labelledby="contained-modal-title-vcenter"
+          className='create-workspace-modal'
           centered
         >
-          <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">
-              Modal heading
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <h4>Centered Modal</h4>
-            <p>
-              Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-              dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-              consectetur ac, vestibulum at eros.
-            </p>
+          <Modal.Body className='p-0' id="contained-modal-title-vcenter">
+            
+            <Row className='p-0 d-flex flex-nowrap'>
+              <Col lg={6}>
+                <Modal.Title id="contained-modal-title-vcenter">
+                  Let's build a Workspace
+                </Modal.Title>
+                <p>Boost your productivity by making it easier for everyone to access boards in one location.</p>
+                <Form>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="name@example.com"
+                      autoFocus
+                    />
+                  </Form.Group>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                  >
+                    <Form.Label>Example textarea</Form.Label>
+                    <Form.Control as="textarea" rows={3} />
+                  </Form.Group>
+                </Form>
+                <p>
+                  Boost your productivity by making it easier for everyone to access boards in one location.
+                </p></Col>
+              <Col lg={6}>
+                <img src="https://trello.com/assets/df0d81969c6394b61c0d.svg" alt="" />
+              </Col>
+            </Row>
           </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={() => setModalShow(false)}>Close</Button>
-          </Modal.Footer>
         </Modal>
       </div>
     </Navbar >
