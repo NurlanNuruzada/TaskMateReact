@@ -1,0 +1,186 @@
+body{
+    background-color: #212529;
+}
+
+.dropdown-menu {
+    --bs-dropdown-zindex: 1000;
+    --bs-dropdown-min-width: 10rem;
+    --bs-dropdown-padding-x: 0;
+    --bs-dropdown-padding-y: 0.5rem;
+    --bs-dropdown-spacer: 0.125rem;
+    --bs-dropdown-font-size: 1rem;
+    --bs-dropdown-color: var(--bs-body-color);
+    --bs-dropdown-bg: #212529;
+    --bs-dropdown-border-color: #384148;
+    --bs-dropdown-border-radius: var(--bs-border-radius);
+    --bs-dropdown-border-width: var(--bs-border-width);
+    --bs-dropdown-inner-border-radius: calc(var(--bs-border-radius) - var(--bs-border-width));
+    --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
+    --bs-dropdown-divider-margin-y: 0.5rem;
+    --bs-dropdown-box-shadow: var(--bs-box-shadow);
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-bg: transparent;
+    --bs-dropdown-link-active-color: #fff;
+    --bs-dropdown-link-active-bg: transparent;
+    --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
+    --bs-dropdown-item-padding-x: 1rem;
+    --bs-dropdown-item-padding-y: 0.25rem;
+    --bs-dropdown-header-color: #6c757d;
+    --bs-dropdown-header-padding-x: 1rem;
+    --bs-dropdown-header-padding-y: 0.5rem;
+    position: absolute;
+    z-index: var(--bs-dropdown-zindex);
+    display: none;
+    min-width: var(--bs-dropdown-min-width);
+    padding: var(--bs-dropdown-padding-y) var(--bs-dropdown-padding-x);
+    margin: 0;
+    font-size: var(--bs-dropdown-font-size);
+    color: var(--bs-dropdown-color);
+    text-align: left;
+    list-style: none;
+    background-color: var(--bs-dropdown-bg);
+    background-clip: padding-box;
+    border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
+    border-radius: var(--bs-dropdown-border-radius);
+}
+
+.card {
+    --bs-card-spacer-y: 1rem;
+    --bs-card-spacer-x: 1rem;
+    --bs-card-title-spacer-y: 0.5rem;
+    --bs-card-title-color: ;
+    --bs-card-subtitle-color: ;
+    --bs-card-border-width: var(--bs-border-width);
+    --bs-card-border-color: var(--bs-border-color-translucent);
+    --bs-card-border-radius: var(--bs-border-radius);
+    --bs-card-box-shadow: ;
+    --bs-card-inner-border-radius: calc(var(--bs-border-radius) -(var(--bs-border-width)));
+    --bs-card-cap-padding-y: 0.5rem;
+    --bs-card-cap-padding-x: 1rem;
+    --bs-card-cap-bg: rgba(var(--bs-body-color-rgb), 0.03);
+    --bs-card-cap-color: ;
+    --bs-card-height: ;
+    --bs-card-color: ;
+    --bs-card-bg: var(--bs-body-bg);
+    --bs-card-img-overlay-padding: 1rem;
+    --bs-card-group-margin: 0.75rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: var(--bs-card-height);
+    color: var(--bs-body-color);
+    word-wrap: break-word;
+    background-color: var(--bs-card-bg);
+    background-clip: border-box;
+    border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+    border-radius: var(--bs-card-border-radius);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #9eacba !important;
+}
+
+.navbar-custom {
+    --bs-navbar-padding-y: 0.25rem;
+    background-color: #1d2125 !important;
+    border-bottom: 2px solid #384148;
+}
+
+.input-custom .form-control {
+    background-color: #22272b;
+    color: #7e8c9b;
+    border-color: #384148;
+}
+
+.input-custom .form-control::placeholder {
+    color: #7e8c9b;
+}
+
+.input-custom .form-control:focus {
+    width: 30rem;
+    transition: width 0.5s;
+    box-shadow: none;
+}
+
+.input-custom .form-control:hover {
+    background-color: #2b3136;
+    transition: background-color 0.5s;
+}
+
+.custom-notification {
+    background-color: transparent;
+    border-color: transparent;
+    border-radius: 999px;
+}
+
+.custom-notification:hover {
+    background-color: #384148;
+    border-color: #384148;
+}
+
+.navbar-workspaces a {
+    color: #7e8c9b !important;
+    font-weight: 500;
+}
+
+.custom-dropdown .btn-primary {
+    --bs-btn-color: #1d2125;
+    --bs-btn-bg: #579dff;
+    --bs-btn-border-color: #579dff;
+    --bs-btn-hover-color: #1d2125;
+    --bs-btn-hover-bg: #78b0ff;
+    --bs-btn-hover-border-color: #78b0ff;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #1d2125;
+    --bs-btn-active-bg: #579dff;
+    --bs-btn-active-border-color: #579dff;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #78b0ff;
+    --bs-btn-disabled-border-color: #78b0ff;
+}
+
+.custom-dropdown button::after {
+    content: none;
+}
+
+.custom-dropdown {
+    margin: auto;
+}
+
+.custom-dropdown .btn {
+    font-weight: 600;
+    --bs-btn-padding-x: 0.7rem;
+    --bs-btn-padding-y: 0.2rem;
+    --bs-btn-font-family: ;
+    --bs-btn-font-size: 0.9rem;
+    --bs-btn-font-weight: 400;
+    --bs-btn-line-height: 1.5;
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-width: var(--bs-border-width);
+    --bs-btn-border-radius: 3px;
+}
+
+.profile-pic {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+
+.workspace-pic {
+    width: clamp(25px, 4.5vw, 50px);
+    object-fit: cover;
+}
+
+.navbar-workspaces .dropdown-menu {
+    width: clamp(15vw, 20vw, 25vw);
+}
+
+.navbar-workspace-link:hover, .create-button-option:hover{
+    background-color: #384148;
+    border-radius: 0.5rem;
+}
