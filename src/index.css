@@ -1,5 +1,11 @@
 body {
     background-color: #212529;
+    color: #9FADBC;
+    min-height: 100vh;
+}
+
+.text-default{
+    color: #9fadbc !important;
 }
 
 .dropdown-menu {
@@ -88,6 +94,14 @@ body {
     --bs-navbar-padding-y: 0.25rem;
     background-color: #1d2125 !important;
     border-bottom: 1px solid #384148;
+    height: 5vh;
+}
+
+.custom-card {
+    --bs-navbar-padding-y: 0.25rem;
+    background-color: #22272b !important;
+    border: 1px solid #384148;
+    color: #9eacba;
 }
 
 .input-custom input {
@@ -96,23 +110,34 @@ body {
 
 .input-custom .form-control {
     background-color: #22272b;
-    color: #7e8c9b;
+    color: #9fadbc;
     border-color: #384148;
 }
 
 .input-custom .form-control::placeholder {
-    color: #7e8c9b;
+    color: #9fadbc;
 }
 
 .input-custom .form-control:focus {
     width: 30rem;
     transition: width 0.5s;
     box-shadow: none;
+    border: 2px solid #388bff;
 }
 
 .input-custom .form-control:hover {
     background-color: #2b3136;
     transition: background-color 0.5s;
+}
+
+.selection-item:not(.disabled):hover {
+    background-color: #384148;
+    transition: background-color 0.5s;
+}
+
+.selection-item.disabled > span,
+.selection-item.disabled > p{
+    color: #535455 !important;
 }
 
 .custom-notification.btn-primary {
@@ -134,12 +159,12 @@ body {
 }
 
 .navbar-workspaces .card-text {
-    color: #7e8c9b !important;
+    color: #9fadbc !important;
     font-weight: 500;
 }
 
 .navbar-workspaces a {
-    color: #7e8c9b !important;
+    color: #9fadbc !important;
     font-weight: 500;
 }
 
@@ -168,10 +193,6 @@ body {
     margin: auto;
 }
 
-.create-dropdown {
-    margin: auto;
-}
-
 .create-dropdown .btn {
     font-weight: 600;
     --bs-btn-padding-x: 0.7rem;
@@ -186,7 +207,7 @@ body {
 }
 
 .create-dropdown .dropdown-item .card {
-    color: #7e8c9b !important;
+    color: #9fadbc !important;
 
     .card-subtitle {
         font-weight: 600;
@@ -237,7 +258,7 @@ body {
 
 .create-workspace-modal .modal-content {
     overflow: hidden;
-    color: #7e8c9b;
+    color: #9fadbc;
     background-color: #1d2125;
     width: 100%;
     height: 100%;
@@ -254,7 +275,7 @@ body {
 #create-workspace-desc {
     background-color: transparent;
     border: 2px solid #384148;
-    color: #7e8c9b;
+    color: #9fadbc;
     box-shadow: none;
 }
 
@@ -265,7 +286,7 @@ body {
 }
 
 #create-workspace-name::placeholder {
-    color: #7e8c9b;
+    color: #9fadbc;
 }
 
 #create-workspace-type {
@@ -295,10 +316,14 @@ body {
     --bs-btn-disabled-border-color: #384148;
 }
 
-.create-workspace-close{
+.create-workspace-close {
     --bs-btn-hover-color: unset;
     --bs-btn-hover-bg: none;
     --bs-btn-hover-border-color: none;
+    --bs-btn-active-color: #1d2125;
+    --bs-btn-active-bg: none;
+    --bs-btn-active-border-color: none;
+    --bs-btn-active-shadow: none;
     --bs-btn-close-color: #000;
     --bs-btn-close-opacity: 0.5;
     --bs-btn-close-hover-opacity: 0.75;
@@ -306,4 +331,21 @@ body {
     --bs-btn-close-focus-opacity: 1;
     --bs-btn-close-disabled-opacity: 0.25;
     --bs-btn-close-white-filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.create-board-card {
+    width: 40%;
+    background-color: #212529;
+    border: 1px solid #384148;
+    color: #9fadbc;
+}
+
+.search-result{
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.search-result:hover{
+    background-color: #384148;
 }

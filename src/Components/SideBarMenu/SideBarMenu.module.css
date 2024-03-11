@@ -1,0 +1,99 @@
+.sideBarMenuWrapper {
+    height: 95vh;
+    background-image: url(https://picsum.photos/1920/1080.jpg);
+    display: flex;
+}
+
+.sideBarMenu {
+    height: 100%;
+    background: rgba(30, 32, 37, 0.9);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.sideBarMenuWorkspaceName {
+    border-bottom: 1px solid #384148;
+}
+
+.sideBarMenuWorkspaceName,
+.sideBarMenuTopMenuWrapper {
+    display: flex;
+    align-items: center;
+    height: 7.5%;
+}
+
+.workspacePic {
+    height: 60%;
+}
+
+.sideBarMenuTopMenuWrapper {
+    background: rgba(30, 32, 37, 0.6);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.sideBarMenuTopMenu {
+    display: flex;
+    color: #fff;
+}
+
+.boardName {
+    margin: 0;
+    padding: 0.35rem;
+    font-weight: 700;
+}
+
+[contenteditable]:focus,
+[contenteditable]:focus-visible {
+    border: 2px solid #388bff;
+    border-radius: 0.5rem;
+    background-color: rgba(145, 145, 220, 0.2);
+    outline: none;
+}
+
+.workspacePrivacyDropdownWrapper{
+    padding: 0 0.3rem;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.workspacePrivacyDropdownWrapper:hover{
+    background-color: #384148;
+}
+
+.workspacePrivacyDropdown button {
+    --bs-btn-color: #fff;
+    font-weight: 500;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: transparent;
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+    --bs-btn-padding-x: 0rem;
+    --bs-btn-padding-y: 0rem;
+}
+
+#workspace-privacy-dropdown-wrapper .dropdown .dropdown-menu[data-bs-popper] {
+    margin-top: 19px;
+}
+
+.workspacePrivacyDropdown button::after {
+    content: none;
+}
+
+.workspacePrivacyDropdown span,
+.workspacePrivacyDropdown p {
+    font-size: 0.9rem;
+    color: #9eacba;
+}
