@@ -2,10 +2,15 @@
     height: 95vh;
     background-image: url(https://picsum.photos/1920/1080.jpg);
     display: flex;
+    background-position: 100%;
+    position: relative;
+    background-repeat: no-repeat;
+    width: 100%;
 }
 
 .sideBarMenu {
-    height: 100%;
+    width: 100%;
+    height: 105%;
     background: rgba(30, 32, 37, 0.9);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
@@ -20,7 +25,7 @@
 .sideBarMenuTopMenuWrapper {
     display: flex;
     align-items: center;
-    height: 7.5%;
+    height: 10%;
 }
 
 .workspacePic {
@@ -38,6 +43,7 @@
     display: flex;
     color: #fff;
     justify-content: space-between;
+    /* height: 100%; */
 }
 
 .boardName {
@@ -132,7 +138,7 @@
     --bs-btn-border-radius: 3px;
 }
 
-.modalShareButton{
+.modalShareButton {
     margin-left: 0.5rem;
     --bs-btn-color: #1d2125;
     --bs-btn-bg: #579dff;
@@ -158,4 +164,41 @@
     --bs-btn-color: var(--bs-body-color);
     --bs-btn-border-width: var(--bs-border-width);
     --bs-btn-border-radius: 6px;
+}
+
+.mainBoard {
+    min-width: 100%;
+    height: 90vh;
+    background-color: transparent;
+    display: flex;
+    position: relative;
+}
+
+.leftNavbar {
+    position: absolute;
+    width: 348px;
+    height: 100%;
+    z-index: 1;
+}
+
+.topNavbar {
+    min-width: 100%;
+    height: 100%;
+}
+
+.CardListt {
+    
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    overflow-y: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 0px;
+}
+
+.CardListt {
+    display: flex;
+    padding: 0 0 0 170px;
 }

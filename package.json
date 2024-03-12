@@ -1,7 +1,7 @@
 {
   "name": "replyment",
   "version": "0.1.0",
-  "homepage": "https://replyment.com",
+  "homepage": "https://TaskMate.com",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -21,6 +21,7 @@
     "formik": "^2.4.3",
     "framer-motion": "^11.0.6",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.1",
     "react-countup": "^6.4.2",
@@ -31,8 +32,11 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "react-trello": "^2.2.11",
+    "redux-actions": "^3.0.0",
+    "redux-logger": "^3.0.6",
     "routes": "^2.1.0",
     "sass": "^1.69.5",
+    "styled-components": "^6.1.8",
     "web-vitals": "^2.1.4",
     "yup": "^1.2.0"
   },
