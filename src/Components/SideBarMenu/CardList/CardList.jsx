@@ -118,7 +118,7 @@ const CardList = () => {
   };
 
   return (
-    <div className={Styles.CardListMain}>
+    <div>
       <Board
         style={{ background: 'transparent' }}
         editable
