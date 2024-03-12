@@ -1,8 +1,6 @@
-.MainContainer{
+.MainContainer {
     width: 100%;
     height: auto;
-    .button32{
-        padding: 10px 30px;
-    }
+    display: flex;
+    background-image: url(https://picsum.photos/1920/1080.jpg);
 }
-
