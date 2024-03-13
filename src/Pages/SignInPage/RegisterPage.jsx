@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Styles from './RegisterPage.module.css';
-import { Grid, GridItem, CircularProgress, ChakraProvider, Alert, AlertIcon } from '@chakra-ui/react';
+import { Grid, GridItem, CircularProgress, ChakraProvider, Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react';
 import AppImage from '../../Images/user-add-icon---shine-set-add-new-user-add-user-30 (1).png'
 import { useFormik } from 'formik';
 import axios from 'axios';
+import Modal from 'react-bootstrap/Modal';
 
 export default function RegisterPage() {
     const [selectedRole, setSelectedRole] = useState("Member");
     const [modalShow, setModalShow] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -32,7 +34,9 @@ export default function RegisterPage() {
                 if (response.status === 200) {
                     setIsSuccess(true);
                 }
-            } catch (error) { }
+            } catch (error) {
+                setIsError(true);
+            }
         },
     });
 
@@ -85,16 +89,64 @@ export default function RegisterPage() {
                 <GridItem className={Styles.Spacer} colSpan={1}></GridItem>
                 <GridItem className={Styles.RightContainer} colSpan={6}>
                     <img src={AppImage} alt="" />
+                    <div className={Styles.userCreateRules}>
+                        1{")"} It is not possible to create a second username with the same name and it can only contain letters and numbers, symbols are not included.<br></br>
+                        2{")"} There must be a domain after the @ at the end of the email.<br></br>
+                        3{")"} The password must be at least 1 letter sized, with no numbers or special symbols, and must be at least 8 chars.<br></br>
+                    </div>
                 </GridItem>
             </Grid>
-            {isSuccess && (
-                <ChakraProvider>
-                    <Alert status='success'>
-                        <AlertIcon />
-                        Data uploaded to the server. Fire on!
-                    </Alert>
-                </ChakraProvider>
-            )}
+            <ChakraProvider>
+                {isSuccess && (
+                    <Modal
+                        show={true}
+                        onHide={() => { setModalShow(false); }}
+                        size="lg"
+                        fullscreen='md-down'
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                        className='create-share-link-modal'
+                    >
+                        <Modal.Body className='p-3 mb-3 position-relative' id="contained-modal-title-vcenter">
+                            <Alert
+                                status='success'
+                                variant='subtle'
+                                flexDirection='column'
+                                alignItems='center'
+                                justifyContent='center'
+                                textAlign='center'
+                                height='200px'
+                            >
+                                <AlertIcon boxSize='40px' mr={0} />
+                                <AlertTitle mt={4} mb={1} fontSize='lg'>
+                                    Successfully created user
+                                </AlertTitle>
+                                <AlertDescription maxWidth='sm'>
+                                    The user has been successfully Created and can now login                                </AlertDescription>
+                            </Alert>
+                        </Modal.Body>
+                    </Modal>
+                )}
+                {isError && (
+                    <Modal
+                        show={true}
+                        onHide={() => { setModalShow(false); }}
+                        size="lg"
+                        fullscreen='md-down'
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                        className='create-share-link-modal'
+                    >
+                        <Modal.Body className='p-3 mb-3 position-relative' id="contained-modal-title-vcenter">
+                            <Alert status='error'>
+                                <AlertIcon />
+                                <AlertTitle>Could not create user</AlertTitle>
+                                <AlertDescription>Try to recreate the user according to the rules</AlertDescription>
+                            </Alert>
+                        </Modal.Body>
+                    </Modal>
+                )}
+            </ChakraProvider>
         </div>
     );
 }
