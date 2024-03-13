@@ -12,16 +12,19 @@ import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
-import Collapse from 'react-bootstrap/Collapse';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBarsProgress, faUserGroup, faLink } from '@fortawesome/free-solid-svg-icons';
 
 export default function Header() {
+  const [createBoardSlide2, setCreateBoardSlide2] = useState(false)
   const [modalShow, setModalShow] = useState(false);
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
-  const [open, setOpen] = useState(false);
+  const doNotClose = (e) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+  }
   const handleContinue = () => { setWorkspaceModal1(false); setWorkspaceModal2(true); }
 
   return (
@@ -63,40 +66,91 @@ export default function Header() {
               </NavDropdown.Item>
             </NavDropdown>
             <DropdownButton className='create-dropdown ms-3' id="dropdown-basic-button" title="Create">
-              <Dropdown.Item className='p-0'>
-                <Card
-                  bg={'dark'}
-                  text={'white'}
-                  style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
-                  className="mb-2"
-                >
-                  <div className='container-fluid position-relative create-button-option-wrapper mt-2'>
-                    <Card.Body onClick={() => setOpen(!open)} className='create-button-option p-0 py-3 px-1 position-relative'>
-                      <Card.Subtitle className='mb-2' ><FontAwesomeIcon className='me-1' icon={faBarsProgress} /> Create Board </Card.Subtitle>
-                      <Card.Text>
-                        A board is made up of cards ordered on lists. Use it to manage projects, track information, or organize anything.
-                      </Card.Text>
-                    </Card.Body>
-                  </div>
-                </Card>
-              </Dropdown.Item>
-              <Dropdown.Item className='p-0'>
-                <Card
-                  bg={'dark'}
-                  text={'white'}
-                  style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
-                  className="mb-2"
-                >
-                  <div className='container-fluid create-button-option-wrapper'>
-                    <Card.Body onClick={() => setModalShow(true)} className='create-button-option p-0 py-3 px-1'>
-                      <Card.Subtitle className='mb-2'><FontAwesomeIcon className='me-1' icon={faUserGroup} /> Create Workspace </Card.Subtitle>
-                      <Card.Text>
-                        A Workspace is a group of boards and people. Use it to organize your company, side hustle, family, or friends.
-                      </Card.Text>
-                    </Card.Body>
-                  </div>
-                </Card>
-              </Dropdown.Item>
+              {createBoardSlide2 ? <div>
+                <Dropdown.Item className='create-dropdown-item'
+                  onClick={doNotClose}
+                  >
+
+                  <Card
+                    bg={'dark'}
+                    text={'white'}
+                    style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
+                    className="mb-2"
+                  >
+                    <div className='container-fluid position-relative mt-2'>
+                      <Card.Body className='create-button-option p-0 py-3 px-1 position-relative'>
+                        <Card.Subtitle className='mb-4 d-flex align-items-center justify-content-between' > Create Board <Button className='btn-close' onClick={() => setCreateBoardSlide2(false)}></Button></Card.Subtitle>
+                        <Card.Text>
+                          <Form>
+                            <Form.Group className="mb-3" controlId="create-workspace-name">
+                              <Form.Label className='fw-bold'>Board Title <span className='text-danger'>*</span></Form.Label>
+                              <Form.Control
+                                autoFocus
+                                type="text"
+                                placeholder="Task Mate"
+                              />
+                              <p className='small mt-2'>
+                                👋 Board title is required.
+                              </p>
+                            </Form.Group>
+                            <div className='mt-3'>
+                              <Form.Group className="mb-3" controlId="create-workspace-type">
+                                <Form.Label className='fw-bold'>Workspace</Form.Label>
+                                <Form.Select aria-label="Default select example">
+                                  <option value="1">Trello Workspace</option>
+                                  <option value="2">Sanan's workspace</option>
+                                </Form.Select>
+                              </Form.Group>
+                              <Form.Group className="mb-3" controlId="create-workspace-type">
+                                <Form.Label className='fw-bold'>Visibility</Form.Label>
+                                <Form.Select aria-label="Default select example">
+                                  <option value="1">Workspace</option>
+                                  <option value="2">Private</option>
+                                  <option value="3">Public</option>
+                                </Form.Select>
+                              </Form.Group>
+                            </div>
+                          </Form>
+                        </Card.Text>
+                      </Card.Body>
+                    </div>
+                  </Card></Dropdown.Item>
+              </div> : <div>
+                <Dropdown.Item onClick={doNotClose} className='p-0'>
+                  <Card
+                    bg={'dark'}
+                    text={'white'}
+                    style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
+                    className="mb-2"
+                  >
+                    <div className='container-fluid position-relative create-button-option-wrapper mt-2'>
+                      <Card.Body onClick={() => setCreateBoardSlide2(true)} className='create-button-option p-0 py-3 px-1 position-relative'>
+                        <Card.Subtitle className='mb-2' ><FontAwesomeIcon className='me-1' icon={faBarsProgress} /> Create Board </Card.Subtitle>
+                        <Card.Text>
+                          A board is made up of cards ordered on lists. Use it to manage projects, track information, or organize anything.
+                        </Card.Text>
+                      </Card.Body>
+                    </div>
+                  </Card>
+                </Dropdown.Item>
+                <Dropdown.Item className='p-0'>
+                  <Card
+                    bg={'dark'}
+                    text={'white'}
+                    style={{ width: '20rem', border: 'none', textWrap: "wrap" }}
+                    className="mb-2"
+                  >
+                    <div className='container-fluid create-button-option-wrapper'>
+                      <Card.Body onClick={() => setModalShow(true)} className='create-button-option p-0 py-3 px-1'>
+                        <Card.Subtitle className='mb-2'><FontAwesomeIcon className='me-1' icon={faUserGroup} /> Create Workspace </Card.Subtitle>
+                        <Card.Text>
+                          A Workspace is a group of boards and people. Use it to organize your company, side hustle, family, or friends.
+                        </Card.Text>
+                      </Card.Body>
+                    </div>
+                  </Card>
+                </Dropdown.Item>
+              </div>}
             </DropdownButton>
           </Nav>
           <Form className="d-flex input-custom">
@@ -116,19 +170,6 @@ export default function Header() {
           </Row>
         </Navbar.Collapse>
       </Container>
-
-      <div className='position-absolute' style={{ minHeight: '150px', top: '100%', left: "20%" }}>
-        <Collapse in={open} dimension="height">
-          <div id="example-collapse-text">
-            <Card className='create-board-card' body>
-              Anim pariatur cliche reprehenderit, enim eiusmod high life
-              accusamus terry richardson ad squid. Nihil anim keffiyeh
-              helvetica, craft beer labore wes anderson cred nesciunt sapiente
-              ea proident.
-            </Card>
-          </div>
-        </Collapse>
-      </div>
 
       <div>
         <Modal

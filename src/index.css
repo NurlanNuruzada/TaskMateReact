@@ -301,6 +301,23 @@ body {
     background-color: #384148;
 }
 
+.default-submit {
+    --bs-btn-color: #b3bfcb;
+    --bs-btn-bg: #3b444c;
+    --bs-btn-border-color: #3b444c;
+    --bs-btn-hover-color: #b3bfcb;
+    --bs-btn-hover-bg: #49545e;
+    --bs-btn-hover-border-color: #49545e;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #b3bfcb;
+    --bs-btn-active-bg: #667583;
+    --bs-btn-active-border-color: #667583;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+}
+
 .create-workspace-submit {
     font-weight: bold;
     --bs-btn-color: #1d2125;
@@ -320,10 +337,11 @@ body {
 }
 
 .create-workspace-close {
+    --bs-btn-close-bg: url(data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2344546f'><path%20d='M.293.293a1%201%200%200%201%201.414%200L8%206.586%2014.293.293a1%201%200%201%201%201.414%201.414L9.414%208l6.293%206.293a1%201%200%200%201-1.414%201.414L8%209.414l-6.293%206.293a1%201%200%200%201-1.414-1.414L6.586%208%20.293%201.707a1%201%200%200%201%200-1.414z'/></svg>);
     --bs-btn-hover-color: unset;
     --bs-btn-hover-bg: none;
     --bs-btn-hover-border-color: none;
-    --bs-btn-active-color: #1d2125;
+    --bs-btn-active-color: #44546f;
     --bs-btn-active-bg: none;
     --bs-btn-active-border-color: none;
     --bs-btn-active-shadow: none;
@@ -380,15 +398,16 @@ body {
     border-left: 2px solid #579dff;
 }
 
-.btn-outline-default{
+.btn-outline-default {
     background-color: #323940;
 }
 
-.btn-anchor{
+.btn-anchor {
     color: #4a7ec6 !important;
     font-weight: 500;
     text-decoration: none;
 }
-.btn-anchor:hover{
+
+.btn-anchor:hover {
     text-decoration: underline;
 }
