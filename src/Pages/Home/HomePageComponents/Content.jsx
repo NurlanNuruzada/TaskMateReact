@@ -1,22 +1,27 @@
 import React, { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
+import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import CardList from '../../../Components/SideBarMenu/CardList/CardList';
+import Modal from 'react-bootstrap/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUserGroup, faBriefcase, faCheck, faGlobe, faUserPlus, faLink } from '@fortawesome/free-solid-svg-icons';
 import Styles from '../../../Components/SideBarMenu/SideBarMenu.module.css'
+import CardList from '../CardList/CardList'
+
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
     return (
         <Col lg={10} className='h-100'>
-            <Col lg={10} className={Styles.sideBarMenuTopMenuWrapper}>
-                <Container style={{ padding: "12px 10px 12px 16px" }} fluid className={Styles.sideBarMenuTopMenu}>
+            <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>
+                <Container fluid className={Styles.sideBarMenuTopMenu}>
                     <div className='d-flex align-items-center'>
                         <h5 contentEditable id='boardName' className={Styles.boardName}>TaskMate</h5>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
@@ -111,6 +116,136 @@ export default function Content() {
                     </div>
                 </Container>
             </Col>
+            <Col lg={12} className={Styles.cardList}>
+                <CardList />
+            </Col>
+            <div>
+                <Modal
+                    show={modalShow}
+                    onHide={() => { setModalShow(false); }}
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    className='create-share-link-modal'
+                >
+                    <Modal.Body className='p-0 position-relative' id="contained-modal-title-vcenter">
+                        <Row className='p-0 d-flex flex-nowrap'>
+                            <div className='py-4 px-5'>
+                                <Modal.Title className='fw-bold mb-4 d-flex justify-content-between' id="contained-modal-title-vcenter">
+                                    <span>Share Board</span>
+                                    <Button className='create-workspace-close btn-close' onClick={() => setModalShow(false)}></Button>
+                                </Modal.Title>
+                                <Form>
+                                    <Form.Group className="mb-1" controlId="create-workspace-name">
+                                        <div className='d-flex align-items-center'>
+                                            <div className='w-100 position-relative me-2'>
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="e.g. calrissian@cloud.ci"
+                                                    onFocus={() => { setInputResult(true); }}
+                                                    onBlur={() => setInputResult(false)}
+                                                />
+                                                {inputResult ? (
+                                                    <Card className='custom-card p-3 mt-1 position-absolute w-100'>
+                                                        <div className='d-flex align-items-center search-result'>
+                                                            <img className='rounded-circle me-2' style={{ width: '36px', height: '36px' }} src="https://picsum.photos/200/300.jpg" alt="" />
+                                                            <div>
+                                                                <p className='m-0 small'>Sanan Dalbik</p>
+                                                                <p className='m-0 small'>Hasn't logged in recently</p>
+                                                            </div>
+                                                        </div>
+                                                    </Card>
+                                                ) : ''}
+                                            </div>
+                                            <div className='d-flex align-items-center'>
+                                                <Dropdown>
+                                                    <Dropdown.Toggle className='defaultDropdown fw-bold' variant="primary" id="dropdown-basic">
+                                                        Member
+                                                    </Dropdown.Toggle>
+
+                                                    <Dropdown.Menu>
+                                                        <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">Member</Dropdown.Item>
+                                                        <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                            Observer
+                                                            <br />
+                                                            <span className='small'>Add people with limited
+                                                                permissions <br /> to this board</span>
+                                                        </Dropdown.Item>
+                                                    </Dropdown.Menu>
+                                                </Dropdown>
+                                                <Button className={Styles.modalShareButton}>Share</Button>
+                                            </div>
+                                        </div>
+                                    </Form.Group>
+                                </Form>
+                                <div className='d-flex justify-content-between align-items-center mt-3'>
+                                    <div className='d-flex align-items-center'>
+                                        <span className='p-2 rounded btn-outline-default me-2'><FontAwesomeIcon icon={faLink} /></span>
+                                        <span>
+                                            <p className='m-0'>Anyone with the board share link</p>
+                                            <a className='btn-anchor' href="">Copy Link</a>
+                                        </span>
+                                    </div>
+                                    <Dropdown>
+                                        <Dropdown.Toggle className='defaultDropdown fw-bold' variant="primary" id="dropdown-basic">
+                                            Can join as member
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                Can join as member
+                                                <br />
+                                                <span className='small'>Board members can view and edit cards, <br />
+                                                    lists, and some board settings.</span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                Can join as observer
+                                                <br />
+                                                <span className='small'>Board observers can view and comment.</span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                Delete Link
+                                                <br />
+                                                <span className='small'>The existing board share link will no longer work.</span>
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </div>
+                                <div className='d-flex justify-content-between align-items-center mt-3'>
+                                    <div className='d-flex'>
+                                        <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" roundedCircle />
+                                        <span className='ms-1'>
+                                            <h6 className='m-0'>Hasbulla Gasimov (you)</h6>
+                                            <p className="m-0">@hasbullagasim  •  Workspace admin</p>
+                                        </span>
+                                    </div>
+                                    <Dropdown>
+                                        <Dropdown.Toggle className='defaultDropdown fw-bold' variant="primary" id="dropdown-basic">
+                                            Admin
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                Admin
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                Member
+                                                <br />
+                                                <span className='small'>Boards must have at least one admin.</span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                Observer
+                                                <br />
+                                                <span className='small'>Add people with limited permissions to this board.</span>
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </div>
+                            </div>
+                        </Row>
+                    </Modal.Body>
+                </Modal>
+            </div>
         </Col>
     )
 }

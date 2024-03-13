@@ -21,7 +21,7 @@
     width: 100% ;
     display: flex;
     align-items: center;
-    height: 7.5%;
+    height: 75px;
 }
 
 .workspacePic {
@@ -39,6 +39,7 @@
     display: flex;
     color: #fff;
     justify-content: space-between;
+    height: 75px;
 }
 
 .boardName {
