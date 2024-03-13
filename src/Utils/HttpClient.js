@@ -1,11 +1,12 @@
 import Axios from "axios";
 
 const api = Axios.create({
-    baseURL: process.env.REACT_APP_API_HOST,
-    headers: {
-      Accept: "*/*",
-    },
-  });
+  baseURL: 'https://localhost:7101/',
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+});
 
 class HttpClient {
   get(url, configs) {
