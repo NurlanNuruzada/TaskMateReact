@@ -20,11 +20,12 @@ const handleDragStart = (cardId, laneId) => {
 
 const ListStyle = {
   width: "280px",
-  backgroundColor: "#ebecf0",
+  backgroundColor: "#101204",
   borderRadius: "14px",
   marginRight: "10px",
   padding: "10px",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
+  boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+  color: "#9fadbc",
 };
 
 const cardStyle = {
@@ -33,10 +34,11 @@ const cardStyle = {
   margin: "auto",
   marginBottom: "8px",
   borderRadius: "14px",
-  backgroundColor: "#fff",
+  backgroundColor: "#22272b",
   boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
   padding: "6px 8px",
-  boxSizing: "border-box"
+  boxSizing: "border-box",
+  color: "#9fadbc"
 };
 
 
@@ -125,9 +127,9 @@ const CardList = () => {
   };
 
   return (
-    <div>
+    <div className='h-100'>
       <Board
-        style={{ background: 'transparent' }}
+        className={Styles.Board}
         editable
         onCardAdd={handleCardAdd}
         data={boardData}

@@ -10,19 +10,35 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faUserGroup, faBriefcase, faCheck, faGlobe, faUserPlus, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUserGroup, faBriefcase, faCheck, faGlobe, faUserPlus, faLink, faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
 import Styles from '../../../Components/SideBarMenu/SideBarMenu.module.css'
 import CardList from '../CardList/CardList'
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutAction } from '../../../Redux/Slices/AuthSlice'
+import {
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    MenuItemOption,
+    MenuGroup,
+    MenuOptionGroup,
+    MenuDivider,
+    Flex
+} from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react';
 
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
+    const { userEmail } = useSelector((state) => state.auth); // Update the selector
+    const dispatch = useDispatch();
     return (
-        <Col lg={10} className='h-100'>
+        <div className='h-100 w-100' style={{ overflowY: 'hidden' }}>
             <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>
-                <Container fluid className={Styles.sideBarMenuTopMenu}>
-                    <div className='d-flex align-items-center'>
+                <Container fluid className={[Styles.sideBarMenuTopMenu, "flex-wrap flex-column flex-md-row"]}>
+                    <div className='d-flex align-items-center col-8 col-md-6 justify-content-start'>
                         <h5 contentEditable id='boardName' className={Styles.boardName}>TaskMate</h5>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
                             <DropdownButton className={Styles.workspacePrivacyDropdown} title="Workspace Visibility">
@@ -67,7 +83,7 @@ export default function Content() {
                         </div>
                     </div>
 
-                    <div className='d-flex align-items-center'>
+                    <div className='d-flex align-items-center col-8 col-md-6 justify-content-start justify-content-md-end'>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
                             <DropdownButton className={Styles.workspacePrivacyDropdown} title="Filters">
                                 <Dropdown.Item className='p-0 mb-1'>
@@ -110,13 +126,27 @@ export default function Content() {
                             </DropdownButton>
                         </div>
                         <div className={Styles.profilesWrapper}>
-                            <Image className='profile-pic' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" roundedCircle />
+                            {!userEmail && <ChakraProvider>
+                                <Menu>
+                                    <MenuButton as={Button} rightIcon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
+                                        <Flex alignItems={"center"}>
+                                            <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
+                                            {userEmail}
+                                            {/* Emaili sil */}
+                                            <p className='m-0'>salam@gmail.com</p>
+                                        </Flex>
+                                    </MenuButton>
+                                    <MenuList zIndex={10} className={Styles.userAccount}>
+                                        <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
+                                    </MenuList>
+                                </Menu>
+                            </ChakraProvider>}
                             <Button onClick={() => setModalShow(true)} className={Styles.shareButton}><FontAwesomeIcon icon={faUserPlus} /> Share</Button>
                         </div>
                     </div>
                 </Container>
             </Col>
-            <Col lg={12} className={Styles.cardList}>
+            <Col lg={12} >
                 <CardList />
             </Col>
             <div>
@@ -131,7 +161,7 @@ export default function Content() {
                     <Modal.Body className='p-0 position-relative' id="contained-modal-title-vcenter">
                         <Row className='p-0 d-flex flex-nowrap'>
                             <div className='py-4 px-5'>
-                                <Modal.Title className='fw-bold mb-4 d-flex justify-content-between' id="contained-modal-title-vcenter">
+                                <Modal.Title className='fw-bold mb-4 d-flex justify-content-between align-items-center' id="contained-modal-title-vcenter">
                                     <span>Share Board</span>
                                     <Button className='create-workspace-close btn-close' onClick={() => setModalShow(false)}></Button>
                                 </Modal.Title>
@@ -246,6 +276,6 @@ export default function Content() {
                     </Modal.Body>
                 </Modal>
             </div>
-        </Col>
+        </div>
     )
 }

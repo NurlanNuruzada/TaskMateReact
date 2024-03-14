@@ -10,6 +10,7 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    color: #9fadbc;
 }
 
 .sideBarMenuWorkspaceName {
@@ -25,7 +26,7 @@
 }
 
 .workspacePic {
-    height: 60%;
+    width: clamp(16px, 4.5vw, 32px);
 }
 
 .sideBarMenuTopMenuWrapper {
@@ -33,6 +34,8 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    z-index: 5;
+    position: relative;
 }
 
 .sideBarMenuTopMenu {
@@ -103,6 +106,7 @@
 }
 
 .profilesWrapper {
+    display: flex;
     margin-left: 0.5rem;
 }
 
@@ -162,39 +166,16 @@
     --bs-btn-border-radius: 6px;
 }
 
-.mainBoard {
-    min-width: 100%;
-    height: 90vh;
-    background-color: transparent;
+.userAccount{
+    background-color: #1d2125 !important;
+    border-color: #1d2125;
+    padding: 0.75rem;
     display: flex;
-    position: relative;
+    align-items: center;
+    justify-content: center;
 }
 
-.leftNavbar {
-    position: absolute;
-    width: 348px;
-    height: 100%;
-    z-index: 1;
-}
-
-.topNavbar {
-    min-width: 100%;
-    height: 100%;
-}
-
-.CardListt {
-
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    display: flex;
-    overflow-y: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    padding: 0px;
-}
-
-.CardListt {
-    display: flex;
-    padding: 0 0 0 170px;
+.userAccount button{
+    background-color: #384148;
+    color: #9fadbc;
 }

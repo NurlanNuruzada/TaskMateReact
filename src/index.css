@@ -36,7 +36,6 @@ body {
     --bs-dropdown-header-padding-x: 1rem;
     --bs-dropdown-header-padding-y: 0.5rem;
     position: absolute;
-    z-index: var(--bs-dropdown-zindex);
     display: none;
     min-width: var(--bs-dropdown-min-width);
     padding: var(--bs-dropdown-padding-y) var(--bs-dropdown-padding-x);
@@ -284,8 +283,12 @@ body {
 
 #create-workspace-name:focus,
 #create-workspace-type:focus,
-#create-workspace-desc:focus {
+#create-workspace-desc:focus,
+#create-workspace-name:hover,
+#create-workspace-type:hover,
+#create-workspace-desc:hover {
     border: 2px solid #388bff;
+    transition: border 0.2s ease-in;
 }
 
 #create-workspace-name::placeholder {
@@ -410,4 +413,25 @@ body {
 
 .btn-anchor:hover {
     text-decoration: underline;
+}
+
+.react-trello-card {
+    background-color: #22272b !important;
+    border: none !important;
+}
+
+.react-trello-card textarea {
+    color: #9fadbc !important;
+}
+
+.react-trello-card header div button {
+    color: #9fadbc !important;
+    font-size: 0.75rem;
+    margin-right: 5px;
+    margin-top: 12px;
+}
+
+.react-trello-lane > div:first-of-type > div:nth-child(2) > article {
+    color: #9fadbc !important;
+    background-color: #22272b !important;
 }
