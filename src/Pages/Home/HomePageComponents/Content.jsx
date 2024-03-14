@@ -32,7 +32,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
-    const { userEmail } = useSelector((state) => state.auth); // Update the selector
+    const { email } = useSelector((state) => state.auth); // Update the selector
     const dispatch = useDispatch();
     return (
         <div className='h-100 w-100' style={{ overflowY: 'hidden' }}>
@@ -126,14 +126,12 @@ export default function Content() {
                             </DropdownButton>
                         </div>
                         <div className={Styles.profilesWrapper}>
-                            {!userEmail && <ChakraProvider>
+                            {email && <ChakraProvider>
                                 <Menu>
                                     <MenuButton as={Button} rightIcon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
                                         <Flex alignItems={"center"}>
                                             <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
-                                            {userEmail}
-                                            {/* Emaili sil */}
-                                            <p className='m-0'>salam@gmail.com</p>
+                                            {email}
                                         </Flex>
                                     </MenuButton>
                                     <MenuList zIndex={10} className={Styles.userAccount}>

@@ -16,16 +16,16 @@ export const AuthSlice = createSlice({
   initialState,
   reducers: {
     loginAction: (state, action) => {
-      state.token = action.payload.token
-      state.fullname = action.payload.fullname
-      state.userName =  action.payload.userName
-      state.email =  action.payload.email
-      state.expireDate = action.payload.expireDate
-      state.refreshToken =  action.payload.refreshToken
-      state.refreshTokenExpiration =  action.payload.refreshTokenExpiration
+      state.token = action.payload.data.token
+      state.fullname = action.payload.data.fullname
+      state.username =  action.payload.data.username
+      state.email =  action.payload.data.email
+      state.expireDate = action.payload.data.expireDate
+      state.refreshToken =  action.payload.data.refreshToken
+      state.refreshTokenExpiration =  action.payload.data.refreshTokenExpiration
     },
     setUsetJobAction:(state,action)=>{
-      state.userJob = action.payload.Role
+      state.userJob = action.payload.data.Role
     },
     logoutAction: (state, action) => {
       return initialState;
@@ -37,5 +37,5 @@ export const AuthSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { loginAction, logoutAction, registerAction,setUsetJobAction } = AuthSlice.actions;
+export const { loginAction, logoutAction, registerAction } = AuthSlice.actions;
 export default AuthSlice.reducer;
