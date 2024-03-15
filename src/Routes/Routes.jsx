@@ -1,4 +1,3 @@
-
 import { MainLayout } from "../Layouts/MainLayout";
 import { Navigate, useRoutes } from "react-router";
 import Home from "../Pages/Home/Home";
@@ -17,6 +16,12 @@ export default function Routes() {
           path: "/",
           element: token ? <Home /> : <Navigate to={"/SignIn"} />,
         },
+
+      ]
+    },
+    {
+      path: "/",
+      children: [
         {
           path: "/SignIn",
           element: <SignInPage />,
@@ -25,8 +30,8 @@ export default function Routes() {
           path: "/CreateUser",
           element: <RegisterPage />,
         },
-      ],
-    }
+      ]
+    },
   ];
   return useRoutes(routes);
 }

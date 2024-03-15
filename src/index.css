@@ -255,7 +255,8 @@ body {
     min-height: 90vh;
 }
 
-.create-workspace-modal .modal-content {
+.create-workspace-modal .modal-content,
+.sign-in-modal .modal-content {
     overflow: hidden;
     color: #9fadbc;
     background-color: #1d2125;
@@ -431,7 +432,7 @@ body {
     margin-top: 12px;
 }
 
-.react-trello-lane > div:first-of-type > div:nth-child(2) > article {
+.react-trello-lane>div:first-of-type>div:nth-child(2)>article {
     color: #9fadbc !important;
     background-color: #22272b !important;
 }
