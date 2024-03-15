@@ -54,6 +54,20 @@ export default function Header() {
 
   const handleContinue = () => { setWorkspaceModal1(false); setWorkspaceModal2(true); }
 
+
+  const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
+    useMutation((values) => CreateWorkSpace(values),{
+      onSuccess:()=>{
+        GetUsersAllWorkSpaces(userId)
+      }
+    });
+  const { mutate: GetUsersAllWorkSpaces } = useMutation((userId) => GetAllWorkspaces(userId),
+    {
+      onSuccess: (values) => {
+        setWorkspaces(values.data)
+      }
+    }
+  )
   const CreateWorkSpaceFormik = useFormik({
     initialValues: {
       Title: "",
@@ -70,19 +84,17 @@ export default function Header() {
       }
     },
   })
-  const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
-    useMutation((values) => CreateWorkSpace(values));
-  const { mutate: GetUsersAllWorkSpaces } = useMutation((userId) => GetAllWorkspaces(userId),
-    {
-      onSuccess: (values) => {
-        setWorkspaces(values.data)
-      }
-    }
-  )
 
   useEffect(() => {
     GetUsersAllWorkSpaces(userId)
+    dispach(MainAction(Workspaces))
+
   }, [userId]);
+
+  useEffect(() => {
+    dispach(MainAction(Workspaces))
+  }, [Workspaces]);
+
   useEffect(() => {
     if (modalShow) {
       resetFormValues();
@@ -106,9 +118,12 @@ export default function Header() {
       }
     },
   })
-  const handleWorksChange = (data) => {
-    dispach(MainAction(data))
-  }
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+
+  const handleWorkspaceSelect = (workspace) => {
+    setSelectedWorkspace(workspace);
+  };
+
   return (
     <Navbar className='navbar-custom' bg='dark' expand="sm" >
       {token ?
@@ -122,7 +137,7 @@ export default function Header() {
             <NavDropdown className='navbar-workspaces' title="Workspaces" id="navbarScrollingDropdown">
               <Card.Text className='ms-3 my-2 container-fluid'> Your Workspaces </Card.Text>
               {Workspaces?.map((workspace, index) => (
-                <NavDropdown.Item key={index}>
+                <NavDropdown.Item key={index} onClick={() => handleWorkspaceSelect(workspace)}>
                   <Container className='navbar-workspace-link'>
                     <Row className='px-1 py-3 d-flex align-items-center'>
                       <Col lg={3}>
