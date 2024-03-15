@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -14,21 +14,101 @@ import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBarsProgress, faUserGroup, faLink } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import jwtDecode from 'jwt-decode';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import { useMutation } from 'react-query';
+import { CreateWorkSpace, GetAllWorkspaces } from '../../Service/WorkSpaceService';
+import { CreateBoard } from '../../Service/BoardService';
+import { MainAction } from '../../Redux/Slices/WorkspaceAndBorderSlice';
 
 export default function Header() {
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false)
+  const [createBoardSlide, setCreateBoardSlide] = useState(false)
   const [modalShow, setModalShow] = useState(false);
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
+  const [Workspaces, setWorkspaces] = useState();
   const { token } = useSelector((x) => x.auth)
+  const dispach = useDispatch()
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userId = decodedToken ? decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] : null;
+
   const doNotClose = (e) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
   }
+  const validationSchema = yup.object({
+    Title: yup.string()
+      .required('Title is required')
+      .min(3)
+      .max(64),
+    Description: yup.string()
+      .max(256)
+  });
+  const resetFormValues = () => {
+    CreateWorkSpaceFormik.resetForm();
+  };
+
   const handleContinue = () => { setWorkspaceModal1(false); setWorkspaceModal2(true); }
 
+  const CreateWorkSpaceFormik = useFormik({
+    initialValues: {
+      Title: "",
+      AppUserId: userId,
+      Description: ""
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      if (values.Title === null || values.Title === "") {
+        console.log('values null');
+      }
+      else {
+        CreateWorkSpaceMutate(values)
+      }
+    },
+  })
+  const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
+    useMutation((values) => CreateWorkSpace(values));
+  const { mutate: GetUsersAllWorkSpaces } = useMutation((userId) => GetAllWorkspaces(userId),
+    {
+      onSuccess: (values) => {
+        setWorkspaces(values.data)
+      }
+    }
+  )
+
+  useEffect(() => {
+    GetUsersAllWorkSpaces(userId)
+  }, [userId]);
+  useEffect(() => {
+    if (modalShow) {
+      resetFormValues();
+    }
+  }, [modalShow]);
+
+
+  const CreateBoardFomik = useFormik({
+    initialValues: {
+      title: "",
+      appUserId: userId,
+      workspaceId: ""
+    },
+    // validationSchema: validationSchema,
+    onSubmit: (values) => {
+      if (values.workspaceId === "" || values.title === "") {
+        console.log('values null');
+      }
+      else {
+        CreateBoard(values)
+      }
+    },
+  })
+  const handleWorksChange = (data) => {
+    dispach(MainAction(data))
+  }
   return (
     <Navbar className='navbar-custom' bg='dark' expand="sm" >
       {token ?
@@ -41,30 +121,20 @@ export default function Header() {
           >
             <NavDropdown className='navbar-workspaces' title="Workspaces" id="navbarScrollingDropdown">
               <Card.Text className='ms-3 my-2 container-fluid'> Your Workspaces </Card.Text>
-              <NavDropdown.Item>
-                <Container className='navbar-workspace-link'>
-                  <Row className='px-1 py-3 d-flex align-items-center'>
-                    <Col lg={3}>
-                      <Image className='workspace-pic' src="https://placehold.co/512x512/d9e3da/1d2125?text=S" rounded />
-                    </Col>
-                    <Col className='p-0'>
-                      Sanan's Workspace
-                    </Col>
-                  </Row>
-                </Container>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Container className='navbar-workspace-link'>
-                  <Row className='px-1 py-3 d-flex align-items-center'>
-                    <Col lg={3}>
-                      <Image className='workspace-pic' src="https://placehold.co/512x512/CDD3FF/1d2125?text=T" rounded />
-                    </Col>
-                    <Col className='p-0'>
-                      Trello Workspace
-                    </Col>
-                  </Row>
-                </Container>
-              </NavDropdown.Item>
+              {Workspaces?.map((workspace, index) => (
+                <NavDropdown.Item key={index}>
+                  <Container className='navbar-workspace-link'>
+                    <Row className='px-1 py-3 d-flex align-items-center'>
+                      <Col lg={3}>
+                        <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${workspace.title.slice(0, 1)}`} rounded />
+                      </Col>
+                      <Col className='p-0'>
+                        {workspace.title}
+                      </Col>
+                    </Row>
+                  </Container>
+                </NavDropdown.Item>
+              ))}
             </NavDropdown>
             <DropdownButton className='create-dropdown ms-3' id="dropdown-basic-button" title="Create">
               {createBoardSlide2 ? <div>
@@ -89,6 +159,8 @@ export default function Header() {
                                 autoFocus
                                 type="text"
                                 placeholder="Task Mate"
+                                onChange={CreateBoardFomik.handleChange}
+                                name='title'
                               />
                               <p className='small mt-2'>
                                 👋 Board title is required.
@@ -97,18 +169,24 @@ export default function Header() {
                             <div className='mt-3'>
                               <Form.Group className="mb-3" controlId="create-workspace-type">
                                 <Form.Label className='fw-bold'>Workspace</Form.Label>
-                                <Form.Select aria-label="Default select example">
-                                  <option value="1">Trello Workspace</option>
-                                  <option value="2">Sanan's workspace</option>
+                                <Form.Select onChange={CreateBoardFomik.handleChange}
+                                  name='workspaceId' aria-label="Default select example">
+                                  {Workspaces?.map((workspace, index) => (
+                                    <option key={index} value={workspace.id}>{workspace.title}</option>
+                                  ))}
                                 </Form.Select>
                               </Form.Group>
-                              <Form.Group className="mb-3" controlId="create-workspace-type">
+                              <Form.Group controlId="create-workspace-type">
                                 <Form.Label className='fw-bold'>Visibility</Form.Label>
                                 <Form.Select aria-label="Default select example">
                                   <option value="1">Workspace</option>
                                   <option value="2">Private</option>
                                   <option value="3">Public</option>
                                 </Form.Select>
+                                <Button type='submit' onClick={() => {
+                                  CreateBoardFomik.handleSubmit();
+                                  setCreateBoardSlide2(false);
+                                }} className='mt-4 mb=0'>Done</Button>
                               </Form.Group>
                             </div>
                           </Form>
@@ -187,52 +265,52 @@ export default function Header() {
             <Button className='create-workspace-close btn-close position-absolute top-0 end-0 mt-5 me-4' onClick={() => { setModalShow(false); setTimeout(() => { setWorkspaceModal2(false); setWorkspaceModal1(true); }, 500) }}></Button>
             <Row className='p-0 d-flex flex-nowrap'>
 
-              {modalShow2 ? <Col lg={6}>
-                <div className='p-5'>
-                  <Modal.Title className='fw-bold' id="contained-modal-title-vcenter">
-                    Let's build a Workspace
-                  </Modal.Title>
-                  <p>Boost your productivity by making it easier for everyone to access boards in one location.</p>
-                  <Form>
-                    <Form.Group className="mb-3" controlId="create-workspace-name">
-                      <Form.Label className='fw-bold'>Workspace Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Taco's Co."
-                      />
-                      <p className='small mt-2'>
-                        This is the name of your company, team or organization.
-                      </p>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="create-workspace-type">
-                      <Form.Label className='fw-bold'>Workspace Type</Form.Label>
-                      <Form.Select aria-label="Default select example">
-                        <option>Choose...</option>
-                        <option value="1">Marketing</option>
-                        <option value="2">Operations</option>
-                        <option value="3">Sales CRM</option>
-                        <option value="4">Small Business</option>
-                        <option value="5">Engineering-IT</option>
-                      </Form.Select>
-                    </Form.Group>
-                    <Form.Group
-                      className="my-3"
-                      controlId="create-workspace-desc"
-                    >
-                      <Form.Label className='fw-bold'>Workspace Description <span className='fw-light small'>
-                        Optional
-                      </span></Form.Label>
-                      <Form.Control as="textarea" rows={5} />
-                    </Form.Group>
-                  </Form>
-                  <p className='small mt-2'>
-                    Get your members on board with a few words about your Workspace.
-                  </p>
-                  <Button onClick={handleContinue} className='container create-workspace-submit' variant="primary" size="lg">
-                    Continue
-                  </Button>
-                </div>
-              </Col> : ''}
+              {modalShow2 ? (
+                <Col lg={6}>
+                  <div className="p-5">
+                    <Modal.Title className="fw-bold" id="contained-modal-title-vcenter">
+                      Let's build a Workspace
+                    </Modal.Title>
+                    <p>Boost your productivity by making it easier for everyone to access boards in one location.</p>
+                    <Form>
+                      <Form.Group className="mb-3" controlId="create-workspace-name">
+                        <Form.Label className="fw-bold">Workspace Name</Form.Label>
+                        <Form.Control
+                          onChange={CreateWorkSpaceFormik.handleChange}
+                          name="Title"
+                          type="text"
+                          placeholder="Taco's Co."
+                        />
+                        <p className="small mt-2">This is the name of your company, team or organization.</p>
+                      </Form.Group>
+                      <Form.Group className="my-3" controlId="create-workspace-desc">
+                        <Form.Label className="fw-bold">Workspace Description</Form.Label>
+                        <Form.Control
+                          onChange={CreateWorkSpaceFormik.handleChange}
+                          name="Description"
+                          as="textarea"
+                          rows={5}
+                        />
+                      </Form.Group>
+                      {CreateWorkSpaceFormik.errors.Description && CreateWorkSpaceFormik.touched.Description && (
+                        <div className="text-danger">{CreateWorkSpaceFormik.errors.Description}</div>
+                      )}
+                      <p className="small mt-2">Get your members on board with a few words about your Workspace.</p>
+                      <Button
+                        onClick={handleContinue}
+                        disabled={!CreateWorkSpaceFormik.values.Title}
+                        className="container create-workspace-submit"
+                        variant="primary"
+                        size="lg"
+                      >
+                        Continue
+                      </Button>
+                    </Form>
+                  </div>
+                </Col>
+              ) : (
+                ''
+              )}
 
               {modalShow3 ? <Col lg={6}>
                 <div className='p-5'>
@@ -272,10 +350,25 @@ export default function Header() {
                     <span className='fw-bold'>Pro tip!</span> Add multiple emails, or invite them with one click.
                   </p>
                   <div className='d-flex flex-column align-items-center'>
-                    <Button className='container create-workspace-submit mb-1' variant="primary" size="lg">
+                    <Button type='Submit' onClick={() => {
+                      CreateWorkSpaceFormik.handleSubmit();
+                      setModalShow(false);
+                      setWorkspaceModal2(false);
+                      setWorkspaceModal1(true);
+                    }} className='container create-workspace-submit mb-1' variant="primary" size="lg">
                       Invite to Workspace
                     </Button>
-                    <a className='btn btn-link text-default' onClick={() => { setModalShow(false); setTimeout(() => { setWorkspaceModal2(false); setWorkspaceModal1(true); }, 500) }}>I'll do this later</a>
+                    <a
+                      className='btn btn-link text-default'
+                      onClick={() => {
+                        CreateWorkSpaceFormik.handleSubmit();
+                        setModalShow(false);
+                        setWorkspaceModal2(false);
+                        setWorkspaceModal1(true);
+                      }}
+                    >
+                      I'll do this later
+                    </a>
                   </div>
                 </div>
               </Col> : ''}

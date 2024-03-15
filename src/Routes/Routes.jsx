@@ -26,6 +26,7 @@ export default function Routes() {
           element: <RegisterPage />,
         },
       ],
+      
     }
   ];
   return useRoutes(routes);

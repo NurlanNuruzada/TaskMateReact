@@ -8,7 +8,6 @@ import { loginAction } from '../../Redux/Slices/AuthSlice';
 import { useDispatch } from 'react-redux';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router';
-import image from '../../Images/trello icon.webp'
 
 export default function SignInPage() {
     const [loginError, setLoginError] = useState(null);
@@ -32,7 +31,6 @@ export default function SignInPage() {
                 dispatch(loginAction(resp));
                 navigate("/");
             },
-            
             onError: (error) => {
                 setIsLoading(false);
                 setLoginError("Invalid username or password.");
@@ -77,7 +75,7 @@ export default function SignInPage() {
                 </GridItem>
                 <GridItem className={Styles.Spacer} colSpan={1}></GridItem>
                 <GridItem className={Styles.RightContainer} colSpan={6}>
-                    <img className={Styles.Image} src={image} alt="" />
+                    <img className={Styles.Image} src={AppImage} alt="" />
                 </GridItem>
             </Grid>
         </div>

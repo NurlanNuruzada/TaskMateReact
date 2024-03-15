@@ -20,10 +20,6 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    MenuItemOption,
-    MenuGroup,
-    MenuOptionGroup,
-    MenuDivider,
     Flex
 } from '@chakra-ui/react'
 import { ChakraProvider } from '@chakra-ui/react';
@@ -128,14 +124,14 @@ export default function Content() {
                         <div className={Styles.profilesWrapper}>
                             {email && <ChakraProvider>
                                 <Menu>
-                                    <MenuButton as={Button} rightIcon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
-                                        <Flex alignItems={"center"}>
+                                    <MenuButton  as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
+                                        <Flex   alignItems={"center"}>
                                             <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
                                             {email}
                                         </Flex>
                                     </MenuButton>
-                                    <MenuList zIndex={10} className={Styles.userAccount}>
-                                        <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
+                                    <MenuList  zIndex={10} className={Styles.userAccount}>
+                                        <MenuItem  className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
                                     </MenuList>
                                 </Menu>
                             </ChakraProvider>}
