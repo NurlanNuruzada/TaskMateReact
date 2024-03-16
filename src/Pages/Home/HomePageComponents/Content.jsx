@@ -37,7 +37,7 @@ export default function Content() {
                     <div className='d-flex align-items-center col-8 col-md-6 justify-content-start'>
                         <h5 contentEditable id='boardName' className={Styles.boardName}>TaskMate</h5>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
-                            <DropdownButton className={Styles.workspacePrivacyDropdown} title="Workspace Visibility">
+                            <DropdownButton className={[Styles.workspacePrivacyDropdown, "p-1"]} title="Workspace Visibility">
                                 <Dropdown.Item className='p-0 mb-1'>
                                     <Container className='px-3 py-1 my-1 selection-item'>
                                         <span className='text-default'>
@@ -81,7 +81,7 @@ export default function Content() {
 
                     <div className='d-flex align-items-center col-8 col-md-6 justify-content-start justify-content-md-end'>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
-                            <DropdownButton className={Styles.workspacePrivacyDropdown} title="Filters">
+                            <DropdownButton className={[Styles.workspacePrivacyDropdown, "p-1"]} title="Filters">
                                 <Dropdown.Item className='p-0 mb-1'>
                                     <Container className='px-3 py-1 my-1 selection-item'>
                                         <span className='text-default'>

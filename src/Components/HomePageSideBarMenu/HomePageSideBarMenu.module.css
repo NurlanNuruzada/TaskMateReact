@@ -1,0 +1,96 @@
+.sideBarMenuWrapper {
+    height: calc(95vh - 1.75rem);
+    display: flex;
+}
+
+.sideBarMenu {
+    height: 100%;
+    width: 100%;
+    background: transparent;
+    color: #9fadbc;
+    overflow: auto;
+}
+
+.sideBarMenu:first-child{
+    margin-top: 1.75rem;
+}
+
+.workspacePic {
+    width: clamp(16px, 4.5vw, 32px);
+}
+
+.profilesWrapper {
+    display: flex;
+    margin-left: 0.5rem;
+}
+
+.accordionBtn,
+.accordionBtn Button {
+    border-radius: 0.5rem !important;
+}
+
+.accordionBtn h2 Button {
+    color: #b6c2cf;
+    font-weight: 600;
+    background-color: transparent !important;
+    box-shadow: none;
+}
+
+.accordionBtn h2 Button:not(.collapsed) {
+    box-shadow: none;
+    color: #b6c2cf;
+}
+
+.accordionBtn h2 Button:hover {
+    background-color: #333c43 !important;
+}
+
+.accordionBtn h2 Button[aria-expanded='true'] {
+    background-color: #1c2b41 !important;
+}
+
+.accordionBtn h2 Button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23b6c2cf'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordionBtn Button {
+    --bs-btn-color: #b6c2cf;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: #b6c2cf;
+    --bs-btn-hover-bg: #333c43;
+    --bs-btn-hover-border-color: #333c43;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #b6c2cf;
+    --bs-btn-active-bg: #1c2b41;
+    --bs-btn-active-border-color: #1c2b41;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #b6c2cf;
+    --bs-btn-disabled-bg: #293035;
+    --bs-btn-disabled-border-color: #293035;
+}
+
+.accordionBtn {
+    background-color: transparent;
+    border: 0;
+}
+
+.sideBarMenuWorkspacePic {
+    width: 32px;
+    height: 32px;
+}
+
+.contentWrapper {
+    padding: 5rem;
+}
+
+.contentTopNavBar {
+    border-bottom: 1px solid #384148;
+    padding-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.contentMain{
+    margin-top: 3rem;
+}

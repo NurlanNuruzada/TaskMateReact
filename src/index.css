@@ -239,6 +239,10 @@ body {
 
 .navbar-workspaces .dropdown-menu[data-bs-popper] {
     margin-top: 4px;
+    overflow: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    max-height: 52.5vh;
 }
 
 .navbar-workspace-link:hover {
@@ -255,7 +259,8 @@ body {
     min-height: 90vh;
 }
 
-.create-workspace-modal .modal-content {
+.create-workspace-modal .modal-content,
+.sign-in-modal .modal-content {
     overflow: hidden;
     color: #9fadbc;
     background-color: #1d2125;
@@ -431,7 +436,26 @@ body {
     margin-top: 12px;
 }
 
-.react-trello-lane > div:first-of-type > div:nth-child(2) > article {
+.react-trello-lane>div:first-of-type>div:nth-child(2)>article {
     color: #9fadbc !important;
     background-color: #22272b !important;
+}
+
+.board-overlay-image{
+    opacity: 0.9;
+}
+
+.board-overlay-title{
+    background-color: #1c2b4163;
+}
+
+.board-overlay .board-overlay-title{
+    background-color: #282d33;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s ease-out;
+    cursor: pointer;
+}
+
+.board-overlay .board-overlay-title:hover{
+    background-color: #333c43;
 }
