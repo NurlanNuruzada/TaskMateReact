@@ -78,20 +78,22 @@ export default function SignInPage() {
             </h1>
           </Modal.Title>
           <p className="text-center my-4 fw-bold">Log in to continue</p>
-          <Form className="mt-1">
+          <Form className="mt-2">
             <Form.Group className="mb-2" controlId="create-workspace-name">
               <Form.Control
                 type="text"
                 placeholder="Email"
                 name="UsernameOrEmail"
                 onChange={handleInputChange}
+                className="p-4 px-3"
               />
             </Form.Group>
-            <Form.Group className="mb-1" controlId="create-workspace-name">
+            <Form.Group className="mb-2" controlId="create-workspace-name">
               <Form.Control
                 type="password"
                 placeholder="Password"
                 name="password"
+                className="p-4 px-3"
                 onChange={handleInputChange}
               />
             </Form.Group>
