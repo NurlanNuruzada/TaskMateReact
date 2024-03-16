@@ -16,7 +16,7 @@ export default function CustomModal({ show, title, object, message, type, update
   useEffect(() => {
     setModalShow(show);
   }, [show]);
-  
+
   return (
     <>
       <Modal
@@ -29,14 +29,13 @@ export default function CustomModal({ show, title, object, message, type, update
         <Modal.Body className='p-0 position-relative' id="contained-modal-title-vcenter">
           <Row className='p-0 d-flex flex-nowrap'>
             <div className='py-4 px-5'>
-              <Modal.Header>
-                <Modal.Title className='fw-bold mb-4 d-flex justify-content-between align-items-center' id="contained-modal-title-vcenter">
-                  <span>{title}</span>
+              <Modal.Header className='mb-3'>
+                <Modal.Title className='fw-bold d-flex justify-content-between align-items-center' id="contained-modal-title-vcenter">
+                  {title}
                 </Modal.Title>
-                <Button className='create-workspace-close btn-close' onClick={handleClick}></Button>
               </Modal.Header>
               <Modal.Body>
-                <h4>Do you want to {type} this {object}</h4>
+                <h4 className='mb-4'>Do you want to {type} this {object}?</h4>
                 <p>
                   {message}
                 </p>
