@@ -1,5 +1,5 @@
 body {
-    background-color: #212529;
+    background-color: #212529 !important;
     color: #9FADBC;
     min-height: 100vh;
 }

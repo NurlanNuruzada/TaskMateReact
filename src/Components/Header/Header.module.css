@@ -1,0 +1,13 @@
+.userAccount{
+    background-color: #1d2125 !important;
+    border-color: #1d2125;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userAccount button{
+    background-color: #384148;
+    color: #9fadbc;
+}

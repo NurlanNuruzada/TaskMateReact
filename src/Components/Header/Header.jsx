@@ -30,8 +30,19 @@ import {
 } from "../../Service/WorkSpaceService";
 import { CreateBoard } from "../../Service/BoardService";
 import { MainAction } from "../../Redux/Slices/WorkspaceAndBorderSlice";
-
 import SliderBarMenu from "../SideBarMenu/SideBarMenu";
+import { logoutAction } from '../../Redux/Slices/AuthSlice'
+import { faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Flex
+} from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react';
+import Styles from './Header.module.css'
+
 
 export default function Header() {
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false);
@@ -41,13 +52,12 @@ export default function Header() {
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
   const [Workspaces, setWorkspaces] = useState();
-  const { token } = useSelector((x) => x.auth);
-  const dispach = useDispatch();
+  const { token, email } = useSelector((x) => x.auth);
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ]
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ]
     : null;
 
   const doNotClose = (e) => {
@@ -62,6 +72,7 @@ export default function Header() {
   const resetFormValues = () => {
     CreateWorkSpaceFormik.resetForm();
   };
+  const dispach = useDispatch();
 
   const handleContinue = () => {
     setWorkspaceModal1(false);
@@ -93,7 +104,7 @@ export default function Header() {
       onSuccess: (values) => {
         setWorkspaces(values.data);
       },
-      onError: (err) => {},
+      onError: (err) => { },
     }
   );
 
@@ -373,7 +384,7 @@ export default function Header() {
             />
           </Form>
           <Row className="ms-1 d-flex align-items-center">
-            <Col>
+            <Col className="col-2">
               <Button className="custom-notification">
                 {" "}
                 <FontAwesomeIcon
@@ -382,12 +393,27 @@ export default function Header() {
                 />{" "}
               </Button>
             </Col>
-            <Col>
-              <Image
+            <Col >
+              {/* <Image
                 className="profile-pic"
                 src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6"
                 roundedCircle
-              />
+              /> */}
+              {email && <ChakraProvider>
+                <Menu>
+                  <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
+                    <Flex  alignItems={"center "}>
+                      <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
+                      <p className="m-0" style={{fontSize:"15px"}}>
+                        {email}
+                      </p>
+                    </Flex>
+                  </MenuButton>
+                  <MenuList zIndex={10} className={Styles.userAccount}>
+                    <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispach(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
+                  </MenuList>
+                </Menu>
+              </ChakraProvider>}
             </Col>
           </Row>
         </Container>
