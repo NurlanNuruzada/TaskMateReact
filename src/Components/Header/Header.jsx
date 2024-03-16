@@ -29,7 +29,6 @@ import {
   GetAllWorkspaces,
 } from "../../Service/WorkSpaceService";
 import { CreateBoard } from "../../Service/BoardService";
-import { MainAction } from "../../Redux/Slices/WorkspaceAndBorderSlice";
 import SliderBarMenu from "../SideBarMenu/SideBarMenu";
 import { logoutAction } from '../../Redux/Slices/AuthSlice'
 import { faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
@@ -42,24 +41,25 @@ import {
 } from '@chakra-ui/react'
 import { ChakraProvider } from '@chakra-ui/react';
 import Styles from './Header.module.css'
-
+import { incrementRefresh, setData } from "../../Redux/Slices/WorkspaceAndBorderSlice";
 
 export default function Header() {
+  const dispatch = useDispatch();
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false);
-  const [createBoardSlide, setCreateBoardSlide] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
   const [Workspaces, setWorkspaces] = useState();
   const { token, email } = useSelector((x) => x.auth);
+  const data = useSelector((x) => x.MainData);
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     ]
     : null;
-
+  dispatch(setData({ userId: userId }));
   const doNotClose = (e) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
@@ -72,7 +72,6 @@ export default function Header() {
   const resetFormValues = () => {
     CreateWorkSpaceFormik.resetForm();
   };
-  const dispach = useDispatch();
 
   const handleContinue = () => {
     setWorkspaceModal1(false);
@@ -117,29 +116,28 @@ export default function Header() {
       resetFormValues();
     }
   }, [modalShow]);
-
   const CreateBoardFomik = useFormik({
     initialValues: {
       title: "",
       workspaceId: "",
       appUserId: userId,
     },
-    // validationSchema: validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (values.workspaceId === "" || values.title === "") {
         console.log("values null");
       } else {
-        CreateBoard(values);
+        console.log('request set');
+        await CreateBoard(values);
+        dispatch(incrementRefresh());
       }
     },
   });
-  const handleWorksChange = (data) => {
-    dispach(MainAction(data));
-  };
+
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
 
-  const handleWorkspaceSelect = (workspaceId) => {
-    setSelectedWorkspaceId(workspaceId);
+  const handleWorkspaceSelect = (Id) => {
+    setSelectedWorkspaceId(Id);
+    dispatch(setData({ workspaceId: Id }));
   };
 
   return (
@@ -402,15 +400,15 @@ export default function Header() {
               {email && <ChakraProvider>
                 <Menu>
                   <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
-                    <Flex  alignItems={"center "}>
+                    <Flex alignItems={"center "}>
                       <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
-                      <p className="m-0" style={{fontSize:"15px"}}>
+                      <p className="m-0" style={{ fontSize: "15px" }}>
                         {email}
                       </p>
                     </Flex>
                   </MenuButton>
                   <MenuList zIndex={10} className={Styles.userAccount}>
-                    <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispach(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
+                    <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
                   </MenuList>
                 </Menu>
               </ChakraProvider>}

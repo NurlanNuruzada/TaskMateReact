@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
@@ -6,21 +6,58 @@ import Style from '../../../Components/HomePageSideBarMenu/HomePageSideBarMenu.m
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../../Components/CustomModal/CustomModal';
+import { useMutation } from 'react-query';
+import { GetWorkSpaceById } from '../../../Service/WorkSpaceService';
+import { useSelector } from 'react-redux';
+import { getbyWokrspaceInBoard } from '../../../Service/BoardService';
+
 
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
+    const [Data, setData] = useState()
+    const [Boards, setBoards] = useState()
+    const { workspaceId, refresh } = useSelector((x) => x.Data)
     const updateParentState = (modalShow) => {
         setModalShow(modalShow);
     };
+    const { mutate: GetBoardsById } = useMutation((values) =>
+        getbyWokrspaceInBoard(values), {
+        onSuccess: (response) => {
+            setBoards(response.data)
+        },
+        onError: (error) => {
+            console.log(error);
+        }
+    })
+    const { mutate: GetworksById } = useMutation((values) =>
+        GetWorkSpaceById(values), {
+        onSuccess: (response) => {
+            setData(response.data)
+            GetBoardsById(response.data.id)
+        },
+        onError: (error) => {
+            console.log(error);
+        }
+    })
+
+    useEffect(() => {
+        GetworksById(workspaceId)
+    }, [workspaceId])
+
+    //her defe board crate olunanda headerden userid ni yeniden local a set edir
+    useEffect(() => {
+        GetBoardsById(workspaceId)
+        console.log('request getdi');
+    }, [refresh])
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
-            <div className={Style.contentWrapper}>
+            <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
                 <div className={Style.contentTopNavBar}>
                     <div className='d-flex align-items-center'>
                         <Image className='workspace-pic' src="https://placehold.co/512x512/d9e3da/1d2125?text=S" rounded />
                         <span className='ms-3'>
-                            <h2 className='m-0'>Sanan's Workspace</h2>
+                            <h2 className='m-0'>{Data?.title}</h2>
                             <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
                         </span>
                     </div>
@@ -29,24 +66,16 @@ export default function Content() {
                 <div className={Style.contentMain}>
                     <h5 className="m-0 mb-3"><FontAwesomeIcon className='me-1' icon={faUser} /> Your Boards</h5>
                     <div className='d-flex flex-wrap col-12'>
-                        <Card className="bg-dark text-white col-2 rounded me-3">
-                            <Card.Img src="https://picsum.photos/id/46/1920/1080.jpg" className='rounded board-overlay-image' alt="Card image" />
-                            <Card.ImgOverlay className='board-overlay-title'>
-                                <Card.Title className='fw-bold'>Lorem</Card.Title>
-                            </Card.ImgOverlay>
-                        </Card>
-                        <Card className="bg-dark text-white col-2 rounded me-3">
-                            <Card.Img src="https://picsum.photos/id/33/1920/1080.jpg" className='rounded board-overlay-image' alt="Card image" />
-                            <Card.ImgOverlay className='board-overlay-title'>
-                                <Card.Title className='fw-bold'>Ipsum</Card.Title>
-                            </Card.ImgOverlay>
-                        </Card>
-                        <Card className="bg-dark text-white col-2 rounded me-3">
-                            <Card.Img src="https://picsum.photos/id/47/1920/1080.jpg" className='rounded board-overlay-image' alt="Card image" />
-                            <Card.ImgOverlay className='board-overlay-title'>
-                                <Card.Title className='fw-bold'>Dolor</Card.Title>
-                            </Card.ImgOverlay>
-                        </Card>
+                        {Boards && Boards.map((data, index) => {
+                            return (
+                                <Card className="bg-dark text-white col-2 rounded me-3">
+                                    <Card.Img src="https://picsum.photos/id/46/1920/1080.jpg" className='rounded board-overlay-image' alt="Card image" />
+                                    <Card.ImgOverlay className='board-overlay-title'>
+                                        <Card.Title className='fw-bold'>{data.title}</Card.Title>
+                                    </Card.ImgOverlay>
+                                </Card>
+                            )
+                        })}
                         <Card className="bg-dark text-white col-2 rounded me-3 board-overlay">
                             <Card.ImgOverlay className='board-overlay-title d-flex justify-content-center align-items-center'>
                                 <Card.Title className='fw-bold m-0 fs-6'>Create new board</Card.Title>

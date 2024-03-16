@@ -17,3 +17,14 @@ export const GetAllWorkspaces = async (AppUserId) => {
         return error
     }
 }
+export const GetWorkSpaceById = async (WorkspaceId) => {
+    try {
+        const result = await httpClient.get(`/api/Workspaces/${WorkspaceId}`)
+        return result
+    }
+    catch (error) {
+        return error
+    }
+}
+
+
