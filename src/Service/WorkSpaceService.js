@@ -8,9 +8,9 @@ export const CreateWorkSpace = async (data) => {
         throw error;
     }
 };
-export const GetAllWorkspaces = async (data) => {
+export const GetAllWorkspaces = async (AppUserId) => {
     try {
-        const result = await httpClient.get(`/api/Workspaces/GetAllbyUserId?AppUserId=${data}`)
+        const result = await httpClient.get(`/api/Workspaces/GetAllbyUserId?AppUserId=${AppUserId}`)
         return result
     }
     catch (error) {

@@ -12,8 +12,9 @@ import { useNavigate } from 'react-router';
 export default function SignInPage() {
     const [loginError, setLoginError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const LoginFormik = useFormik({
         initialValues: {
             UsernameOrEmail: "",
@@ -38,7 +39,6 @@ export default function SignInPage() {
         });
     const handleInputChange = (e) => {
         LoginFormik.handleChange(e);
-       
     };
     useEffect(() => {
         if (loginError) {

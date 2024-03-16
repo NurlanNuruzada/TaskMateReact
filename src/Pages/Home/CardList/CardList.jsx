@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Board from 'react-trello';
 import Styles from './CardList.module.css'
-import { DataApi } from './Data';
+import { DataApi, transformBoardData } from './Data';
 import Modal from 'react-bootstrap/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBarsProgress, faEye, faAlignLeft, faListUl, faUser, faTag, faClock, faPaperclip, faPalette, faCopy, faSquareCheck, faArrowRight, faShareNodes } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,12 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
+import jwtDecode from 'jwt-decode';
+import { useDispatch, useSelector } from 'react-redux';
+import { getByBoard } from "../../../Service/BoardService";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import axios from 'axios';
+import { useFormik } from "formik";
 
 
 const handleDragStart = (cardId, laneId) => {
@@ -54,14 +60,36 @@ const CardList = () => {
 
   const [modalShow, setModalShow] = useState(false);
   const [boardData, setBoardData] = useState({ lanes: [] });
+  const [cardListId, SetCardListId] = useState();
+  const [card, SetCard] = useState();
   const eventBusRef = useRef(null);
+
+  const { token } = useSelector((x) => x.auth)
+  const queryClient = useQueryClient();
+
+
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userId = decodedToken ? decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] : null;
+
+  // const { id } = useParams();
+  const id = "e94d0eb9-df9e-4222-58c7-08dc4536cb6c";
+  const { data: byBoard } = useQuery(["Board", id], () =>
+    getByBoard(id)
+  );
 
   useEffect(() => {
     getBoard().then(setBoardData);
   }, []);
 
+
+  const [dataApi, setDataApi] = useState(byBoard?.data);
+
+  useEffect(()=> {
+    setDataApi(byBoard?.data ? byBoard?.data : byBoard?.data);
+  },[dataApi])
+
   const getBoard = () => {
-    const dataCopy = JSON.parse(JSON.stringify(DataApi[0]));
+    const dataCopy = JSON.parse(JSON.stringify(transformBoardData(dataApi)));
 
     dataCopy.lanes.forEach(lane => {
       lane.style = { ...ListStyle };
@@ -112,9 +140,10 @@ const CardList = () => {
     console.log(nextData);
   };
 
+  
   const handleCardAdd = (card, laneId) => {
-    console.log(`New card added to lane ${laneId}`);
-    console.dir(card);
+    SetCard(card);
+    SetCardListId(laneId);
   };
 
   const setEventBus = (eventBus) => {

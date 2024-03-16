@@ -30,6 +30,7 @@ export default function Content() {
     const [inputResult, setInputResult] = useState(false);
     const { email } = useSelector((state) => state.auth); // Update the selector
     const dispatch = useDispatch();
+    
     return (
         <div className='h-100 w-100' style={{ overflowY: 'hidden' }}>
             <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>

@@ -16,20 +16,6 @@ export const DataApi = [
                         "description": "2 Gallons of milk at the Deli store"
                     },
                     {
-                        "id": "Plan2",
-                        "title": "Dispose Garbage",
-                        "label": "10 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Sort out recyclable and waste as needed"
-                    },
-                    {
-                        "id": "Plan3",
-                        "title": "Write Blog",
-                        "label": "30 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Can AI make memes?"
-                    },
-                    {
                         "id": "Plan4",
                         "title": "Pay Rent",
                         "label": "5 mins",
@@ -60,89 +46,33 @@ export const DataApi = [
                 "style": { "width": 280 },
                 "cards": []
             },
-            {
-                "id": "COMPLETED",
-                "title": "Completed",
-                "style": { "width": 280 },
-                "label": "2/5",
-                "cards": [
-                    {
-                        "id": "Completed1",
-                        "title": "Practice Meditation",
-                        "label": "15 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Use Headspace app"
-                    },
-                    {
-                        "id": "Completed2",
-                        "title": "Maintain Daily Journal",
-                        "label": "15 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Use Spreadsheet for now"
-                    }
-                ]
-            },
-            {
-                "id": "REPEAT",
-                "title": "Repeat",
-                "style": { "width": 280 },
-                "label": "1/1",
-                "cards": [
-                    {
-                        "id": "Repeat1",
-                        "title": "Morning Jog",
-                        "label": "30 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Track using fitbit"
-                    }
-                ]
-            },
-            {
-                "id": "ARCHIVED",
-                "title": "Archived",
-                "style": { "width": 280 },
-                "label": "1/1",
-                "cards": [
-                    {
-                        "id": "Archived1",
-                        "title": "Go Trekking",
-                        "label": "300 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Completed 10km on cycle"
-                    }
-                ]
-            },
-            {
-                "id": "ARCHIVED2",
-                "title": "Archived2",
-                "style": { "width": 280 },
-                "label": "1/1",
-                "cards": [
-                    {
-                        "id": "Archived1",
-                        "title": "Go Trekking",
-                        "label": "300 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Completed 10km on cycle"
-                    }
-                ]
-            },
-            {
-                "id": "ARCHIVED3",
-                "title": "Archived3",
-                "style": { "width": 280 },
-                "label": "1/1",
-                "cards": [
-                    {
-                        "id": "Archived1",
-                        "title": "Go Trekking",
-                        "label": "300 mins",
-                        "cardStyle": { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
-                        "description": "Completed 10km on cycle"
-                    }
-                ]
-            }
         ]
     }
+];
 
-]
+export const transformBoardData = (apiData) => {
+    if (!apiData || !apiData.length || !apiData[0].getCardListDtos) {
+      return { lanes: [] };
+    }
+  
+    const lanes = apiData[0].getCardListDtos.map(cardListDto => ({
+      id: cardListDto.id,
+      title: cardListDto.title,
+      boardsId: cardListDto.boardsId,
+      style: { "width": "280px" },
+      cards: cardListDto.getCardDtos.map(cardDto => ({
+        id: cardDto.id, 
+        title: cardDto.title,
+        description: cardDto.description || '',
+        startDate: cardDto.startDate || '',
+        endDate: cardDto.endDate || '',
+        cardListId: cardDto.cardListId || '',
+        cardStyle: { "width": 270, "maxWidth": 270, "margin": "auto", "marginBottom": 5 },
+      })),
+      // lane'e özel stil eklemek gerekiyorsa burada yapılabilir
+    }));
+  
+    return { lanes };
+  };
+  
+

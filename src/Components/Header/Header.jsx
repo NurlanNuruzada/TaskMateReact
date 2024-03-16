@@ -36,64 +36,57 @@ export default function Header() {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken ? decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] : null;
 
+  
   const doNotClose = (e) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
   }
   const validationSchema = yup.object({
     Title: yup.string()
-      .required('Title is required')
-      .min(3)
-      .max(64),
+      .required('Title is required').min(3).max(64),
     Description: yup.string()
       .max(256)
   });
+  
   const resetFormValues = () => {
     CreateWorkSpaceFormik.resetForm();
   };
 
   const handleContinue = () => { setWorkspaceModal1(false); setWorkspaceModal2(true); }
 
-
-  const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
-    useMutation((values) => CreateWorkSpace(values),{
-      onSuccess:()=>{
-        GetUsersAllWorkSpaces(userId)
-      }
-    });
-  const { mutate: GetUsersAllWorkSpaces } = useMutation((userId) => GetAllWorkspaces(userId),
-    {
-      onSuccess: (values) => {
-        setWorkspaces(values.data)
-      }
-    }
-  )
   const CreateWorkSpaceFormik = useFormik({
     initialValues: {
       Title: "",
       AppUserId: userId,
       Description: ""
     },
-    validationSchema: validationSchema,
+    // validationSchema: validationSchema,
     onSubmit: (values) => {
       if (values.Title === null || values.Title === "") {
         console.log('values null');
       }
       else {
-        CreateWorkSpaceMutate(values)
+        CreateWorkSpaceMutate(values);
       }
     },
-  })
+  });
+  
+  const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
+    useMutation((values) => CreateWorkSpace(values));
+    
+  const { mutate: GetUsersAllWorkSpaces } = useMutation((userId) => GetAllWorkspaces(userId),
+    {
+      onSuccess: (values) => {
+        setWorkspaces(values.data)
+      },
+      onError: (err) => {}
+    }
+  )
 
   useEffect(() => {
     GetUsersAllWorkSpaces(userId)
-    dispach(MainAction(Workspaces))
+  }, [userId, Workspaces]);
 
-  }, [userId]);
-
-  useEffect(() => {
-    dispach(MainAction(Workspaces))
-  }, [Workspaces]);
 
   useEffect(() => {
     if (modalShow) {
@@ -105,8 +98,8 @@ export default function Header() {
   const CreateBoardFomik = useFormik({
     initialValues: {
       title: "",
-      appUserId: userId,
-      workspaceId: ""
+      workspaceId: "",
+      appUserId: userId
     },
     // validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -118,12 +111,9 @@ export default function Header() {
       }
     },
   })
-  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-
-  const handleWorkspaceSelect = (workspace) => {
-    setSelectedWorkspace(workspace);
-  };
-
+  const handleWorksChange = (data) => {
+    dispach(MainAction(data))
+  }
   return (
     <Navbar className='navbar-custom' bg='dark' expand="sm" >
       {token ?
@@ -137,7 +127,7 @@ export default function Header() {
             <NavDropdown className='navbar-workspaces' title="Workspaces" id="navbarScrollingDropdown">
               <Card.Text className='ms-3 my-2 container-fluid'> Your Workspaces </Card.Text>
               {Workspaces?.map((workspace, index) => (
-                <NavDropdown.Item key={index} onClick={() => handleWorkspaceSelect(workspace)}>
+                <NavDropdown.Item key={index}>
                   <Container className='navbar-workspace-link'>
                     <Row className='px-1 py-3 d-flex align-items-center'>
                       <Col lg={3}>
