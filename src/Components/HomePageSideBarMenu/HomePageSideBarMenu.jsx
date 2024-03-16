@@ -5,10 +5,15 @@ import Accordion from 'react-bootstrap/Accordion';
 import Col from 'react-bootstrap/Col';
 import Styles from './HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserGroup, faBarsProgress } from '@fortawesome/free-solid-svg-icons';
+import { faUserGroup, faBarsProgress, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import Button from 'react-bootstrap/Button';
+import CustomModal from '../CustomModal/CustomModal';
 
 export default function SideBarMenu() {
+  const [modalShow, setModalShow] = useState(false);
+  const updateParentState = (modalShow) => {
+    setModalShow(modalShow);
+  };
   return (
     <>
       <Col className={[Styles.sideBarMenuWrapper, "col-2"]}>
@@ -21,8 +26,9 @@ export default function SideBarMenu() {
                 Sanan's Workspace
               </Accordion.Header>
               <Accordion.Body className='d-flex flex-column p-0 mt-2'>
-                <Button className='fw-bold mb-2 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
-                <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
+                <Button className='fw-bold my-2 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                <Button onClick={() => setModalShow(true)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item className={[Styles.accordionBtn, 'mt-2']} eventKey="1">
@@ -31,14 +37,22 @@ export default function SideBarMenu() {
                 Trello Workspace
               </Accordion.Header>
               <Accordion.Body className='d-flex flex-column p-0 mt-2'>
-                <Button className='fw-bold mb-2 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
-                <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
+                <Button className='fw-bold my-2 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
+                <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
         </Col>
       </Col >
+      <CustomModal
+        type={'delete'}
+        object={'workspace'}
+        message={'Are you sure you want to delete this workspace?'}
+        title={'Delete Workspace'}
+        show={modalShow}
+        updateParentState={updateParentState}
+      />
     </>
-
   );
 }

@@ -11,7 +11,7 @@ import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import Style from '../../../Components/HomePageSideBarMenu/HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUser, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function Content() {
@@ -19,11 +19,14 @@ export default function Content() {
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
             <div className={Style.contentWrapper}>
                 <div className={Style.contentTopNavBar}>
-                    <Image className='workspace-pic' src="https://placehold.co/512x512/d9e3da/1d2125?text=S" rounded />
-                    <span className='ms-3'>
-                        <h2 className='m-0'>Sanan's Workspace</h2>
-                        <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
-                    </span>
+                    <div className='d-flex align-items-center'>
+                        <Image className='workspace-pic' src="https://placehold.co/512x512/d9e3da/1d2125?text=S" rounded />
+                        <span className='ms-3'>
+                            <h2 className='m-0'>Sanan's Workspace</h2>
+                            <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
+                        </span>
+                    </div>
+                    <Button className='btn btn-danger'><FontAwesomeIcon className='me-2' icon={faTrashCan} />Delete</Button>
                 </div>
                 <div className={Style.contentMain}>
                     <h5 className="m-0 mb-3"><FontAwesomeIcon className='me-1' icon={faUser} /> Your Boards</h5>
