@@ -23,13 +23,29 @@ import {
     Flex
 } from '@chakra-ui/react'
 import { ChakraProvider } from '@chakra-ui/react';
+import { SeachUsers } from '../../../Service/UserService';
+import { useQuery } from 'react-query';
 
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
     const { email } = useSelector((state) => state.auth); // Update the selector
+    const [Users, SerUsers] = useState()
     const dispatch = useDispatch();
+
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const { data: searchResults, isLoading, isError } = useQuery(
+        ["searchUsers", searchQuery],
+        () => SeachUsers(searchQuery),
+        { enabled: !!searchQuery }
+    );
+
+    const handleInputChange = (e) => {
+        setSearchQuery(e.target.value);
+        setInputResult(true);
+    };
 
     return (
         <div className='h-100 w-100' style={{ overflowY: 'hidden' }}>
@@ -162,43 +178,55 @@ export default function Content() {
                                 </Modal.Title>
                                 <Form>
                                     <Form.Group className="mb-1" controlId="create-workspace-name">
-                                        <div className='d-flex align-items-center'>
-                                            <div className='w-100 position-relative me-2'>
+                                        <div className="d-flex align-items-center">
+                                            <div className="w-100 position-relative me-2">
                                                 <Form.Control
                                                     type="text"
                                                     placeholder="e.g. calrissian@cloud.ci"
-                                                    onFocus={() => { setInputResult(true); }}
+                                                    value={searchQuery}
+                                                    onChange={handleInputChange}
+                                                    onFocus={() => setInputResult(true)}
                                                     onBlur={() => setInputResult(false)}
                                                 />
-                                                {inputResult ? (
-                                                    <Card className='custom-card p-3 mt-1 position-absolute w-100'>
-                                                        <div className='d-flex align-items-center search-result'>
-                                                            <img className='rounded-circle me-2' style={{ width: '36px', height: '36px' }} src="https://picsum.photos/200/300.jpg" alt="" />
-                                                            <div>
-                                                                <p className='m-0 small'>Sanan Dalbik</p>
-                                                                <p className='m-0 small'>Hasn't logged in recently</p>
+                                                {inputResult && !isLoading && !isError && (
+                                                    <Card className="custom-card p-3 mt-1 position-absolute w-100">
+                                                        {Array.isArray(searchResults) && searchResults.map((user) => (
+                                                            <div key={user.id} className="d-flex align-items-center search-result">
+                                                                <img
+                                                                    className="rounded-circle me-2"
+                                                                    style={{ width: "36px", height: "36px" }}
+                                                                    src={`https://placehold.co/512x512/d9e3da/1d2125?text=${user.username.slice(0, 1)}`}
+                                                                    alt={user.username}
+                                                                />
+                                                                <div>
+                                                                    <p className="m-0 small">{user.name}</p>
+                                                                    <p className="m-0 small">Status: {user.status}</p>
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                        ))}
                                                     </Card>
-                                                ) : ''}
+                                                )}
                                             </div>
-                                            <div className='d-flex align-items-center'>
+                                            <div className="d-flex align-items-center">
                                                 <Dropdown>
-                                                    <Dropdown.Toggle className='defaultDropdown fw-bold' variant="primary" id="dropdown-basic">
+                                                    <Dropdown.Toggle className="defaultDropdown fw-bold" variant="primary" id="dropdown-basic">
                                                         Member
                                                     </Dropdown.Toggle>
 
                                                     <Dropdown.Menu>
-                                                        <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">Member</Dropdown.Item>
-                                                        <Dropdown.Item className='defaultDropdown-link px-3 py-2' href="#">
+                                                        <Dropdown.Item className="defaultDropdown-link px-3 py-2" href="#">
+                                                            Member
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item className="defaultDropdown-link px-3 py-2" href="#">
                                                             Observer
                                                             <br />
-                                                            <span className='small'>Add people with limited
-                                                                permissions <br /> to this board</span>
+                                                            <span className="small">
+                                                                Add people with limited permissions <br /> to this board
+                                                            </span>
                                                         </Dropdown.Item>
                                                     </Dropdown.Menu>
                                                 </Dropdown>
-                                                <Button className={Styles.modalShareButton}>Share</Button>
+                                                <Button className="modalShareButton">Share</Button>
                                             </div>
                                         </div>
                                     </Form.Group>

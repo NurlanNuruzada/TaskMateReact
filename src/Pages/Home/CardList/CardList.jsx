@@ -66,12 +66,10 @@ const CardList = () => {
   const [card, SetCard] = useState({});
   const eventBusRef = useRef(null);
 
-  const { token } = useSelector((x) => x.auth);
   const queryClient = useQueryClient();
   const { data: byBoard } = useQuery(["BoardInCardList", BoardId], () =>
     getByBoard(BoardId)
   );
-  const { id2 } = useParams();
   useEffect(() => {
     getBoard().then(setBoardData);
   }, []);
