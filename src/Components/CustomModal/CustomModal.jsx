@@ -10,7 +10,10 @@ export default function CustomModal({ show, title, object, message, type, update
   const [showModal, setModalShow] = useState(show);
 
   const handleClick = () => {
-    updateParentState(!show);
+    updateParentState(!show,false);
+  };
+  const handleClick2 = () => {
+    updateParentState(!show,true);
   };
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export default function CustomModal({ show, title, object, message, type, update
                 </p>
               </Modal.Body>
               <Modal.Footer>
-                <Button className='btn btn-danger'>Yes</Button>
+                <Button className='btn btn-danger' onClick={handleClick2}>Yes</Button>
                 <Button className='btn btn-dark' onClick={handleClick}>No</Button>
               </Modal.Footer>
             </div>

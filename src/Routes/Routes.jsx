@@ -14,7 +14,7 @@ export default function Routes() {
       element: <MainLayout />,
       children: [
         {
-          path: "/Boards",
+          path: "/Boards/:id",
           element: token ? <Home /> : <Navigate to={"/SignIn"} />,
         },
         {

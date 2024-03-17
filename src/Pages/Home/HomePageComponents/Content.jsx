@@ -30,13 +30,13 @@ export default function Content() {
     const [inputResult, setInputResult] = useState(false);
     const { email } = useSelector((state) => state.auth); // Update the selector
     const dispatch = useDispatch();
-    
+
     return (
         <div className='h-100 w-100' style={{ overflowY: 'hidden' }}>
             <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>
                 <Container fluid className={[Styles.sideBarMenuTopMenu, "flex-wrap flex-column flex-md-row"]}>
                     <div className='d-flex align-items-center col-8 col-md-6 justify-content-start'>
-                        <h5 contentEditable id='boardName' className={Styles.boardName}>TaskMate</h5>
+                        <h5 id='boardName' className={Styles.boardName}>TaskMate</h5>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
                             <DropdownButton className={Styles.workspacePrivacyDropdown} title="Workspace Visibility">
                                 <Dropdown.Item className='p-0 mb-1'>
@@ -125,14 +125,14 @@ export default function Content() {
                         <div className={Styles.profilesWrapper}>
                             {email && <ChakraProvider>
                                 <Menu>
-                                    <MenuButton  as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
-                                        <Flex   alignItems={"center"}>
+                                    <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
+                                        <Flex alignItems={"center"}>
                                             <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
                                             {email}
                                         </Flex>
                                     </MenuButton>
-                                    <MenuList  zIndex={10} className={Styles.userAccount}>
-                                        <MenuItem  className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
+                                    <MenuList zIndex={10} className={Styles.userAccount}>
+                                        <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
                                     </MenuList>
                                 </Menu>
                             </ChakraProvider>}

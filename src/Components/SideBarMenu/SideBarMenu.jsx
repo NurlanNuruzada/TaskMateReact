@@ -84,30 +84,29 @@ export default function SideBarMenu({ workspaceId }) {
                   {" "}
                   Your Boards{" "}
                 </Card.Text>
-                {console.log("---------", byBoard?.data?.length)}
                 {byBoard?.data?.length ? (
-                  byBoard.data.map((board, index) => (
-                    <NavDropdown.Item key={index}>
-                      <Container className="navbar-workspace-link">
-                        <Row className="px-1 py-3 d-flex align-items-center">
-                          <Col lg={3}>
-                            <Image
-                              className="workspace-pic"
-                              src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board.title.slice(
-                                0,
-                                1
-                              )}`}
-                              rounded
-                            />
-                          </Col>
-                          <Col className="p-0">{board.title}</Col>
-                        </Row>
-                      </Container>
-                    </NavDropdown.Item>
-                  ))
+                  byBoard.data.map((board, index) => {
+                    return (
+                      <NavDropdown.Item key={index}>
+                        <Container className="navbar-workspace-link">
+                          <Row className="px-1 py-3 d-flex align-items-center">
+                            <Col lg={3}>
+                              <Image
+                                className="workspace-pic"
+                                src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board.title.slice(0, 1)}`}
+                                rounded
+                              />
+                            </Col>
+                            <Col className="p-0">{board.title}</Col>
+                          </Row>
+                        </Container>
+                      </NavDropdown.Item>
+                    );
+                  })
                 ) : (
-                  <div>No boards Ulvi</div>
+                  <NavDropdown.Item>No boards available</NavDropdown.Item>
                 )}
+
               </Container>
             </div>
           </Col>

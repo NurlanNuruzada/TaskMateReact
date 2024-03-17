@@ -32,6 +32,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
 import { getByCard } from "../../../Service/CardService";
+import { useParams } from "react-router";
 
 const ListStyle = {
   width: "280px",
@@ -69,16 +70,18 @@ const CardList = () => {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ]
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ]
     : null;
-
-  // const { id } = useParams();
-  const id = "1135FDAF-2D43-455F-3D43-08DC45AA1307";
+  const id = "843ee5ab-2075-4180-22a8-08dc461753c6";
   const { data: byBoard } = useQuery(["BoardInCardList", id], () =>
     getByBoard(id)
   );
-  console.log("tapdiq->", byBoard?.data[0]?.getCardListDtos);
+  const { id2 } = useParams();
+
+  useEffect(() => {
+    console.log(id2);
+  }, [id2]);
 
   useEffect(() => {
     getBoard().then(setBoardData);
@@ -125,7 +128,7 @@ const CardList = () => {
   const [dragCardId, setDragCardId] = useState();
   const [dragLineId, setDragLineId] = useState();
 
-  const handleDragStart = (cardId, laneId) => {}; //El Deyme
+  const handleDragStart = (cardId, laneId) => { }; //El Deyme
 
   const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
     setDragCardId(cardId);
@@ -166,7 +169,7 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) {}
+      } catch (error) { }
     },
     // validationSchema: reservationScheme,
   });
@@ -217,7 +220,7 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) {}
+      } catch (error) { }
     },
     // validationSchema: reservationScheme,
   });
@@ -257,7 +260,7 @@ const CardList = () => {
     initialValues: {
       AppUserId: userId,
       Title: "",
-      BoardsId: byBoard?.data[0].getCardListDtos[0].boardsId,
+      BoardsId: byBoard?.data[0]?.getCardListDtos[0]?.boardsId,
     },
     onSubmit: async (values) => {
       const formData = new FormData();
@@ -279,7 +282,7 @@ const CardList = () => {
         if (response.status === 201) {
           queryClient.invalidateQueries(["BoardInCardList"]);
         }
-      } catch (error) {}
+      } catch (error) { }
     },
     // validationSchema: reservationScheme,
   });

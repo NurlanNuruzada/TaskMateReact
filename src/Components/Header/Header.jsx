@@ -52,14 +52,12 @@ export default function Header() {
   const [inputResult, setInputResult] = useState(false);
   const [Workspaces, setWorkspaces] = useState();
   const { token, email } = useSelector((x) => x.auth);
-  const data = useSelector((x) => x.MainData);
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     ]
     : null;
-  dispatch(setData({ userId: userId }));
   const doNotClose = (e) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
@@ -68,7 +66,7 @@ export default function Header() {
     Title: yup.string().required("Title is required").min(3).max(64),
     Description: yup.string().max(256),
   });
-
+  dispatch(setData({ userId: userId }));
   const resetFormValues = () => {
     CreateWorkSpaceFormik.resetForm();
   };
@@ -87,9 +85,9 @@ export default function Header() {
     // validationSchema: validationSchema,
     onSubmit: (values) => {
       if (values.Title === null || values.Title === "") {
-        console.log("values null");
       } else {
         CreateWorkSpaceMutate(values);
+        dispatch(incrementRefresh())
       }
     },
   });
@@ -122,17 +120,19 @@ export default function Header() {
       workspaceId: "",
       appUserId: userId,
     },
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       if (values.workspaceId === "" || values.title === "") {
-        console.log("values null");
+        console.log(values);
       } else {
-        console.log('request set');
-        await CreateBoard(values);
+        CreateBoard(values);
         dispatch(incrementRefresh());
       }
     },
   });
-
+  const handeCreateBoard = () => {
+    setCreateBoardSlide2(!createBoardSlide2)
+    GetUsersAllWorkSpaces(userId);
+  }
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
 
   const handleWorkspaceSelect = (Id) => {
@@ -319,7 +319,7 @@ export default function Header() {
                     >
                       <div className="container-fluid position-relative create-button-option-wrapper mt-2">
                         <Card.Body
-                          onClick={() => setCreateBoardSlide2(true)}
+                          onClick={handeCreateBoard}
                           className="create-button-option p-0 py-3 px-1 position-relative"
                         >
                           <Card.Subtitle className="mb-2">

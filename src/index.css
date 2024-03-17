@@ -435,3 +435,7 @@ body {
     color: #9fadbc !important;
     background-color: #22272b !important;
 }
+
+.board-overlay-card{
+    cursor: pointer;
+}
