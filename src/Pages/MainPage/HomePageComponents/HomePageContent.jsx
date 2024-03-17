@@ -37,8 +37,8 @@ export default function Content() {
     };
     const { mutate: GetBoardsById } = useMutation((values) =>
         getbyWokrspaceInBoard(values), {
-        onSuccess: (response) => {
-            setBoards(response.data)
+        onSuccess: async (response) => {
+            await setBoards(response.data)
         },
         onError: (error) => {
             console.log(error);

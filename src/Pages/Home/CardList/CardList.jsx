@@ -57,32 +57,21 @@ const cardStyle = {
   color: "#9fadbc",
 };
 
-const CardList = () => {
+const CardList = () => { 
   const [modalShow, setModalShow] = useState(false);
   const [boardData, setBoardData] = useState({ lanes: [] });
   const [cardListId, SetCardListId] = useState("");
+  const {BoardId,userId} =useSelector((x)=>x.Data)
+  const [BId,setBoardId] = useState(BoardId)
   const [card, SetCard] = useState({});
   const eventBusRef = useRef(null);
 
   const { token } = useSelector((x) => x.auth);
   const queryClient = useQueryClient();
-
-  const decodedToken = token ? jwtDecode(token) : null;
-  const userId = decodedToken
-    ? decodedToken[
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    ]
-    : null;
-  const id = "843ee5ab-2075-4180-22a8-08dc461753c6";
-  const { data: byBoard } = useQuery(["BoardInCardList", id], () =>
-    getByBoard(id)
+  const { data: byBoard } = useQuery(["BoardInCardList", BoardId], () =>
+    getByBoard(BoardId)
   );
   const { id2 } = useParams();
-
-  useEffect(() => {
-    console.log(id2);
-  }, [id2]);
-
   useEffect(() => {
     getBoard().then(setBoardData);
   }, []);
@@ -260,14 +249,14 @@ const CardList = () => {
     initialValues: {
       AppUserId: userId,
       Title: "",
-      BoardsId: byBoard?.data[0]?.getCardListDtos[0]?.boardsId,
+      BoardId: BoardId,
     },
     onSubmit: async (values) => {
       const formData = new FormData();
 
       formData.append("AppUserId", userId);
       formData.append("Title", values.Title);
-      formData.append("BoardsId", byBoard?.data[0].getCardListDtos[0].boardsId);
+      formData.append("BoardsId",  BId.id);
 
       try {
         const response = await axios.post(
@@ -305,7 +294,6 @@ const CardList = () => {
         <div className={Styles.createCardList}>
           <form onSubmit={reservFormik.handleSubmit}>
             <FormControl>
-              <label htmlFor="Title">Card List Name</label>
               <Input
                 isInvalid={
                   reservFormik.errors.Title && reservFormik.touched.Title
@@ -316,7 +304,7 @@ const CardList = () => {
                 placeholder="Card List Title"
                 size="sm"
               />
-              <Button className={Styles.createcardlistbtn} type="submit">
+              <Button onClick={reservFormik.handleSubmit} className={Styles.createcardlistbtn} type="submit">
                 Create
               </Button>
             </FormControl>

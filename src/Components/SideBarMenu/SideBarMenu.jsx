@@ -23,23 +23,23 @@ import { getbyWokrspaceInBoard } from "../../Service/BoardService.js";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
-
-export default function SideBarMenu({ workspaceId }) {
+import { useParams } from "react-router";
+import { setData } from "../../Redux/Slices/WorkspaceAndBorderSlice.js";
+export default function SideBarMenu() {
+  const { refresh, workspaceId ,BoardId} = useSelector((x) => x.Data)
+  const GetId = useParams()
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    dispatch(setData({ BoardId: GetId }))
+  },[])
   const [isMenuOpen, setMenuOpen] = useState(true);
-
   const queryClient = useQueryClient();
-
-  const id = "3251DCB6-9FC2-4E01-71BF-08DC459EFC6B";
-  const { data: byBoard } = useQuery(["Board", id], () =>
-    getbyWokrspaceInBoard(id)
+  
+  const { data: byBoard, isSuccess } = useQuery(
+    ["WorkspaceInBoard", workspaceId ? workspaceId : undefined],
+    () => getbyWokrspaceInBoard(workspaceId),
+    { enabled: !!workspaceId }
   );
-
-  // const { data: byBoard, isSuccess } = useQuery(
-  //   ["WorkspaceInBoard", workspaceId ? workspaceId : undefined],
-  //   () => getbyWokrspaceInBoard(workspaceId),
-  //   { enabled: !!workspaceId }
-  // );
-  // console.log("Boards", byBoard?.data);
 
   return (
     <>
@@ -75,12 +75,12 @@ export default function SideBarMenu({ workspaceId }) {
                 className={[Styles.sideBarMenuWorkspace, "mt-2"]}
                 fluid
               >
-                <div className="ms-2">
-                  <p className="m-0 fw-bold">Trello Workspace</p>
-                  <p className="m-0 small">Free</p>
+                <div className="ms-1">
+                  <p className="mx-0  p-0  m-0 fw-bold">Trello Workspace</p>
+                  <p className=" mx-0  p-0  m-0 small">Free</p>
                 </div>
 
-                <Card.Text className="ms-3 my-2 container-fluid">
+                <Card.Text className="mx-1 my-1 p-0 container-fluid">
                   {" "}
                   Your Boards{" "}
                 </Card.Text>
@@ -88,8 +88,8 @@ export default function SideBarMenu({ workspaceId }) {
                   byBoard.data.map((board, index) => {
                     return (
                       <NavDropdown.Item key={index}>
-                        <Container className="navbar-workspace-link">
-                          <Row className="px-1 py-3 d-flex align-items-center">
+                        <Container className="p-0 m-0 navbar-workspace-link">
+                          <Row className="px-2 py-2 d-flex align-items-center">
                             <Col lg={3}>
                               <Image
                                 className="workspace-pic"

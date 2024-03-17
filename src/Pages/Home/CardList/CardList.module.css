@@ -36,16 +36,17 @@
 }
 
 .createCardList {
-  width: 270px;
-  height: 130px;
+  border-radius: 6px;
+  padding: 10px;
+  max-width: 250px;
+  height: max-content;
   background-color: rgb(33, 32, 32);
-  border-radius: 30px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border: 1px solid #2b2e31;
 }
 label {
-  margin-left: 14px;
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   margin-top: 5px;
   font-size: 20px;
@@ -54,13 +55,25 @@ label {
 input {
   width: 100%;
   height: 30px;
-  border-radius: 10px;
   margin-top: 10px;
+  border-radius: 4px;
+  padding: 10px;
+  color: #a8aaac;
+  background-color: #22272B;
+  box-shadow: inset 0 0 0 2px var(--ds-border-input, #091e4224);
+  border: 1px solid #2b2e31;
+}
+input:focus {
+  outline: #616466 1px solid;
 }
 
+
 .createcardlistbtn {
-  width: 100px;
   margin-left: 0px;
   margin-top: 15px;
-  border-bottom-left-radius: 50px;
+  padding: 4px 10px;
+  font-size: 14px;
+  color: #1d2125;
+  background-color: #579DFF;
+
 }
