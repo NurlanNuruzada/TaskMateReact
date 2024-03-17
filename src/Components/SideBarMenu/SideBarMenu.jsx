@@ -13,7 +13,7 @@ import {
   faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getDeletebyId, getbyWokrspaceInBoard } from "../../Service/BoardService.js";
+import { UpdateBoard, getDeletebyId, getbyWokrspaceInBoard } from "../../Service/BoardService.js";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router";
 import { setData } from "../../Redux/Slices/WorkspaceAndBorderSlice.js";
@@ -31,17 +31,27 @@ import {
   ModalCloseButton,
   useDisclosure,
   ChakraProvider,
+  Alert,
+  AlertIcon,
+  FormLabel,
+  Input,
+  FormControl
 } from '@chakra-ui/react'
-import { Button } from "react-bootstrap";
+import { Button, Stack } from "react-bootstrap";
+import { useFormik } from "formik";
 
 export default function SideBarMenu() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { refresh, workspaceId, BoardId, userId } = useSelector((x) => x.Data);
+  const [Bid,setBoardid]=useState(BoardId)
   const GetId = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setData({ BoardId: GetId }));
   }, []);
+  useEffect(() => {
+    setBoardid(BoardId)
+  }, [BoardId]);
 
   const [isMenuOpen, setMenuOpen] = useState(true);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
@@ -61,21 +71,65 @@ export default function SideBarMenu() {
         // Invalidate the query cache after successful deletion
         queryClient.invalidateQueries("WorkspaceInBoard");
       },
-      onError: (err) => {},
+      onError: (err) => { },
     }
   );
-
+  const { mutate: updateBoradMutation } = useMutation(
+    () => UpdateBoard(BoardUpdateFomik.values),
+    {
+      onSuccess: (values) => {
+        queryClient.invalidateQueries("WorkspaceInBoard");
+      },
+      onError: (err) => { },
+    }
+  );
   const onCloseUpdateModal = () => {
     setUpdateModalOpen(false);
   };
-
+  const HandleUpdate = () => {
+    if (BoardUpdateFomik.values.title === "") {
+      console.log("Title cannot be empty");
+    } else {
+      updateBoradMutation();
+      onCloseUpdateModal();
+    }
+  };
   const HandleSubmit = () => {
     deleteBoardMutation();
     onClose();
   };
+  const BoardUpdateFomik = useFormik({
+    initialValues: {
+      title: "",
+      BoardId: Bid,
+      appUserId: userId,
+    },
+    onSubmit: (values) => {
+      if (values.title === "") {
+        console.log("values null");
+      } else {
+        values.boardId=BoardId
+        UpdateBoard(values)
 
+        const timer = setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
+      }
+    },
+  });
+  const [showAlert, setShowAlert] = useState(false);
   return (
     <>
+      <ChakraProvider>
+        <Stack zIndex={1} top={0} right={0} position={'absolute'} spacing={3}>
+          {showAlert && (
+            <Alert status='success' variant='top-accent'>
+              <AlertIcon />
+              Board is Succesfully Updated!
+            </Alert>
+          )}
+        </Stack>
+      </ChakraProvider>
       <Col className={[Styles.sideBarMenuWrapper, isMenuOpen ? "col-2" : ""]}>
         {isMenuOpen ? (
           <Col className={[Styles.sideBarMenu, isMenuOpen ? "col-lg-12" : ""]}>
@@ -185,9 +239,13 @@ export default function SideBarMenu() {
             <ModalCloseButton />
             <ModalBody>
               Update board content goes here.
+              <FormControl>
+                <FormLabel>Board Title</FormLabel>
+                <Input name="title" onChange={BoardUpdateFomik.handleChange} placeholder={"Board Title"} />
+              </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onCloseUpdateModal}>
+              <Button colorScheme="blue" mr={3}  onClick={HandleUpdate} >
                 Save Changes
               </Button>
               <Button variant='ghost' onClick={onCloseUpdateModal}>Cancel</Button>

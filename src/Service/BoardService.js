@@ -10,7 +10,7 @@ export const CreateBoard = async (data) => {
 };
 export const UpdateBoard = async (data) => {
   try {
-    const result = await httpClient.post("/api/Boards", data);
+    const result = await httpClient.put("/api/Boards", data);
     return result;
   } catch (error) {
     return error;
