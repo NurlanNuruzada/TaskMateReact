@@ -18,12 +18,13 @@ import {
   faBarsProgress,
   faUserGroup,
   faLink,
+  faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import {
   CreateWorkSpace,
   GetAllWorkspaces,
@@ -42,6 +43,8 @@ import {
 import { ChakraProvider } from '@chakra-ui/react';
 import Styles from './Header.module.css'
 import { incrementRefresh, setData } from "../../Redux/Slices/WorkspaceAndBorderSlice";
+import { AlertIcon, FormLabel, Stack, useDisclosure, Alert } from '@chakra-ui/react';
+import { GetUserById } from "../../Service/UserService";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -126,6 +129,9 @@ export default function Header() {
       } else {
         CreateBoard(values);
         dispatch(incrementRefresh());
+        const timer = setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
       }
     },
   });
@@ -133,15 +139,32 @@ export default function Header() {
     setCreateBoardSlide2(!createBoardSlide2)
     GetUsersAllWorkSpaces(userId);
   }
+
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
 
   const handleWorkspaceSelect = (Id) => {
     setSelectedWorkspaceId(Id);
     dispatch(setData({ workspaceId: Id }));
   };
-
+  const { data: Data } = useQuery(["UserData", userId], () =>
+    GetUserById(userId)
+  );
+  const { data: UserData } = useQuery(["UserData", userId], () =>
+    GetUserById(userId)
+  );
+  const [showAlert, setShowAlert] = useState(false);
   return (
     <Navbar className="navbar-custom" bg="dark" expand="sm">
+      <ChakraProvider>
+        <Stack zIndex={1} top={0} right={0} position={'absolute'} spacing={3}>
+          {showAlert && (
+            <Alert status='success' variant='top-accent'>
+              <AlertIcon />
+              Workspace is Succesfully Created!
+            </Alert>
+          )}
+        </Stack>
+      </ChakraProvider>
       {token ? (
         <Container fluid>
           <Navbar.Brand
@@ -338,38 +361,43 @@ export default function Header() {
                       </div>
                     </Card>
                   </Dropdown.Item>
-                  <Dropdown.Item className="p-0">
-                    <Card
-                      bg={"dark"}
-                      text={"white"}
-                      style={{
-                        width: "20rem",
-                        border: "none",
-                        textWrap: "wrap",
-                      }}
-                      className="mb-2"
-                    >
-                      <div className="container-fluid create-button-option-wrapper">
-                        <Card.Body
-                          onClick={() => setModalShow(true)}
-                          className="create-button-option p-0 py-3 px-1"
+                  {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
+                    <>
+                      <Dropdown.Item className="p-0">
+                        <Card
+                          bg={"dark"}
+                          text={"white"}
+                          style={{
+                            width: "20rem",
+                            border: "none",
+                            textWrap: "wrap",
+                          }}
+                          className="mb-2"
                         >
-                          <Card.Subtitle className="mb-2">
-                            <FontAwesomeIcon
-                              className="me-1"
-                              icon={faUserGroup}
-                            />{" "}
-                            Create Workspace{" "}
-                          </Card.Subtitle>
-                          <Card.Text>
-                            A Workspace is a group of boards and people. Use it
-                            to organize your company, side hustle, family, or
-                            friends.
-                          </Card.Text>
-                        </Card.Body>
-                      </div>
-                    </Card>
-                  </Dropdown.Item>
+                          <div className="container-fluid create-button-option-wrapper">
+                            <Card.Body
+                              onClick={() => setModalShow(true)}
+                              className="create-button-option p-0 py-3 px-1"
+                            >
+                              <Card.Subtitle className="mb-2">
+                                <FontAwesomeIcon
+                                  className="me-1"
+                                  icon={faUserGroup}
+                                />{" "}
+                                Create Workspace{" "}
+                              </Card.Subtitle>
+                              <Card.Text>
+                                A Workspace is a group of boards and people. Use it
+                                to organize your company, side hustle, family, or
+                                friends.
+                              </Card.Text>
+                            </Card.Body>
+                          </div>
+                        </Card>
+                      </Dropdown.Item>
+                    </>
+                  ) : null}
+
                 </div>
               )}
             </DropdownButton>
@@ -392,6 +420,7 @@ export default function Header() {
               </Button>
             </Col>
             <Col >
+            <FontAwesomeIcon icon={faEllipsis} />
               {/* <Image
                 className="profile-pic"
                 src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6"

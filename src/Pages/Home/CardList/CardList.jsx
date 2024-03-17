@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import Board, { BoardContainer } from "react-trello";
+import Board from "react-trello";
 import Styles from "./CardList.module.css";
-import { DataApi, transformBoardData } from "./Data";
+import {  transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,18 +21,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormControl, Input } from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { getByBoard } from "../../../Service/BoardService";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
 import { getByCard } from "../../../Service/CardService";
-import { useParams } from "react-router";
 
 const ListStyle = {
   width: "280px",
@@ -57,15 +54,17 @@ const cardStyle = {
   color: "#9fadbc",
 };
 
-const CardList = () => { 
+const CardList = () => {
   const [modalShow, setModalShow] = useState(false);
   const [boardData, setBoardData] = useState({ lanes: [] });
   const [cardListId, SetCardListId] = useState("");
-  const {BoardId,userId} =useSelector((x)=>x.Data)
-  const [BId,setBoardId] = useState(BoardId)
+  const { BoardId, userId } = useSelector((x) => x.Data)
+  const [BId, setBoardId] = useState(BoardId)
   const [card, SetCard] = useState({});
   const eventBusRef = useRef(null);
-
+  useEffect(() => {
+    setBoardId(BoardId.id)
+  }, [BoardId])
   const queryClient = useQueryClient();
   const { data: byBoard } = useQuery(["BoardInCardList", BoardId], () =>
     getByBoard(BoardId)
@@ -75,7 +74,6 @@ const CardList = () => {
   }, []);
 
   const [dataApi, setDataApi] = useState(byBoard?.data);
-
   useEffect(() => {
     setDataApi(byBoard?.data ? byBoard?.data : byBoard?.data);
   }, [dataApi]);
@@ -254,7 +252,7 @@ const CardList = () => {
 
       formData.append("AppUserId", userId);
       formData.append("Title", values.Title);
-      formData.append("BoardsId",  BId.id);
+      formData.append("BoardsId", BId);
 
       try {
         const response = await axios.post(

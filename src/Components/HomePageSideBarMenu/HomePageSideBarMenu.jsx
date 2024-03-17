@@ -8,11 +8,13 @@ import { faUserGroup, faBarsProgress, faTrashCan, faEdit } from '@fortawesome/fr
 import Button from 'react-bootstrap/Button';
 import CustomModal from '../CustomModal/CustomModal';
 import { DeleteWorkSpace, GetAllWorkspaces, UpdateWorkSpace } from '../../Service/WorkSpaceService';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { incrementRefresh, setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
-import { ChakraProvider, FormLabel, useDisclosure } from '@chakra-ui/react';
+import { AlertIcon, FormLabel, Stack, useDisclosure, Alert } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
+
 import {
   Modal,
   ModalOverlay,
@@ -25,6 +27,8 @@ import {
   FormControl
 } from '@chakra-ui/react'
 import { Formik, useFormik } from 'formik';
+import { ChakraAlert } from '@chakra-ui/react';
+import { GetUserById } from '../../Service/UserService';
 
 export default function SideBarMenu() {
   const initialRef = React.useRef(null)
@@ -37,9 +41,10 @@ export default function SideBarMenu() {
   const [WorkspaceId, setWorkspaceId] = useState();
   const { token } = useSelector((x) => x.auth);
   const { refresh, workspaceId } = useSelector((x) => x.Data)
-  useEffect(()=>{
+
+  useEffect(() => {
     setWorkspaceId(workspaceId)
-  },[workspaceId])
+  }, [workspaceId])
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
@@ -55,12 +60,18 @@ export default function SideBarMenu() {
       onError: (err) => { },
     }
   );
+  const { data: Data } = useQuery(["BoardInCardList", userId], () =>
+    GetUserById(userId)
+  );
   const { mutate: DeleteWorks } = useMutation(
     (userId) => DeleteWorkSpace(userId, workspaceId),
     {
       onSuccess: (values) => {
-        console.log(values);
         GetUsersAllWorkSpaces(userId);
+        setShowAlert(true);
+        const timer = setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
       },
       onError: (err) => {
         console.log(err);
@@ -74,8 +85,8 @@ export default function SideBarMenu() {
       workspaceId: workspaceId,
       appUserId: userId
     },
-    onSubmit:async  (values) => {
-      values.workspaceId=WorkspaceId;
+    onSubmit: async (values) => {
+      values.workspaceId = WorkspaceId;
       await Update(values);
       onClose()
       dispatch(incrementRefresh());
@@ -102,19 +113,43 @@ export default function SideBarMenu() {
   }, [answer]);
   useEffect(() => {
     GetUsersAllWorkSpaces(userId);
-    GetUsersAllWorkSpaces(userId);
   }, [userId, refresh]);
+  const [Render, SetRender] = useState(refresh)
+  useEffect(() => {
+    SetRender(refresh);
+  }, [refresh]);
+  useEffect(() => {
+    GetUsersAllWorkSpaces(userId);
+  }, [Render]);
 
   const updateParentState = (modalShow, Answer) => {
     setModalShow(modalShow);
     setAnswer(Answer);
   };
-  const HandeUpdateClick=(data)=>{
+  const HandeUpdateClick = (data) => {
     onOpen()
-    dispatch(setData({ workspaceId:data }))
+    dispatch(setData({ workspaceId: data }))
   }
+  const [showAlert, setShowAlert] = useState(false);
+  const [ShowCreateError, setShowCreateError] = useState(false);
   return (
     <>
+      <ChakraProvider>
+        <Stack top={0} right={0} position={'absolute'} spacing={3}>
+          {showAlert && (
+            <Alert status='success' variant='top-accent'>
+              <AlertIcon />
+              Workspace is Succesfully Deleted!
+            </Alert>
+          )}
+          {ShowCreateError && (
+            <Alert status='error' variant='top-accent'>
+              <AlertIcon />
+              Workspace couldn't be created!
+            </Alert>
+          )}
+        </Stack>
+      </ChakraProvider>
       <Col className={[Styles.sideBarMenuWrapper, "col-2"]}>
         <Col className={Styles.sideBarMenu}>
           <Accordion className='m-auto col-11 mt-2' defaultActiveKey="0">
@@ -132,8 +167,12 @@ export default function SideBarMenu() {
                   <Accordion.Body className='d-flex flex-column p-0 mt-2'>
                     <Button className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faBarsProgress} /></span>Boards</Button>
                     <Button className='fw-bold my-2 w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faUserGroup} /></span>Members</Button>
-                    <Button onClick={() =>setModalShow(true)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
-                    <Button onClick={()=>HandeUpdateClick(data.id)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faEdit} /></span>Edit</Button>
+                    {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
+                      <>
+                        <Button onClick={() => setModalShow(true)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faTrashCan} /></span>Delete</Button>
+                        <Button onClick={() => HandeUpdateClick(data.id)} className='fw-bold w-100 text-start ps-4'><span className='me-3 text-center'><FontAwesomeIcon icon={faEdit} /></span>Edit</Button>
+                      </>
+                    ) : null}
                   </Accordion.Body>
                 </Accordion.Item>
               );
@@ -149,6 +188,7 @@ export default function SideBarMenu() {
         show={modalShow}
         updateParentState={updateParentState}
       />
+
       <ChakraProvider>
         <Modal
           initialFocusRef={initialRef}

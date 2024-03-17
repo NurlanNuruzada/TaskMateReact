@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -23,15 +23,18 @@ import {
     Flex
 } from '@chakra-ui/react'
 import { ChakraProvider } from '@chakra-ui/react';
-import { SeachUsers } from '../../../Service/UserService';
+import { GetUserById, SeachUsers } from '../../../Service/UserService';
 import { useQuery } from 'react-query';
+import { GetWorkSpaceById } from '../../../Service/WorkSpaceService';
+import { getByBoard } from '../../../Service/BoardService';
 
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
     const { email } = useSelector((state) => state.auth); // Update the selector
-    const [Users, SerUsers] = useState()
+    const { userId, workspaceId,BoardId } = useSelector((x) => x.Data)
+
     const dispatch = useDispatch();
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -46,13 +49,19 @@ export default function Content() {
         setSearchQuery(e.target.value);
         setInputResult(true);
     };
-
+    const { data: UserData } = useQuery(["UserData", userId], () =>
+        GetUserById(userId)
+    );
+    const [workspaceData, setworkspaceData] = useState()
+    const { data: boardData } = useQuery(["worspacedata", BoardId], () =>
+        getByBoard(BoardId)
+    );
     return (
         <div className='h-100 w-100' style={{ overflowY: 'hidden' }}>
             <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>
                 <Container fluid className={[Styles.sideBarMenuTopMenu, "flex-wrap flex-column flex-md-row"]}>
                     <div className='d-flex align-items-center col-8 col-md-6 justify-content-start'>
-                        <h5 id='boardName' className={Styles.boardName}>TaskMate</h5>
+                        <h5 id='boardName' className={Styles.boardName}>{boardData?.data?.title}</h5>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
                             <DropdownButton className={Styles.workspacePrivacyDropdown} title="Workspace Visibility">
                                 <Dropdown.Item className='p-0 mb-1'>
@@ -268,8 +277,8 @@ export default function Content() {
                                     <div className='d-flex'>
                                         <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" roundedCircle />
                                         <span className='ms-1'>
-                                            <h6 className='m-0'>Hasbulla Gasimov (you)</h6>
-                                            <p className="m-0">@hasbullagasim  •  Workspace admin</p>
+                                            <h6 className='m-0'>{UserData?.data?.username} (you)</h6>
+                                            <p className="m-0">{UserData?.data?.email}  •  Role : {UserData?.data?.role}</p><span>board name:  {boardData?.data?.title }</span>
                                         </span>
                                     </div>
                                     <Dropdown>
