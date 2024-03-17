@@ -150,7 +150,7 @@ export default function SideBarMenu() {
           )}
         </Stack>
       </ChakraProvider>
-      <Col className={[Styles.sideBarMenuWrapper, "col-2"]}>
+      <Col className={[Styles.sideBarMenuWrapper, "d-none d-md-flex col-md-3 col-xl-2"]}>
         <Col className={Styles.sideBarMenu}>
           <Accordion className='m-auto col-11 mt-2' defaultActiveKey="0">
             <h5 className='fw-bold my-3'>Workspaces</h5>
