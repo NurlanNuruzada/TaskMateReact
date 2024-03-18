@@ -34,7 +34,7 @@ import { useFormik } from "formik";
 import { getByCard, getCardDelete } from "../../../Service/CardService";
 import { useParams } from "react-router";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-
+import TextEditor from "./TextEditor/TextEditor";
 
 const ListStyle = {
   width: "280px",
@@ -312,6 +312,7 @@ const CardList = () => {
   const handleCardClick = (cardId, metadata, laneId) => {
     setModalShow(true);
     setCardId(cardId);
+
   };
 
   const { data: thisCard, isSuccess } = useQuery(
@@ -321,8 +322,6 @@ const CardList = () => {
       enabled: !!cardId,
     }
   );
-  console.log("ttt", thisCard);
-
 
   const reservFormik = useFormik({
     initialValues: {
@@ -422,7 +421,7 @@ const CardList = () => {
         </div>
       </div>
       <Modal
-        show={true}
+        show={modalShow}
         onHide={() => {
           setModalShow(false);
         }}
@@ -432,7 +431,7 @@ const CardList = () => {
         centered
         className="create-share-link-modal"
       >
-        {true ? (
+        {thisCard ? (
           <Modal.Body
             className="p-3 mb-3 position-relative"
             id="contained-modal-title-vcenter"
@@ -446,7 +445,7 @@ const CardList = () => {
                   <div className="py-1">
                     <Card.Subtitle className="mb-2 fs-5">
                       {" "}
-                      {/* {thisCard?.data.title}{" "} */}
+                      {thisCard?.data.title}{" "}
                     </Card.Subtitle>
                     <Card.Text className="small fs-6">
                       in list{" "}
@@ -493,7 +492,7 @@ const CardList = () => {
                       >
                         <Form.Control as="textarea" rows={3} cols={80} />
                       </Form.Group> */}
-                                                
+                      <TextEditor description={thisCard?.data.title}/>
                     </div>
                   </Card.Body>
                 </div>
