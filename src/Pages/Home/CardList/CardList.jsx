@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import Board, { BoardContainer } from "react-trello";
+import Board from "react-trello";
 import Styles from "./CardList.module.css";
-import { DataApi, transformBoardData } from "./Data";
+import {  transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,20 +21,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FormControl, Input } from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { getByBoard } from "../../../Service/BoardService";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
-import { getByCard, getCardDelete } from "../../../Service/CardService";
-import { useParams } from "react-router";
-import { Dropdown, DropdownButton } from "react-bootstrap";
-
+import { getByCard } from "../../../Service/CardService";
 
 const ListStyle = {
   width: "280px",
@@ -61,32 +56,27 @@ const cardStyle = {
 
 const CardList = () => {
   const [modalShow, setModalShow] = useState(false);
-  const [moveModalShow, setMoveModalShow] = useState(false);
-
-
   const [boardData, setBoardData] = useState({ lanes: [] });
   const [cardListId, SetCardListId] = useState("");
   const { BoardId, userId } = useSelector((x) => x.Data)
   const [BId, setBoardId] = useState(BoardId)
   const [card, SetCard] = useState({});
   const eventBusRef = useRef(null);
-
+  useEffect(() => {
+    setBoardId(BoardId.id)
+  }, [BoardId])
   const queryClient = useQueryClient();
-  const { data: byBoard } = useQuery(["BoardInCardList", BoardId?.id], () =>
-    getByBoard(BoardId?.id)
+  const { data: byBoard } = useQuery(["BoardInCardList", BoardId], () =>
+    getByBoard(BoardId)
   );
-
-  const [dataApi, setDataApi] = useState(byBoard?.data);
-
   useEffect(() => {
     getBoard().then(setBoardData);
   }, []);
 
+  const [dataApi, setDataApi] = useState(byBoard?.data);
   useEffect(() => {
-    if (byBoard?.data) {
-      setDataApi(byBoard.data);
-    }
-  }, [byBoard]);
+    setDataApi(byBoard?.data ? byBoard?.data : byBoard?.data);
+  }, [dataApi]);
 
   const getBoard = () => {
     const dataCopy = JSON.parse(JSON.stringify(transformBoardData(dataApi)));
@@ -184,88 +174,10 @@ const CardList = () => {
     }
   };
 
-  // if (updatedCards && updatedCards.length > 0) {
-  //   console.log("Change Card ID:", updateCard);
-  //   console.log("Statde deyer:", updateCard);
-  //   // updateCardFormik.submitForm();
-  // }
-  const [updateCard, setUpdateCard] = useState(null);
-
   const shouldReceiveNewData = (nextData) => {
     console.log("New card has been added");
-    console.log(nextData.lanes);
-    const updatedCards = findUpdatedCards(boardData, nextData);
-    setUpdateCard(updatedCards);
-    if(updateCard !==null){
-      updateCardFormik.submitForm();
-    }
+    console.log(nextData);
   };
-
-  const updateCardFormik = useFormik({
-    initialValues: {
-      CardId: updateCard && updateCard.length > 0 ? updateCard[0].id : '',
-      Title: updateCard && updateCard.length > 0 ? updateCard[0].title : '',
-      Description: updateCard && updateCard.length > 0 ? updateCard[0].description : '',
-    },
-    onSubmit: async (values) => {
-      const formData = new FormData();
-
-      formData.append("CardId", values.CardId);
-      formData.append("Title", values.Title);
-      formData.append("Description", values.Description);
-
-      try {
-        const response = await axios.put(
-          "https://localhost:7101/api/Cards",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        if (response.status === 201) {
-          queryClient.invalidateQueries(["BoardInCardList"]);
-        }
-      } catch (error) { }
-    },
-    // validationSchema: reservationScheme,
-  });
-
-  useEffect(() => {
-    if (updateCard && updateCard.length > 0 && updateCardFormik) {
-      updateCardFormik.setValues({
-        CardId: updateCard[0].id,
-        Title: updateCard[0].title,
-        Description: updateCard[0].description,
-      });
-    }
-  }, [updateCard]);
-
-  function findUpdatedCards(boardData, nextData) {
-    const updatedCards = [];
-
-    // Her bir lane üzerinde döngü
-
-    nextData.lanes.forEach((nextLane) => {
-      const prevLane = boardData.lanes.find(lane => lane.id === nextLane.id);
-
-      if (prevLane) {
-        nextLane.cards.forEach((nextCard) => {
-          const prevCard = prevLane.cards.find(card => card.id === nextCard.id);
-
-          // Kartın title veya description alanında değişiklik var mı kontrol et
-          if (prevCard && (prevCard.title !== nextCard.title || prevCard.description !== nextCard.description)) {
-            updatedCards.push(nextCard);
-          }
-        });
-      }
-    });
-
-    return updatedCards;
-  }
-
-
 
   const formik = useFormik({
     initialValues: {
@@ -314,22 +226,20 @@ const CardList = () => {
     eventBusRef.current = eventBus;
   };
 
-  // const [cardId, setCardId] = useState(null);
+  const [cardId, setCardId] = useState(null);
 
-  // const handleCardClick = (cardId, metadata, laneId) => {
-  //   setModalShow(true);
-  //   setCardId(cardId);
-  // };
+  const handleCardClick = (cardId, metadata, laneId) => {
+    setModalShow(true);
+    setCardId(cardId);
+  };
 
-  // const { data: thisCard, isSuccess } = useQuery(
-  //   ["Card", cardId],
-  //   () => getByCard(cardId),
-  //   {
-  //     enabled: !!cardId,
-  //   }
-  // );
-  // console.log("ttt", thisCard);
-
+  const { data: thisCard, isSuccess } = useQuery(
+    ["Card", cardId],
+    () => getByCard(cardId),
+    {
+      enabled: !!cardId,
+    }
+  );
 
   const reservFormik = useFormik({
     initialValues: {
@@ -342,7 +252,7 @@ const CardList = () => {
 
       formData.append("AppUserId", userId);
       formData.append("Title", values.Title);
-      formData.append("BoardsId", BId.id);
+      formData.append("BoardsId", BId);
 
       try {
         const response = await axios.post(
@@ -362,35 +272,6 @@ const CardList = () => {
     // validationSchema: reservationScheme,
   });
 
-
-  const { mutate } = useMutation(({ AppUserId, CardId }) => getCardDelete(AppUserId, CardId), {
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(['BoardInCardList']);
-    },
-    onError: (error) => {
-    }
-  });
-
-  const cardDelete = async (userId, cardId) => {
-    mutate({ AppUserId: userId, CardId: cardId });
-  };
-
-  const handleCardDelete = (cardId) => {
-    cardDelete(userId, cardId);
-  };
-
-
-  const handleOnLaneDelete = (laneId) => {
-    if (eventBusRef.current) {
-      eventBusRef.current.publish({ type: 'REMOVE_LANE', laneId: laneId });
-    }
-    console.log("LaneId--->", laneId);
-  }
-
-  const handleCardTitleAndDescriptionChange = (cardId, cardTitle, cardDescription) => {
-
-  }
-
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -404,9 +285,7 @@ const CardList = () => {
           eventBusHandle={setEventBus}
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
-          // onCardClick={handleCardClick}
-          onCardDelete={handleCardDelete}
-          onLaneDelete={handleOnLaneDelete}
+          onCardClick={handleCardClick}
         />
         <div className={Styles.createCardList}>
           <form onSubmit={reservFormik.handleSubmit}>
@@ -439,7 +318,7 @@ const CardList = () => {
         centered
         className="create-share-link-modal"
       >
-        {false ? (
+        {thisCard?.data ? (
           <Modal.Body
             className="p-3 mb-3 position-relative"
             id="contained-modal-title-vcenter"
@@ -453,7 +332,7 @@ const CardList = () => {
                   <div className="py-1">
                     <Card.Subtitle className="mb-2 fs-5">
                       {" "}
-                      {/* {thisCard?.data.title}{" "} */}
+                      {thisCard?.data.title}{" "}
                     </Card.Subtitle>
                     <Card.Text className="small fs-6">
                       in list{" "}
@@ -568,7 +447,7 @@ const CardList = () => {
                     </div>
                     <p className="mt-5 mb-2 small fw-bold">Actions</p>
                     <div>
-                      <button onClick={(pres) => setMoveModalShow(true)} className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      <button className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon className="me-2" icon={faArrowRight} />
                         Move
                       </button>
@@ -589,69 +468,6 @@ const CardList = () => {
         ) : (
           ""
         )}
-      </Modal>
-      <Modal
-        show={moveModalShow}
-        onHide={() => {
-          setMoveModalShow(false);
-        }}
-        fullscreen="md-down"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        id={Styles.MainMoveModelShow}
-      >
-        <Modal.Body
-          id={Styles.MoveModelShow}
-        >
-          <div className={Styles.PositionMoveModelShow}>
-            <div className={Styles.headerMoveModelShow}>
-              <div></div>
-              <div>Move Card</div>
-              <div><button>X</button></div>
-            </div>
-            <div className={Styles.centerMoveModelShow}>
-              <div>
-                <Dropdown id={Styles.DropDownMove} data-bs-theme="dark">
-                  <Dropdown.Toggle id="dropdown-button-dark-example1" variant="secondary">
-                    Dropdown Button
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu>
-                    <Dropdown.Item href="#/action-1" active>
-                      Action
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div>
-                <Dropdown data-bs-theme="dark">
-                  <Dropdown.Toggle id="dropdown-button-dark-example1" variant="secondary">
-                    Dropdown Button
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu>
-                    <Dropdown.Item href="#/action-1" active>
-                      Action
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-              <div>
-                <Button variant="primary">Move</Button>
-              </div>
-            </div>
-          </div>
-        </Modal.Body>
       </Modal>
     </div>
   );
