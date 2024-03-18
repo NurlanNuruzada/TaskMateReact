@@ -1,6 +1,8 @@
 .sideBarMenuWrapper {
-    height: calc(95vh - 1.75rem);
+    /* height: calc(95vh - 1.75rem); */
+    height: 95vh;
     display: flex;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .sideBarMenu {
@@ -11,9 +13,9 @@
     overflow: auto;
 }
 
-.sideBarMenu:first-child{
+/* .sideBarMenu:first-child{
     margin-top: 1.75rem;
-}
+} */
 
 .workspacePic {
     width: clamp(16px, 4.5vw, 32px);

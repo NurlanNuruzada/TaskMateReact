@@ -135,7 +135,7 @@ export default function Content() {
                                     </MenuList>
                                 </Menu>
                             </ChakraProvider>}
-                            <Button onClick={() => setModalShow(true)} className={Styles.shareButton}><FontAwesomeIcon icon={faUserPlus} /> Share</Button>
+                            <Button onClick={() => setModalShow(true)} className={Styles.shareButton}><FontAwesomeIcon icon={faUserPlus} />Share</Button>
                         </div>
                     </div>
                 </Container>

@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import jwtDecode from "jwt-decode";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   CreateWorkSpace,
   GetAllWorkspaces,
@@ -53,7 +53,6 @@ export default function Header() {
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
-  const [Workspaces, setWorkspaces] = useState();
   const { token, email } = useSelector((x) => x.auth);
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
@@ -91,6 +90,10 @@ export default function Header() {
       } else {
         CreateWorkSpaceMutate(values);
         dispatch(incrementRefresh())
+        setShowAlert(true);
+        const timer = setTimeout(() => {
+          setShowAlert(false);
+        }, 2000);
       }
     },
   });
@@ -98,18 +101,14 @@ export default function Header() {
   const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
     useMutation((values) => CreateWorkSpace(values));
 
-  const { mutate: GetUsersAllWorkSpaces } = useMutation(
-    (userId) => GetAllWorkspaces(userId),
-    {
-      onSuccess: (values) => {
-        setWorkspaces(values.data);
-      },
-      onError: (err) => { },
-    }
-  );
 
+
+  const { data: ALlworkspaces } = useQuery(["GetAllworkspaces", userId], () =>
+    GetAllWorkspaces(userId)
+  );
+  const queryClient = useQueryClient();
   useEffect(() => {
-    GetUsersAllWorkSpaces(userId);
+    queryClient.invalidateQueries("GetAllworkspaces");
   }, [userId]);
 
   useEffect(() => {
@@ -127,17 +126,30 @@ export default function Header() {
       if (values.workspaceId === "" || values.title === "") {
         console.log(values);
       } else {
-        CreateBoard(values);
-        dispatch(incrementRefresh());
-        const timer = setTimeout(() => {
-          setShowAlert(false);
-        }, 2000);
+        CreateBoardMutation(values);
+
       }
     },
   });
+  const { mutate: CreateBoardMutation } = useMutation(
+    (values) => CreateBoard(values),
+    {
+      onSuccess: (values) => {
+        dispatch(incrementRefresh());
+        queryClient.invalidateQueries("Boards");
+        setShowAlert2(true);
+        const timer = setTimeout(() => {
+          setShowAlert2(false);
+        }, 2000);
+      },
+      onError: (err) => {
+        console.log(err);
+      },
+    }
+  );
   const handeCreateBoard = () => {
     setCreateBoardSlide2(!createBoardSlide2)
-    GetUsersAllWorkSpaces(userId);
+    queryClient.invalidateQueries("GetAllworkspaces");
   }
 
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
@@ -153,6 +165,7 @@ export default function Header() {
     GetUserById(userId)
   );
   const [showAlert, setShowAlert] = useState(false);
+  const [showAlert2, setShowAlert2] = useState(false);
   return (
     <Navbar className="navbar-custom" bg="dark" expand="sm">
       <ChakraProvider>
@@ -161,6 +174,14 @@ export default function Header() {
             <Alert status='success' variant='top-accent'>
               <AlertIcon />
               Workspace is Succesfully Created!
+            </Alert>
+          )}
+        </Stack>
+        <Stack zIndex={1} top={0} right={0} position={'absolute'} spacing={3}>
+          {showAlert2 && (
+            <Alert status='success' variant='top-accent'>
+              <AlertIcon />
+              Board is Succesfully Created!
             </Alert>
           )}
         </Stack>
@@ -204,13 +225,14 @@ export default function Header() {
                 {" "}
                 Your Workspaces{" "}
               </Card.Text>
-              {Workspaces?.map((workspace, index) => (
+              {ALlworkspaces?.data?.map((workspace, index) => (
                 <NavDropdown.Item
                   key={index}
                   onClick={() => handleWorkspaceSelect(workspace.id)}
                 >
-                  <Container className="navbar-workspace-link">
-                    <Row className="px-1 py-3 d-flex align-items-center">
+                  {/*css de deyisiklik*/}
+                  <Container  className="navbar-workspace-link"> 
+                    <Row  className="px-1 py-3 d-flex align-items-center">
                       <Col lg={3}>
                         <Image
                           className="workspace-pic"
@@ -292,8 +314,15 @@ export default function Header() {
                                     name="workspaceId"
                                     aria-label="Default select example"
                                   >
-                                    {Workspaces?.map((workspace, index) => (
-                                      <option key={index} value={workspace.id}>
+                                    <option value="">Select a Workspace</option>
+                                    <option value={ALlworkspaces?.data?.[0]?.id}>
+                                      {ALlworkspaces?.data?.[0]?.title}
+                                    </option>
+                                    {ALlworkspaces?.data?.slice(1).map((workspace, index) => (
+                                      <option
+                                        key={index}
+                                        value={workspace.id}
+                                      >
                                         {workspace.title}
                                       </option>
                                     ))}
@@ -420,16 +449,16 @@ export default function Header() {
               </Button>
             </Col>
             <Col >
-            <FontAwesomeIcon icon={faEllipsis} />
+              <FontAwesomeIcon icon={faEllipsis} />
               {/* <Image
                 className="profile-pic"
                 src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6"
                 roundedCircle
               /> */}
               {email && <ChakraProvider>
-                <Menu>
-                  <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
-                    <Flex alignItems={"center "}>
+                <Menu >
+                  <MenuButton  as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
+                    <Flex  alignItems={"center "}>
                       <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
                       <p className="m-0" style={{ fontSize: "15px" }}>
                         {email}

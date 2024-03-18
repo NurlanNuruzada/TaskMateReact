@@ -11,3 +11,20 @@
     background-color: #384148;
     color: #9fadbc;
 }
+/* css de deyisiklik */
+.shareButton{
+    background-color: transparent;
+    border-color: transparent;
+}
+.shareButton:hover{
+    background-color: transparent;
+    border-color: transparent;
+}
+.shareButton:active{
+    background-color: transparent;
+    border-color: transparent;
+}
+input{
+    margin: 0 !important;
+    transition: 300ms;
+}

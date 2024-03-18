@@ -8,7 +8,7 @@ import { faUserGroup, faBarsProgress, faTrashCan, faEdit } from '@fortawesome/fr
 import Button from 'react-bootstrap/Button';
 import CustomModal from '../CustomModal/CustomModal';
 import { DeleteWorkSpace, GetAllWorkspaces, UpdateWorkSpace } from '../../Service/WorkSpaceService';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { incrementRefresh, setData } from '../../Redux/Slices/WorkspaceAndBorderSlice';
@@ -41,7 +41,7 @@ export default function SideBarMenu() {
   const [WorkspaceId, setWorkspaceId] = useState();
   const { token } = useSelector((x) => x.auth);
   const { refresh, workspaceId } = useSelector((x) => x.Data)
-
+  const queryClient = useQueryClient();
   useEffect(() => {
     setWorkspaceId(workspaceId)
   }, [workspaceId])
@@ -51,14 +51,8 @@ export default function SideBarMenu() {
     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     ]
     : null;
-  const { mutate: GetUsersAllWorkSpaces } = useMutation(
-    (userId) => GetAllWorkspaces(userId),
-    {
-      onSuccess: (values) => {
-        setWorkspaces(values.data);
-      },
-      onError: (err) => { },
-    }
+  const { data: ALlworkspaces } = useQuery(["GetAllworkspaces", userId], () =>
+    GetAllWorkspaces(userId)
   );
   const { data: Data } = useQuery(["BoardInCardList", userId], () =>
     GetUserById(userId)
@@ -67,8 +61,9 @@ export default function SideBarMenu() {
     (userId) => DeleteWorkSpace(userId, workspaceId),
     {
       onSuccess: (values) => {
-        GetUsersAllWorkSpaces(userId);
+        queryClient.invalidateQueries("GetAllworkspaces");
         setShowAlert(true);
+        queryClient.invalidateQueries("GetWorkspace");
         const timer = setTimeout(() => {
           setShowAlert(false);
         }, 2000);
@@ -98,7 +93,8 @@ export default function SideBarMenu() {
     {
       onSuccess: (values) => {
         console.log(values);
-        GetUsersAllWorkSpaces(userId);
+        queryClient.invalidateQueries("GetAllworkspaces");
+        queryClient.invalidateQueries("GetWorkspace");
       },
       onError: (err) => {
         console.log(err);
@@ -112,14 +108,14 @@ export default function SideBarMenu() {
     }
   }, [answer]);
   useEffect(() => {
-    GetUsersAllWorkSpaces(userId);
+    queryClient.invalidateQueries("GetAllworkspaces");
   }, [userId, refresh]);
   const [Render, SetRender] = useState(refresh)
   useEffect(() => {
     SetRender(refresh);
   }, [refresh]);
   useEffect(() => {
-    GetUsersAllWorkSpaces(userId);
+    queryClient.invalidateQueries("GetAllworkspaces");
   }, [Render]);
 
   const updateParentState = (modalShow, Answer) => {
@@ -154,7 +150,7 @@ export default function SideBarMenu() {
         <Col className={Styles.sideBarMenu}>
           <Accordion className='m-auto col-11 mt-2' defaultActiveKey="0">
             <h5 className='fw-bold my-3'>Workspaces</h5>
-            {Workspaces?.map((data, index) => {
+            {ALlworkspaces?.data?.map((data, index) => {
               return (
                 <Accordion.Item onClick={() => dispatch(setData({ workspaceId: data.id }))} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
                   <Accordion.Header>

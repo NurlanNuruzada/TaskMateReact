@@ -35,17 +35,26 @@ import {
   AlertIcon,
   FormLabel,
   Input,
-  FormControl
+  FormControl,
+  Flex
 } from '@chakra-ui/react'
 import { Button, Stack } from "react-bootstrap";
 import { useFormik } from "formik";
+import jwtDecode from "jwt-decode";
 
 export default function SideBarMenu() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { refresh, workspaceId, BoardId, userId } = useSelector((x) => x.Data);
-  const [Bid,setBoardid]=useState(BoardId)
+  const { token } = useSelector((x) => x.auth);
+  const [Bid, setBoardid] = useState(BoardId)
   const GetId = useParams();
   const dispatch = useDispatch();
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userId2 = decodedToken
+    ? decodedToken[
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ]
+    : null;
   useEffect(() => {
     dispatch(setData({ BoardId: GetId }));
   }, []);
@@ -102,13 +111,14 @@ export default function SideBarMenu() {
     initialValues: {
       title: "",
       BoardId: Bid,
-      appUserId: userId,
+      appUserId: userId2,
     },
     onSubmit: (values) => {
       if (values.title === "") {
         console.log("values null");
       } else {
-        values.boardId=BoardId
+        values.boardId = BoardId
+        values.appUserId = userId2
         UpdateBoard(values)
 
         const timer = setTimeout(() => {
@@ -171,26 +181,34 @@ export default function SideBarMenu() {
                     return (
                       <NavDropdown.Item key={index}>
                         <Container onClick={() => dispatch(setData({ BoardId: board.id }))} className="p-0 m-0 navbar-workspace-link">
-                          <Row className="px-2 py-2 d-flex align-items-center">
-                            <Col lg={3}>
-                              <Image
-                                className="workspace-pic"
-                                src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board.title.slice(0, 1)}`}
-                                rounded
-                              />
-                            </Col>
-                            <Col className="p-0">{board.title} </Col>
-                            <span>
-                              <Menu>
-                                <MenuButton bgColor={'transparent'}>
-                                  <FontAwesomeIcon icon={faEllipsis} />
-                                </MenuButton>
-                                <MenuList w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={10} pt={10} gap={10} bgColor={'#1d2125 '}>
-                                  <MenuItem onClick={() => onOpen()} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Delete Board</MenuItem>
-                                  <MenuItem onClick={() => setUpdateModalOpen(true)} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Update Board</MenuItem>
-                                </MenuList>
-                              </Menu>
-                            </span>
+                          <Row  className="px-0 my-2 d-flex align-items-center rounded-0">
+                            {/* css de deyisiklik */}
+                            <ChakraProvider>
+                              <Flex  align={'center'} justify={'space-between'} gap={2}>
+                                <Flex  align={'center'} justify={'flex-start'} gap={2}>
+                                  <Col style={{width:"20px"}} lg={3}>
+                                    <Image
+                                      className="workspace-pic"
+                                      src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board.title.slice(0, 1)}`}
+                                    />
+                                  </Col>
+                                  <Col className="p-0">{board.title}
+                                  </Col>
+                                </Flex>
+                                <Menu>
+                                  <MenuButton bgColor={'transparent'}>
+                                    <FontAwesomeIcon icon={faEllipsis} />
+                                  </MenuButton>
+                                  <MenuList  w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={2} pt={2} gap={10} bgColor={'#1d2125'}>
+                                    <MenuItem backgroundColor={"transparent"} onClick={() => onOpen()} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Delete Board</MenuItem>
+                                    <MenuItem backgroundColor={"transparent"}  onClick={() => {
+                                      setUpdateModalOpen(true);
+                                      BoardUpdateFomik.setFieldValue("BoardId", board.id)
+                                    }} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Update Board</MenuItem>
+                                  </MenuList>
+                                </Menu>
+                              </Flex>
+                            </ChakraProvider>
                           </Row>
                         </Container>
                       </NavDropdown.Item>
@@ -212,7 +230,7 @@ export default function SideBarMenu() {
             </button>
           </Col>
         )}
-      </Col>
+      </Col >
       <ChakraProvider>
 
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -245,7 +263,7 @@ export default function SideBarMenu() {
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3}  onClick={HandleUpdate} >
+              <Button colorScheme="blue" mr={3} onClick={HandleUpdate} >
                 Save Changes
               </Button>
               <Button variant='ghost' onClick={onCloseUpdateModal}>Cancel</Button>

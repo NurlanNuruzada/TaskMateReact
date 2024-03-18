@@ -148,7 +148,7 @@ export default function Content() {
                             </DropdownButton>
                         </div>
                         <div className={Styles.profilesWrapper}>
-                            {email && <ChakraProvider>
+                            {/* {email && <ChakraProvider>
                                 <Menu>
                                     <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
                                         <Flex alignItems={"center"}>
@@ -160,8 +160,8 @@ export default function Content() {
                                         <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
                                     </MenuList>
                                 </Menu>
-                            </ChakraProvider>}
-                            <Button onClick={() => setModalShow(true)} className={Styles.shareButton}><FontAwesomeIcon icon={faUserPlus} /> Share</Button>
+                            </ChakraProvider>} */}
+                            <Button onClick={() => setModalShow(true)} className={Styles.shareButton}><FontAwesomeIcon icon={faUserPlus} />Share</Button>
                         </div>
                     </div>
                 </Container>
