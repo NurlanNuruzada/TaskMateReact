@@ -65,12 +65,13 @@ export default function SideBarMenu() {
   const [isMenuOpen, setMenuOpen] = useState(true);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
 
-  const queryClient = useQueryClient();
+  // console.log("workspaceId", workspaceId);
 
+  const queryClient = useQueryClient();
   const { data: byBoard, isSuccess, refetch } = useQuery(
-    ["WorkspaceInBoard", workspaceId ? workspaceId : undefined],
-    () => getbyWokrspaceInBoard(workspaceId),
-    { enabled: !!workspaceId }
+    ["WorkspaceInBoard", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
+    () => getbyWokrspaceInBoard(userId2, workspaceId),
+    { enabled: !!workspaceId && !!userId2 }
   );
 
   const { mutate: deleteBoardMutation } = useMutation(
@@ -176,17 +177,17 @@ export default function SideBarMenu() {
                   {" "}
                   Your Boards{" "}
                 </Card.Text>
-                {byBoard?.data?.length ? (
+                {Array.isArray(byBoard?.data) && byBoard.data.length ? (
                   byBoard.data.map((board, index) => {
                     return (
                       <NavDropdown.Item key={index}>
                         <Container onClick={() => dispatch(setData({ BoardId: board.id }))} className="p-0 m-0 navbar-workspace-link">
-                          <Row  className="px-0 my-2 d-flex align-items-center rounded-0">
+                          <Row className="px-0 my-2 d-flex align-items-center rounded-0">
                             {/* css de deyisiklik */}
                             <ChakraProvider>
-                              <Flex  align={'center'} justify={'space-between'} gap={2}>
-                                <Flex  align={'center'} justify={'flex-start'} gap={2}>
-                                  <Col style={{width:"20px"}} lg={3}>
+                              <Flex align={'center'} justify={'space-between'} gap={2}>
+                                <Flex align={'center'} justify={'flex-start'} gap={2}>
+                                  <Col style={{ width: "20px" }} lg={3}>
                                     <Image
                                       className="workspace-pic"
                                       src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board.title.slice(0, 1)}`}
@@ -199,9 +200,9 @@ export default function SideBarMenu() {
                                   <MenuButton bgColor={'transparent'}>
                                     <FontAwesomeIcon icon={faEllipsis} />
                                   </MenuButton>
-                                  <MenuList  w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={2} pt={2} gap={10} bgColor={'#1d2125'}>
+                                  <MenuList w={"200px"} border={"#616466 1px solid"} borderRadius={4} pb={2} pt={2} gap={10} bgColor={'#1d2125'}>
                                     <MenuItem backgroundColor={"transparent"} onClick={() => onOpen()} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Delete Board</MenuItem>
-                                    <MenuItem backgroundColor={"transparent"}  onClick={() => {
+                                    <MenuItem backgroundColor={"transparent"} onClick={() => {
                                       setUpdateModalOpen(true);
                                       BoardUpdateFomik.setFieldValue("BoardId", board.id)
                                     }} p={"0px 12px"} _hover={{ backgroundColor: "#616466" }}>Update Board</MenuItem>

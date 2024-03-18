@@ -32,7 +32,7 @@ import { getByBoard } from '../../../Service/BoardService';
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
-    const { email } = useSelector((state) => state.auth); // Update the selector
+    const { email } = useSelector((state) => state.auth); 
     const { userId, workspaceId,BoardId } = useSelector((x) => x.Data)
 
     const dispatch = useDispatch();

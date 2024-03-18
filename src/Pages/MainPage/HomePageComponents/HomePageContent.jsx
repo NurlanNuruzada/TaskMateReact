@@ -2,17 +2,19 @@ import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
+import NavDropdown from "react-bootstrap/NavDropdown";
 import Style from '../../../Components/HomePageSideBarMenu/HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser, faTrashCan, faBarsProgress } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../../Components/CustomModal/CustomModal';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { GetWorkSpaceById } from '../../../Service/WorkSpaceService';
+import { GetWorkSpaceById, GetAllWorkspaces } from '../../../Service/WorkSpaceService';
 import { useSelector } from 'react-redux';
 import { getbyWokrspaceInBoard } from '../../../Service/BoardService';
 import { useNavigate } from 'react-router';
 import Dropdown from "react-bootstrap/Dropdown";
-import { Form } from 'react-bootstrap';
+import { Container, Form } from 'react-bootstrap';
+import jwtDecode from "jwt-decode";
 
 
 
@@ -21,6 +23,14 @@ export default function Content() {
     const [Data, setData] = useState()
     const [Render, setRender] = useState();
     const { workspaceId, refresh, BoardId } = useSelector((x) => x.Data)
+    const { token } = useSelector((x) => x.auth);
+    const decodedToken = token ? jwtDecode(token) : null;
+    const userId2 = decodedToken
+        ? decodedToken[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+        ]
+        : null;
+
     useEffect(() => {
         setRender(refresh);
     }, [refresh]);
@@ -36,10 +46,11 @@ export default function Content() {
     const updateParentState = (modalShow) => {
         setModalShow(modalShow);
     };
+
     const { data: byBoard, isSuccess, refetch } = useQuery(
-        ["Boards", workspaceId ? workspaceId : undefined],
-        () => getbyWokrspaceInBoard(workspaceId),
-        { enabled: !!workspaceId }
+        ["WorkspaceInBoard", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
+        () => getbyWokrspaceInBoard(userId2, workspaceId),
+        { enabled: !!workspaceId && !!userId2 }
     );
     // const { mutate: GetBoardsById } = useMutation((values) =>
     //     getbyWokrspaceInBoard(values), {
@@ -56,50 +67,60 @@ export default function Content() {
         { enabled: !!workspaceId }
     );
 
+    const { data: userWorkspace } = useQuery(
+        ["UserWorkspace", userId2 ? userId2 : undefined],
+        () => GetAllWorkspaces(userId2),
+        { enabled: !!userId2 }
+    );
+
     useEffect(() => {
         queryClient.invalidateQueries("Boards");
         queryClient.invalidateQueries("GetWorkspace");
     }, [Render, workspaceId])
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
-            {GetWorkspace?.data &&
-                <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
-                    <div className={Style.contentTopNavBar}>
-                        <div className='d-flex align-items-center'>
-                            <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${GetWorkspace?.data?.title.slice(
-                                0,
-                                1
-                            )}`} rounded />     
-                            <span className='ms-3'>
-                                <h2 className='m-0'>{GetWorkspace.data?.title}</h2>
-                                <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
-                            </span>
+            {userWorkspace && userWorkspace.length > 0 ? (
+                GetWorkspace?.data && (
+                    <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
+                        <div className={Style.contentTopNavBar}>
+                            <div className='d-flex align-items-center'>
+                                <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${GetWorkspace?.data?.title.slice(
+                                    0,
+                                    1
+                                )}`} rounded />
+                                <span className='ms-3'>
+                                    <h2 className='m-0'>{GetWorkspace.data?.title}</h2>
+                                    <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div className={Style.contentMain}>
-                        <h5 className="m-0 mb-3"><FontAwesomeIcon className='me-1' icon={faUser} /> Your Boards</h5>
-                        <div className='d-flex flex-wrap col-12'>
-                            {byBoard && byBoard?.data?.map((data, index) => {
-                                /* css de deyisiklik */
-                                return (
-                                    <Card onClick={() => Navigate(`/Boards/${data.id}`)} key={index} style={{ height: "110px" }} className="bg-dark text-white col-2 rounded me-2 mb-2 board-overlay-card">
-                                        <Card.Img src="https://picsum.photos/id/46/1920/1080.jpg" style={{ height: "110px" }} className='rounded board-overlay-image' alt="Card image" />
-                                        <Card.ImgOverlay className='board-overlay-title'>
-                                            <Card.Title className='fw-bold'>{data.title}</Card.Title>
-                                        </Card.ImgOverlay>
-                                    </Card>
-                                )
-                            })}
-                            {/* Yuxari hissede boards eger 1 den coxsursa map edir */}
-                            {/* css  deyisliklik */}
-                            {/* <Card style={{ height: "110px" }} className=" bg-dark text-white col-2 rounded me-3 board-overlay">
+                        <div className={Style.contentMain}>
+                            <h5 className="m-0 mb-3"><FontAwesomeIcon className='me-1' icon={faUser} /> Your Boards</h5>
+                            <div className='d-flex flex-wrap col-12'>
+                                {Array.isArray(byBoard?.data) && byBoard.data.length ? (
+                                    byBoard.data.map((board, index) => {
+                                        return (
+                                            <Card onClick={() => Navigate(`/Boards/${board.id}`)} key={index} style={{ height: "110px" }} className="bg-dark text-white col-2 rounded me-2 mb-2 board-overlay-card">
+                                                <Card.Img src="https://picsum.photos/id/46/1920/1080.jpg" style={{ height: "110px" }} className='rounded board-overlay-image' alt="Card image" />
+                                                <Card.ImgOverlay className='board-overlay-title'>
+                                                    <Card.Title className='fw-bold'>{board.title}</Card.Title>
+                                                </Card.ImgOverlay>
+                                            </Card>
+                                        );
+                                    })
+                                ) : (
+                                    <NavDropdown.Item>No boards available</NavDropdown.Item>
+                                )}
+                                {/* Yuxari hissede boards eger 1 den coxsursa map edir */}
+                                {/* css  deyisliklik */}
+                                {/* <Card style={{ height: "110px" }} className=" bg-dark text-white col-2 rounded me-3 board-overlay">
                                 <Card.ImgOverlay className='board-overlay-title d-flex justify-content-center align-items-center'>
                                     <Card.Title className='fw-bold m-0 fs-6'>Create new board</Card.Title>
                                 </Card.ImgOverlay>
                             </Card> */}
+                            </div>
                         </div>
-                    </div>
-                    {/* <Dropdown.Item
+                        {/* <Dropdown.Item
                         className="create-dropdown-item"
                         onClick={doNotClose}
                     >
@@ -188,9 +209,16 @@ export default function Content() {
                             </div>
                         </Card>
                     </Dropdown.Item> */}
-                </div>
-
-            }
+                    </div>
+                )
+            ) : (
+                <Container style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <NavDropdown.Item style={{ fontSize: '20px', color: 'white', padding: '30px', paddingLeft: '44%', paddingTop: '15%' }}>Board not found.</NavDropdown.Item>
+                    <NavDropdown.Item style={{ fontSize: '20px', color: 'white', width: 'auto' }}>This board may be private. If someone gave you this link, they may need to</NavDropdown.Item>
+                    <NavDropdown.Item style={{ fontSize: '20px', color: 'white', width: 'auto' }}>share the board with you or invite you to their Workspace.</NavDropdown.Item>
+                    <p style={{ fontSize: '20px', color: 'white', paddingTop:'60px' }}>Not Brinsley Blackwood? Switch accounts</p>
+                </Container>
+            )}
             <CustomModal
                 type={'delete'}
                 object={'workspace'}

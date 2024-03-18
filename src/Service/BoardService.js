@@ -20,16 +20,16 @@ export const UpdateBoard = async (data) => {
 export const getByBoard = (id) => {
   return httpClient.get(`api/Boards/${id}`);
 };
-export const getbyWokrspaceInBoard = (id) => {
-  return httpClient.get(`api/Boards?WorkspaceId=${id}`);
+export const getbyWokrspaceInBoard = (AppUserId, WorkspaceId) => {
+  return httpClient.get(`api/Boards?AppUserId=${AppUserId}&WorkspaceId=${WorkspaceId}`);
 };
-export const getDeletebyId = async (AppUserId,BoardId) => {
+export const getDeletebyId = async (AppUserId, BoardId) => {
   try {
-      const result = await httpClient.delete(`/api/Boards/Remove?AppUserId=${AppUserId}&BoardId=${BoardId}`)
-      return result
+    const result = await httpClient.delete(`/api/Boards/Remove?AppUserId=${AppUserId}&BoardId=${BoardId}`)
+    return result
   }
   catch (error) {
-      return error
+    return error
   }
 }
 

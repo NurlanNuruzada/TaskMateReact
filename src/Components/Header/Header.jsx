@@ -114,7 +114,7 @@ export default function Header() {
   useEffect(() => {
     queryClient.invalidateQueries("GetAllworkspaces");
   }, [userId]);
-  
+
   useEffect(() => {
     if (modalShow) {
       resetFormValues();
@@ -236,8 +236,7 @@ export default function Header() {
                   key={index}
                   onClick={() => handleWorkspaceSelect(workspace.id)}
                 >
-                  {/*css de deyisiklik*/}
-                  <Container  className="navbar-workspace-link"> 
+                  <Container  className="navbar-workspace-link">
                     <Row  className="px-1 py-3 d-flex align-items-center">
                       <Col lg={3}>
                         <Image
