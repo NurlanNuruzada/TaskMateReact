@@ -36,6 +36,8 @@
     "redux-logger": "^3.0.6",
     "routes": "^2.1.0",
     "sass": "^1.69.5",
+    "slate": "^0.102.0",
+    "slate-react": "^0.102.0",
     "styled-components": "^6.1.8",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"

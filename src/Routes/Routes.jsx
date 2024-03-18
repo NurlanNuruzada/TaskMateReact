@@ -5,6 +5,7 @@ import SignInPage from "../Pages/SignInPage/SignInPage";
 import RegisterPage from "../Pages/SignInPage/RegisterPage";
 import { useSelector } from "react-redux";
 import MainPage from "../Pages/MainPage/MainPage";
+import Members from "../Components/Members/Members";
 
 export default function Routes() {
   const { token } = useSelector((x) => x.auth);
@@ -20,6 +21,10 @@ export default function Routes() {
         {
           path: "/",
           element: token ? <MainPage /> : <Navigate to={"/SignIn"} />,
+        },
+        {
+          path: "/Members",
+          element: token ? <Members /> : <Navigate to={"/SignIn"} />,
         },
       ],
     },

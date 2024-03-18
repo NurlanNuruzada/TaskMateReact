@@ -96,6 +96,10 @@ export default function Header() {
         }, 2000);
       }
     },
+    onSuccess: ()=>{
+      queryClient.invalidateQueries(["GetAllworkspaces"]);
+      queryClient.invalidateQueries(["WorkspaceInBoard"]);
+    }
   });
 
   const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
@@ -110,7 +114,7 @@ export default function Header() {
   useEffect(() => {
     queryClient.invalidateQueries("GetAllworkspaces");
   }, [userId]);
-
+  
   useEffect(() => {
     if (modalShow) {
       resetFormValues();
@@ -127,9 +131,11 @@ export default function Header() {
         console.log(values);
       } else {
         CreateBoardMutation(values);
-
       }
     },
+    onSuccess: ()=>{
+      queryClient.invalidateQueries("WorkspaceInBoard");
+    }
   });
   const { mutate: CreateBoardMutation } = useMutation(
     (values) => CreateBoard(values),
