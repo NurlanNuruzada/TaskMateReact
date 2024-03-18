@@ -72,14 +72,14 @@ export default function Content() {
         () => GetAllWorkspaces(userId2),
         { enabled: !!userId2 }
     );
-
+        console.log("userWorkspace",userWorkspace);
     useEffect(() => {
         queryClient.invalidateQueries("Boards");
         queryClient.invalidateQueries("GetWorkspace");
     }, [Render, workspaceId])
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
-            {userWorkspace && userWorkspace.length > 0 ? (
+            {userWorkspace && userWorkspace.data.length > 0 ? (
                 GetWorkspace?.data && (
                     <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
                         <div className={Style.contentTopNavBar}>

@@ -35,7 +35,7 @@ import { getByCard, getCardDelete } from "../../../Service/CardService";
 import { useParams } from "react-router";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import TextEditor from "./TextEditor/TextEditor";
-
+const data = require('./data.json')
 const ListStyle = {
   width: "280px",
   backgroundColor: "#101204",
@@ -79,16 +79,21 @@ const CardList = () => {
   const [dataApi, setDataApi] = useState(byBoard?.data);
 
   useEffect(() => {
-    getBoard().then(setBoardData);
-  }, []);
-
-  useEffect(() => {
     if (byBoard?.data) {
       setDataApi(byBoard.data);
     }
   }, [byBoard]);
 
-  const getBoard = () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      const newBoardData = await getBoard();
+      setBoardData(newBoardData);
+    };
+
+    fetchData();
+  }, [dataApi]);
+
+  const getBoard = async () => {
     const dataCopy = JSON.parse(JSON.stringify(transformBoardData(dataApi)));
 
     dataCopy.lanes.forEach((lane) => {
@@ -97,7 +102,7 @@ const CardList = () => {
         card.cardStyle = { ...cardStyle };
       });
     });
-    return Promise.resolve(dataCopy);
+    return dataCopy;
   };
 
   const completeCard = () => {
@@ -190,7 +195,7 @@ const CardList = () => {
     console.log(nextData.lanes);
     const updatedCards = findUpdatedCards(boardData, nextData);
     setUpdateCard(updatedCards);
-    if(updateCard !==null){
+    if (updateCard !== null) {
       updateCardFormik.submitForm();
     }
   };
@@ -492,7 +497,7 @@ const CardList = () => {
                       >
                         <Form.Control as="textarea" rows={3} cols={80} />
                       </Form.Group> */}
-                      <TextEditor description={thisCard?.data.title}/>
+                      <TextEditor description={thisCard?.data.description} />
                     </div>
                   </Card.Body>
                 </div>

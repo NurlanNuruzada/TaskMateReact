@@ -34,7 +34,7 @@ export const GetWorkSpaceById = async (WorkspaceId) => {
         return error
     }
 }
-export const DeleteWorkSpace = async (AppUserId,WorkspaceId) => {
+export const DeleteWorkSpace = async (AppUserId, WorkspaceId) => {
     try {
         const result = await httpClient.delete(`/api/Workspaces?AppUserId=${AppUserId}&WorkspaceId=${WorkspaceId}`)
         return result
