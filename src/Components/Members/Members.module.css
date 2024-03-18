@@ -1,0 +1,74 @@
+.contentWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem;
+}
+
+.contentTopNavBar {
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contentTopNavBar Button {
+    align-self: flex-start;
+}
+
+.modalShareButton {
+    margin-left: 0.5rem;
+    --bs-btn-color: #1d2125;
+    --bs-btn-bg: #579dff;
+    --bs-btn-border-color: #579dff;
+    --bs-btn-hover-color: #1d2125;
+    --bs-btn-hover-bg: #78b0ff;
+    --bs-btn-hover-border-color: #78b0ff;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #1d2125;
+    --bs-btn-active-bg: #579dff;
+    --bs-btn-active-border-color: #579dff;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+    font-weight: 600;
+    --bs-btn-padding-x: 1.25rem;
+    --bs-btn-padding-y: 7px;
+    --bs-btn-font-family: ;
+    --bs-btn-font-size: 0.9rem;
+    --bs-btn-font-weight: 400;
+    --bs-btn-line-height: 1.5;
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-width: var(--bs-border-width);
+    --bs-btn-border-radius: 6px;
+}
+
+.shareButton {
+    margin-left: 1rem;
+    --bs-btn-color: #1d2125;
+    --bs-btn-bg: #579dff;
+    --bs-btn-border-color: #579dff;
+    --bs-btn-hover-color: #1d2125;
+    --bs-btn-hover-bg: #78b0ff;
+    --bs-btn-hover-border-color: #78b0ff;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #1d2125;
+    --bs-btn-active-bg: #579dff;
+    --bs-btn-active-border-color: #579dff;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+    font-weight: 600;
+    --bs-btn-padding-x: 0.7rem;
+    --bs-btn-padding-y: 0.2rem;
+    --bs-btn-font-family: ;
+    --bs-btn-font-size: 0.9rem;
+    --bs-btn-font-weight: 400;
+    --bs-btn-line-height: 1.5;
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-border-width: var(--bs-border-width);
+    --bs-btn-border-radius: 3px;
+}
