@@ -326,6 +326,57 @@ body {
     --bs-btn-disabled-border-color: #384148;
 }
 
+.default-outline-submit {
+    --bs-btn-color: #b3bfcb;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-color: #b3bfcb;
+    --bs-btn-hover-bg: #49545e;
+    --bs-btn-hover-border-color: #49545e;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #b3bfcb;
+    --bs-btn-active-bg: #667583;
+    --bs-btn-active-border-color: #667583;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+}
+
+.default-outline-dark-submit {
+    --bs-btn-color: #9fadbc;
+    --bs-btn-bg: #323940;
+    --bs-btn-border-color: #323940;
+    --bs-btn-hover-color: #9fadbc;
+    --bs-btn-hover-bg: #57626d;
+    --bs-btn-hover-border-color: #57626d;
+    --bs-btn-focus-shadow-rgb: 0;
+    --bs-btn-active-color: #9fadbc;
+    --bs-btn-active-bg: #1c2b41;
+    --bs-btn-active-border-color: #1c2b41;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #1d2125;
+    --bs-btn-disabled-bg: #384148;
+    --bs-btn-disabled-border-color: #384148;
+}
+
+.nav-pills .nav-link.default-outline-dark-submit {
+    background-color: var(--bs-btn-bg);
+    color: var(--bs-btn-color);
+    border-color: var(--bs-btn-border-color);
+}
+.nav-pills .nav-link.default-outline-dark-submit:hover {
+    background-color: var(--bs-btn-hover-bg);
+    color: var(--bs-btn-hover-color);
+    border-color: var(--bs-btn-hover-border-color);
+}
+
+.nav-pills .nav-link.active.default-outline-dark-submit {
+    background-color: var(--bs-btn-active-bg);
+    color: var(--bs-btn-active-color);
+    border-color: var(--bs-btn-active-border-color);
+}
+
 .create-workspace-submit {
     font-weight: bold;
     --bs-btn-color: #1d2125;
@@ -441,21 +492,26 @@ body {
     background-color: #22272b !important;
 }
 
-.board-overlay-image{
+.board-overlay-image {
     opacity: 0.9;
 }
 
-.board-overlay-title{
+.board-overlay-title {
     background-color: #1c2b4163;
 }
 
-.board-overlay .board-overlay-title{
+.board-overlay .board-overlay-title {
     background-color: #282d33;
     border-radius: 0.25rem;
     transition: background-color 0.3s ease-out;
     cursor: pointer;
 }
 
-.board-overlay .board-overlay-title:hover{
+.board-overlay .board-overlay-title:hover {
     background-color: #333c43;
+}
+
+.tab-footer {
+    border-block: 1px solid #384148;
+    padding: 2rem 0;
 }
