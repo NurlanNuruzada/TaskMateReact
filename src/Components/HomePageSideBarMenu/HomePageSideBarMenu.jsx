@@ -155,6 +155,7 @@ export default function SideBarMenu() {
   useEffect(() => {
     SetInedex(currentWorkspaceIndex)
   }, [currentWorkspaceIndex])
+  
   return (
     <>
       <ChakraProvider>
@@ -207,7 +208,7 @@ export default function SideBarMenu() {
       <CustomModal
         type={'delete'}
         object={'workspace'}
-        message={`Are you sure you want to delete this ${"text"} workspace?`}
+        message={`Are you sure you want to delete this  workspace?`}
         title={'Delete Workspace'}
         show={modalShow}
         updateParentState={updateParentState}

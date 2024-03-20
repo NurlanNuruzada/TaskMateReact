@@ -138,6 +138,9 @@ export default function SideBarMenu() {
     () => GetWorkSpaceById(workspaceId),
     { enabled: !!workspaceId }
   );
+  useEffect(() => {
+    queryClient.invalidateQueries("BoardInCardList");
+  }, [BoardId]);
   const currentWorkspace = GetWorkspaceById?.data?.title;
   // function generateLightColor() {
   //   const red = Math.floor(Math.random() * 128) + 128; 
@@ -146,6 +149,12 @@ export default function SideBarMenu() {
 
   //   return  ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
   // }
+
+  const HandeSellect = (data) => {
+    dispatch(setData({ BoardId: data}));
+    queryClient.refetchQueries("BoardInCardList");
+    queryClient.removeQueries("BoardInCardList")
+  }
   return (
     <>
       <ChakraProvider>
@@ -197,7 +206,9 @@ export default function SideBarMenu() {
                     // {var randomColor = generateLightColor()}
                     return (
                       <NavDropdown.Item key={index}>
-                        <Container onClick={() => dispatch(setData({ BoardId: board.id }))} className="p-0 m-0 navbar-workspace-link">
+                        <Container onClick={() =>
+                          HandeSellect(board.id)
+                        } className="p-0 m-0 navbar-workspace-link">
                           <Row className="px-0 my-2 d-flex align-items-center rounded-0">
                             {/* css de deyisiklik */}
                             <ChakraProvider>
@@ -206,7 +217,7 @@ export default function SideBarMenu() {
                                   <Col style={{ width: "20px" }} lg={3}>
                                     <Image
                                       className="workspace-pic"
-                                      src={`https://placehold.co/512x512/1d2125/1d2125?text=${board?.title?.slice(0, 1)}`}
+                                      src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board?.title?.slice(0, 1)}`}
                                     />
                                   </Col>
                                   <Col className="p-0">{board.title}

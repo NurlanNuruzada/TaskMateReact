@@ -29,7 +29,6 @@ export default function Content() {
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
         ]
         : null;
-
     useEffect(() => {
         setRender(refresh);
     }, [refresh]);
