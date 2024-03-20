@@ -81,6 +81,7 @@ export default function SideBarMenu() {
       onSuccess: () => {
         // Invalidate the query cache after successful deletion
         queryClient.invalidateQueries("GetBoartsInWorkspace");
+        queryClient.invalidateQueries("worspacedata")
       },
     }
   );
@@ -89,6 +90,7 @@ export default function SideBarMenu() {
     {
       onSuccess: (values) => {
         queryClient.invalidateQueries("GetBoartsInWorkspace");
+        queryClient.invalidateQueries("worspacedata")
       },
       onError: (err) => { },
     }
@@ -151,7 +153,7 @@ export default function SideBarMenu() {
   // }
 
   const HandeSellect = (data) => {
-    dispatch(setData({ BoardId: data}));
+    dispatch(setData({ BoardId: data }));
     queryClient.refetchQueries("BoardInCardList");
     queryClient.removeQueries("BoardInCardList")
   }
