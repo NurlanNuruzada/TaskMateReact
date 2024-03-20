@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Style from '../../../Components/HomePageSideBarMenu/HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faUser, faTrashCan, faBarsProgress } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUser  } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../../Components/CustomModal/CustomModal';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { GetWorkSpaceById, GetAllWorkspaces } from '../../../Service/WorkSpaceService';
 import { useSelector } from 'react-redux';
 import { getbyWokrspaceInBoard } from '../../../Service/BoardService';
 import { useNavigate } from 'react-router';
-import Dropdown from "react-bootstrap/Dropdown";
 import { Container, Form } from 'react-bootstrap';
 import jwtDecode from "jwt-decode";
 

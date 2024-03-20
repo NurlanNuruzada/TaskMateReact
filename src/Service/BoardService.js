@@ -23,15 +23,14 @@ export const getByBoard = (id) => {
 export const getbyWokrspaceInBoard = (AppUserId, WorkspaceId) => {
   return httpClient.get(`api/Boards?AppUserId=${AppUserId}&WorkspaceId=${WorkspaceId}`);
 };
-export const getDeletebyId = async (AppUserId, BoardId) => {
+export const getDeletebyId = async (data) => {
   try {
-    const result = await httpClient.delete(`/api/Boards/AppUserId=${AppUserId}&BoardId=${BoardId}`)
-    return result
+    const result = await httpClient.delete(`/api/Boards`, { data }); 
+    return result.data; 
+  } catch (error) {
+    throw error; 
   }
-  catch (error) {
-    return error
-  }
-}
+};
 
 
 //https://localhost:7101/api/Boards/e94d0eb9-df9e-4222-58c7-08dc4536cb6c

@@ -75,7 +75,7 @@ export default function SideBarMenu() {
   );
 
   const { mutate: deleteBoardMutation } = useMutation(
-    () => getDeletebyId(userId, BoardId),
+    (data) => getDeletebyId(data),
     {
       onSuccess: (values) => {
         // Invalidate the query cache after successful deletion
@@ -89,7 +89,6 @@ export default function SideBarMenu() {
     {
       onSuccess: (values) => {
         queryClient.invalidateQueries("GetBoartsInWorkspace");
-        console.log("update ");
       },
       onError: (err) => { },
     }
@@ -106,7 +105,11 @@ export default function SideBarMenu() {
     }
   };
   const HandleSubmit = () => {
-    deleteBoardMutation();
+    const data = {
+      AppUserId: userId,
+      boardId: BoardId
+    };
+    deleteBoardMutation(data);
     onClose();
   };
   const BoardUpdateFomik = useFormik({
