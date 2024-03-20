@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -48,7 +48,7 @@ export default function Content() {
             <Col lg={12} className={Styles.sideBarMenuTopMenuWrapper}>
                 <Container fluid className={[Styles.sideBarMenuTopMenu, "flex-wrap flex-column flex-md-row"]}>
                     <div className='d-flex align-items-center col-8 col-md-6 justify-content-start'>
-                        <h5 id='boardName' className={Styles.boardName}>{boardData?.data?.title}</h5>
+                        <h5 id='boardName' className={Styles.boardName}>{boardData?.data[0]?.title}</h5>
                         <div id="workspace-privacy-dropdown-wrapper" className={Styles.workspacePrivacyDropdownWrapper}>
                             <DropdownButton className={Styles.workspacePrivacyDropdown} title="Workspace Visibility">
                                 <Dropdown.Item className='p-0 mb-1'>
@@ -154,7 +154,10 @@ export default function Content() {
                 </Container>
             </Col>
             <Col lg={12} >
-                <CardList />
+            {boardData?.data[0]?.title
+            ?
+            <CardList />
+            :""}
             </Col>
             <div>
                 <Modal
@@ -265,7 +268,7 @@ export default function Content() {
                                         <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" roundedCircle />
                                         <span className='ms-1'>
                                             <h6 className='m-0'>{UserData?.data?.username} (you)</h6>
-                                            <p className="m-0">{UserData?.data?.email}  •  Role : {UserData?.data?.role}</p><span>board name:  {boardData?.data?.title }</span>
+                                            <p className="m-0">{UserData?.data?.email}  •  Role : {UserData?.data?.role}</p><span>board name:  {boardData?.data?.title}</span>
                                         </span>
                                     </div>
                                     <Dropdown>

@@ -399,8 +399,9 @@ return (
         onCardClick={handleCardClick}
         onCardDelete={handleCardDelete}
         onLaneDelete={handleOnLaneDelete}
-      />
-      <div className={Styles.createCardList}>
+      >
+      </Board>
+      <div style={{margin: "10px"}} className={Styles.createCardList}>
         <form onSubmit={reservFormik.handleSubmit}>
           <FormControl>
             <Input

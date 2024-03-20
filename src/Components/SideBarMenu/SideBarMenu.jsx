@@ -260,7 +260,6 @@ export default function SideBarMenu() {
         )}
       </Col >
       <ChakraProvider>
-
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
