@@ -6,6 +6,7 @@ import RegisterPage from "../Pages/SignInPage/RegisterPage";
 import { useSelector } from "react-redux";
 import MainPage from "../Pages/MainPage/MainPage";
 import Members from "../Components/Members/Members";
+import Invite from "../Pages/Invite/Invite";
 
 export default function Routes() {
   const { token } = useSelector((x) => x.auth);
@@ -38,6 +39,10 @@ export default function Routes() {
         {
           path: "/CreateUser",
           element: <RegisterPage />,
+        },
+        {
+          path: "/Invite",
+          element: < Invite />,
         },
       ],
     },
