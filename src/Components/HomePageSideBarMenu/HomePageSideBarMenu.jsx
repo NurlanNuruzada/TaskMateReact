@@ -129,6 +129,8 @@ export default function SideBarMenu() {
   const [ShowCreateError, setShowCreateError] = useState(false);
   const [workspaceColors, setWorkspaceColors] = useState({});
   const currentWorkspace = ALlworkspaces?.data?.find((x) => x.id === workspaceId)?.title;
+  const currentWorkspaceIndex = ALlworkspaces?.data?.findIndex((x) => x.id === workspaceId);
+
   // function generateLightColor() {
   //   const red = Math.floor(Math.random() * 128) + 128;
   //   const green = Math.floor(Math.random() * 128) + 128;
@@ -145,6 +147,14 @@ export default function SideBarMenu() {
   //   });
   //   setWorkspaceColors(colors);
   // }, []);
+
+  const ActiveIndex = () => {
+    return currentWorkspaceIndex !== -1 ? currentWorkspaceIndex : null;
+  };
+  const [index, SetInedex] = useState(currentWorkspaceIndex)
+  useEffect(() => {
+    SetInedex(currentWorkspaceIndex)
+  }, [currentWorkspaceIndex])
   return (
     <>
       <ChakraProvider>
@@ -165,13 +175,13 @@ export default function SideBarMenu() {
       </ChakraProvider>
       <Col className={[Styles.sideBarMenuWrapper, "col-2"]}>
         <Col className={Styles.sideBarMenu}>
-          <Accordion className='m-auto col-11 mt-2' defaultActiveKey="0">
+          <Accordion className='m-auto col-11 mt-2' activeKey={`${index}`}>
             <h5 className='fw-bold my-3'>Workspace - {currentWorkspace}</h5>
             {ALlworkspaces?.data?.map((data, index) => {
               return (
                 <Accordion.Item onClick={() => dispatch(setData({ workspaceId: data.id }))} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
                   <Accordion.Header>
-                  {/* ${workspaceColors[data.id]} */}
+                    {/* ${workspaceColors[data.id]} */}
                     <Image className={[Styles.sideBarMenuWorkspacePic, 'me-2']} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data.title.slice(
                       0,
                       1
