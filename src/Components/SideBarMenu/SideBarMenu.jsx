@@ -34,7 +34,7 @@ import {
   Alert,
   AlertIcon,
   FormLabel,
-  Input,
+  Input, 
   FormControl,
   Flex
 } from '@chakra-ui/react'
@@ -69,7 +69,7 @@ export default function SideBarMenu() {
 
   const queryClient = useQueryClient();
   const { data: byBoard, isSuccess, refetch } = useQuery(
-    ["WorkspaceInBoard", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
+    ["GetBoartsInWorkspace", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
     () => getbyWokrspaceInBoard(userId2, workspaceId),
     { enabled: !!workspaceId && !!userId2 }
   );
@@ -79,7 +79,7 @@ export default function SideBarMenu() {
     {
       onSuccess: (values) => {
         // Invalidate the query cache after successful deletion
-        queryClient.invalidateQueries("WorkspaceInBoard");
+        queryClient.invalidateQueries("GetBoartsInWorkspace");
       },
       onError: (err) => { },
     }
@@ -88,7 +88,8 @@ export default function SideBarMenu() {
     () => UpdateBoard(BoardUpdateFomik.values),
     {
       onSuccess: (values) => {
-        queryClient.invalidateQueries("WorkspaceInBoard");
+        queryClient.invalidateQueries("GetBoartsInWorkspace");
+        console.log("update ");
       },
       onError: (err) => { },
     }
@@ -111,7 +112,7 @@ export default function SideBarMenu() {
   const BoardUpdateFomik = useFormik({
     initialValues: {
       title: "",
-      BoardId: Bid,
+      BoardId: '',
       appUserId: userId2,
     },
     onSubmit: (values) => {

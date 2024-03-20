@@ -30,7 +30,7 @@ import { Formik, useFormik } from 'formik';
 import { ChakraAlert } from '@chakra-ui/react';
 import { GetUserById } from '../../Service/UserService';
 
-export default function SideBarMenu() {
+export default function SideBarMenu() { 
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const dispatch = useDispatch();
@@ -61,9 +61,9 @@ export default function SideBarMenu() {
     (userId) => DeleteWorkSpace(userId, workspaceId),
     {
       onSuccess: (values) => {
-        queryClient.invalidateQueries("GetAllworkspaces");
         setShowAlert(true);
-        queryClient.invalidateQueries("GetWorkspace");
+        queryClient.invalidateQueries("GetWorkspaceById");
+        queryClient.invalidateQueries("GetAllworkspaces");
         const timer = setTimeout(() => {
           setShowAlert(false);
         }, 2000);
@@ -94,7 +94,7 @@ export default function SideBarMenu() {
       onSuccess: (values) => {
         console.log(values);
         queryClient.invalidateQueries("GetAllworkspaces");
-        queryClient.invalidateQueries("GetWorkspace");
+        queryClient.invalidateQueries("GetWorkspaceById");
       },
       onError: (err) => {
         console.log(err);

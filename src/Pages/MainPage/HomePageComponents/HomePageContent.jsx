@@ -18,7 +18,7 @@ import jwtDecode from "jwt-decode";
 
 
 
-export default function Content() {
+export default function Content() { 
     const [modalShow, setModalShow] = useState(false);
     const [Data, setData] = useState()
     const [Render, setRender] = useState();
@@ -48,7 +48,7 @@ export default function Content() {
     };
 
     const { data: byBoard, isSuccess, refetch } = useQuery(
-        ["WorkspaceInBoard", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
+        ["GetBoartsInWorkspace", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
         () => getbyWokrspaceInBoard(userId2, workspaceId),
         { enabled: !!workspaceId && !!userId2 }
     );
@@ -61,8 +61,8 @@ export default function Content() {
     //         console.log(error);
     //     }
     // })
-    const { data: GetWorkspace } = useQuery(
-        ["GetWorkspace", workspaceId ? workspaceId : undefined],
+    const { data: GetWorkspaceById } = useQuery(
+        ["GetWorkspaceById", workspaceId ? workspaceId : undefined],
         () => GetWorkSpaceById(workspaceId),
         { enabled: !!workspaceId }
     );
@@ -72,24 +72,24 @@ export default function Content() {
         () => GetAllWorkspaces(userId2),
         { enabled: !!userId2 }
     );
-        console.log("userWorkspace",userWorkspace);
+
     useEffect(() => {
         queryClient.invalidateQueries("Boards");
-        queryClient.invalidateQueries("GetWorkspace");
-    }, [Render, workspaceId])
+        queryClient.invalidateQueries("GetWorkspaceById");
+    }, [Render, workspaceId]);
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
             {userWorkspace && userWorkspace.data.length > 0 ? (
-                GetWorkspace?.data && (
+                GetWorkspaceById?.data &&  (
                     <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
                         <div className={Style.contentTopNavBar}>
                             <div className='d-flex align-items-center'>
-                                <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${GetWorkspace?.data?.title.slice(
+                                <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${GetWorkspaceById?.data?.title.slice(
                                     0,
                                     1
                                 )}`} rounded />
                                 <span className='ms-3'>
-                                    <h2 className='m-0'>{GetWorkspace.data?.title}</h2>
+                                    <h2 className='m-0'>{GetWorkspaceById.data?.title}</h2>
                                     <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
                                 </span>
                             </div>
@@ -216,7 +216,7 @@ export default function Content() {
                     <NavDropdown.Item style={{ fontSize: '20px', color: 'white', padding: '30px', paddingLeft: '44%', paddingTop: '15%' }}>Board not found.</NavDropdown.Item>
                     <NavDropdown.Item style={{ fontSize: '20px', color: 'white', width: 'auto' }}>This board may be private. If someone gave you this link, they may need to</NavDropdown.Item>
                     <NavDropdown.Item style={{ fontSize: '20px', color: 'white', width: 'auto' }}>share the board with you or invite you to their Workspace.</NavDropdown.Item>
-                    <p style={{ fontSize: '20px', color: 'white', paddingTop:'60px' }}>Not Brinsley Blackwood? Switch accounts</p>
+                    <p style={{ fontSize: '20px', color: 'white', paddingTop: '60px' }}>Not Brinsley Blackwood? Switch accounts</p>
                 </Container>
             )}
             <CustomModal

@@ -30,6 +30,7 @@ import {
   GetAllWorkspaces,
 } from "../../Service/WorkSpaceService";
 import { CreateBoard } from "../../Service/BoardService";
+import { checkIsAdmin } from "../../Service/AuthService";
 import SliderBarMenu from "../SideBarMenu/SideBarMenu";
 import { logoutAction } from '../../Redux/Slices/AuthSlice'
 import { faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
@@ -96,14 +97,18 @@ export default function Header() {
         }, 2000);
       }
     },
-    onSuccess: ()=>{
+    onSuccess: () => {
       queryClient.invalidateQueries(["GetAllworkspaces"]);
-      queryClient.invalidateQueries(["WorkspaceInBoard"]);
+      queryClient.invalidateQueries(["GetBoartsInWorkspace"]);
     }
   });
 
   const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
-    useMutation((values) => CreateWorkSpace(values));
+    useMutation((values) => CreateWorkSpace(values),{
+      onSuccess:()=>{
+        queryClient.invalidateQueries("GetAllworkspaces");
+      }
+    });
 
 
 
@@ -133,8 +138,8 @@ export default function Header() {
         CreateBoardMutation(values);
       }
     },
-    onSuccess: ()=>{
-      queryClient.invalidateQueries("WorkspaceInBoard");
+    onSuccess: () => {
+      queryClient.invalidateQueries("GetBoartsInWorkspace");
     }
   });
   const { mutate: CreateBoardMutation } = useMutation(
@@ -143,12 +148,13 @@ export default function Header() {
       onSuccess: (values) => {
         dispatch(incrementRefresh());
         queryClient.invalidateQueries("Boards");
+        queryClient.invalidateQueries("GetBoartsInWorkspace");
         setShowAlert2(true);
         const timer = setTimeout(() => {
           setShowAlert2(false);
         }, 2000);
       },
-      onError: (err) => {
+      onError: (err) => { 
         console.log(err);
       },
     }
@@ -172,6 +178,14 @@ export default function Header() {
   );
   const [showAlert, setShowAlert] = useState(false);
   const [showAlert2, setShowAlert2] = useState(false);
+
+
+  const { data: isAdmin } = useQuery(
+    ["CheckIsAdmin", userId ? userId : undefined],
+    () => checkIsAdmin(userId),
+    { enabled: !!userId }
+  );
+
   return (
     <Navbar className="navbar-custom" bg="dark" expand="sm">
       <ChakraProvider>
@@ -236,8 +250,8 @@ export default function Header() {
                   key={index}
                   onClick={() => handleWorkspaceSelect(workspace.id)}
                 >
-                  <Container  className="navbar-workspace-link">
-                    <Row  className="px-1 py-3 d-flex align-items-center">
+                  <Container className="navbar-workspace-link">
+                    <Row className="px-1 py-3 d-flex align-items-center">
                       <Col lg={3}>
                         <Image
                           className="workspace-pic"
@@ -436,6 +450,9 @@ export default function Header() {
               )}
             </DropdownButton>
           </Nav>
+          {isAdmin?.data && isAdmin.data === true &&
+            <p style={{ color: 'whitesmoke', padding: '10px', paddingTop: '24px', paddingRight: '23px', fontFamily: 'sans-serif' }}><a href="/members">Share Workspace</a></p>
+          }
           <Form className="d-flex input-custom">
             <Form.Control
               type="search"
@@ -462,8 +479,8 @@ export default function Header() {
               /> */}
               {email && <ChakraProvider>
                 <Menu >
-                  <MenuButton  as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
-                    <Flex  alignItems={"center "}>
+                  <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
+                    <Flex alignItems={"center "}>
                       <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
                       <p className="m-0" style={{ fontSize: "15px" }}>
                         {email}

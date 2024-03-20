@@ -25,7 +25,7 @@ export const getbyWokrspaceInBoard = (AppUserId, WorkspaceId) => {
 };
 export const getDeletebyId = async (AppUserId, BoardId) => {
   try {
-    const result = await httpClient.delete(`/api/Boards/Remove?AppUserId=${AppUserId}&BoardId=${BoardId}`)
+    const result = await httpClient.delete(`/api/Boards/AppUserId=${AppUserId}&BoardId=${BoardId}`)
     return result
   }
   catch (error) {
