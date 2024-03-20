@@ -30,14 +30,13 @@ import { Formik, useFormik } from 'formik';
 import { ChakraAlert } from '@chakra-ui/react';
 import { GetUserById } from '../../Service/UserService';
 
-export default function SideBarMenu() { 
+export default function SideBarMenu() {
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const dispatch = useDispatch();
   const [modalShow, setModalShow] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [answer, setAnswer] = useState(false);
-  const [Workspaces, setWorkspaces] = useState();
   const [WorkspaceId, setWorkspaceId] = useState();
   const { token } = useSelector((x) => x.auth);
   const { refresh, workspaceId } = useSelector((x) => x.Data)
@@ -64,7 +63,7 @@ export default function SideBarMenu() {
         setShowAlert(true);
         queryClient.invalidateQueries("GetWorkspaceById");
         queryClient.invalidateQueries("GetAllworkspaces");
-        const timer = setTimeout(() => {
+        setTimeout(() => {
           setShowAlert(false);
         }, 2000);
       },
@@ -84,6 +83,7 @@ export default function SideBarMenu() {
       values.workspaceId = WorkspaceId;
       await Update(values);
       onClose()
+      dispatch(setData(refresh++))
       dispatch(incrementRefresh());
     },
   });
@@ -91,8 +91,7 @@ export default function SideBarMenu() {
   const { mutate: Update } = useMutation(
     (data) => UpdateWorkSpace(data),
     {
-      onSuccess: (values) => {
-        console.log(values);
+      onSuccess: () => {
         queryClient.invalidateQueries("GetAllworkspaces");
         queryClient.invalidateQueries("GetWorkspaceById");
       },
@@ -128,6 +127,24 @@ export default function SideBarMenu() {
   }
   const [showAlert, setShowAlert] = useState(false);
   const [ShowCreateError, setShowCreateError] = useState(false);
+  const [workspaceColors, setWorkspaceColors] = useState({});
+  const currentWorkspace = ALlworkspaces?.data?.find((x) => x.id === workspaceId)?.title;
+  // function generateLightColor() {
+  //   const red = Math.floor(Math.random() * 128) + 128;
+  //   const green = Math.floor(Math.random() * 128) + 128;
+  //   const blue = Math.floor(Math.random() * 128) + 128;
+
+  //   return ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
+  // }
+  // useEffect(() => {
+  //   const colors = {};
+  //   ALlworkspaces?.data?.forEach((data) => {
+  //     if (!workspaceColors[data.id]) {
+  //       colors[data.id] = generateLightColor();
+  //     }
+  //   });
+  //   setWorkspaceColors(colors);
+  // }, []);
   return (
     <>
       <ChakraProvider>
@@ -149,11 +166,12 @@ export default function SideBarMenu() {
       <Col className={[Styles.sideBarMenuWrapper, "col-2"]}>
         <Col className={Styles.sideBarMenu}>
           <Accordion className='m-auto col-11 mt-2' defaultActiveKey="0">
-            <h5 className='fw-bold my-3'>Workspaces</h5>
+            <h5 className='fw-bold my-3'>Workspace - {currentWorkspace}</h5>
             {ALlworkspaces?.data?.map((data, index) => {
               return (
                 <Accordion.Item onClick={() => dispatch(setData({ workspaceId: data.id }))} key={index} className={Styles.accordionBtn} eventKey={index.toString()}>
                   <Accordion.Header>
+                  {/* ${workspaceColors[data.id]} */}
                     <Image className={[Styles.sideBarMenuWorkspacePic, 'me-2']} src={`https://placehold.co/512x512/d9e3da/1d2125?text=${data.title.slice(
                       0,
                       1

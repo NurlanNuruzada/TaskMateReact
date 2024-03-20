@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -13,29 +13,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUserGroup, faBriefcase, faCheck, faGlobe, faUserPlus, faLink, faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
 import Styles from '../../../Components/SideBarMenu/SideBarMenu.module.css'
 import CardList from '../CardList/CardList'
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutAction } from '../../../Redux/Slices/AuthSlice'
-import {
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    Flex
-} from '@chakra-ui/react'
-import { ChakraProvider } from '@chakra-ui/react';
+import { useSelector } from 'react-redux';
 import { GetUserById, SeachUsers } from '../../../Service/UserService';
 import { useQuery } from 'react-query';
-import { GetWorkSpaceById } from '../../../Service/WorkSpaceService';
 import { getByBoard } from '../../../Service/BoardService';
 
 
 export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [inputResult, setInputResult] = useState(false);
-    const { email } = useSelector((state) => state.auth); 
-    const { userId, workspaceId,BoardId } = useSelector((x) => x.Data)
-
-    const dispatch = useDispatch();
+    const { userId, BoardId } = useSelector((x) => x.Data)
 
     const [searchQuery, setSearchQuery] = useState("");
 

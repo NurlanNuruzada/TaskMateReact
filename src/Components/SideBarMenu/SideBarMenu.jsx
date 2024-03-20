@@ -34,13 +34,14 @@ import {
   Alert,
   AlertIcon,
   FormLabel,
-  Input, 
+  Input,
   FormControl,
   Flex
 } from '@chakra-ui/react'
 import { Button, Stack } from "react-bootstrap";
 import { useFormik } from "formik";
 import jwtDecode from "jwt-decode";
+import { GetWorkSpaceById } from "../../Service/WorkSpaceService.js";
 
 export default function SideBarMenu() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,7 +69,7 @@ export default function SideBarMenu() {
   // console.log("workspaceId", workspaceId);
 
   const queryClient = useQueryClient();
-  const { data: byBoard, isSuccess, refetch } = useQuery(
+  const { data: byBoard } = useQuery(
     ["GetBoartsInWorkspace", workspaceId ? workspaceId : undefined, userId2 ? userId2 : undefined],
     () => getbyWokrspaceInBoard(userId2, workspaceId),
     { enabled: !!workspaceId && !!userId2 }
@@ -77,11 +78,10 @@ export default function SideBarMenu() {
   const { mutate: deleteBoardMutation } = useMutation(
     (data) => getDeletebyId(data),
     {
-      onSuccess: (values) => {
+      onSuccess: () => {
         // Invalidate the query cache after successful deletion
         queryClient.invalidateQueries("GetBoartsInWorkspace");
       },
-      onError: (err) => { },
     }
   );
   const { mutate: updateBoradMutation } = useMutation(
@@ -133,6 +133,19 @@ export default function SideBarMenu() {
     },
   });
   const [showAlert, setShowAlert] = useState(false);
+  const { data: GetWorkspaceById } = useQuery(
+    ["GetWorkspaceById", workspaceId ? workspaceId : undefined],
+    () => GetWorkSpaceById(workspaceId),
+    { enabled: !!workspaceId }
+  );
+  const currentWorkspace = GetWorkspaceById?.data?.title;
+  // function generateLightColor() {
+  //   const red = Math.floor(Math.random() * 128) + 128; 
+  //   const green = Math.floor(Math.random() * 128) + 128; 
+  //   const blue = Math.floor(Math.random() * 128) + 128; 
+
+  //   return  ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
+  // }
   return (
     <>
       <ChakraProvider>
@@ -159,10 +172,10 @@ export default function SideBarMenu() {
                 <span className="d-flex align-items-center">
                   <Image
                     className={Styles.workspacePic}
-                    src="https://placehold.co/512x512/CDD3FF/1d2125?text=T"
+                    src={`https://placehold.co/512x512/d9e3da/1d2125?text=${currentWorkspace?.slice(0, 1)}`}
                     rounded
                   />
-                  <p className="m-0 ms-2 fw-bold">Trello Workspace</p>
+                  <p className="m-0 ms-2 fw-bold">{currentWorkspace} </p>
                 </span>
                 <button
                   onClick={() => setMenuOpen(false)}
@@ -173,8 +186,6 @@ export default function SideBarMenu() {
               </Container>
               <Container className={[Styles.sideBarMenuWorkspace, "mt-2"]} fluid>
                 <div className="ms-1">
-                  <p className="mx-0  p-0  m-0 fw-bold">Trello Workspace</p>
-                  <p className=" mx-0  p-0  m-0 small">Free</p>
                 </div>
 
                 <Card.Text className="mx-1 my-1 p-0 container-fluid">
@@ -183,6 +194,7 @@ export default function SideBarMenu() {
                 </Card.Text>
                 {Array.isArray(byBoard?.data) && byBoard.data.length ? (
                   byBoard.data.map((board, index) => {
+                    // {var randomColor = generateLightColor()}
                     return (
                       <NavDropdown.Item key={index}>
                         <Container onClick={() => dispatch(setData({ BoardId: board.id }))} className="p-0 m-0 navbar-workspace-link">
@@ -194,7 +206,7 @@ export default function SideBarMenu() {
                                   <Col style={{ width: "20px" }} lg={3}>
                                     <Image
                                       className="workspace-pic"
-                                      src={`https://placehold.co/512x512/d9e3da/1d2125?text=${board.title.slice(0, 1)}`}
+                                      src={`https://placehold.co/512x512/1d2125/1d2125?text=${board?.title?.slice(0, 1)}`}
                                     />
                                   </Col>
                                   <Col className="p-0">{board.title}

@@ -4,7 +4,7 @@ import Image from 'react-bootstrap/Image';
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Style from '../../../Components/HomePageSideBarMenu/HomePageSideBarMenu.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faUser  } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import CustomModal from '../../../Components/CustomModal/CustomModal';
 import { useQuery, useQueryClient } from 'react-query';
 import { GetWorkSpaceById, GetAllWorkspaces } from '../../../Service/WorkSpaceService';
@@ -13,10 +13,11 @@ import { getbyWokrspaceInBoard } from '../../../Service/BoardService';
 import { useNavigate } from 'react-router';
 import { Container, Form } from 'react-bootstrap';
 import jwtDecode from "jwt-decode";
+import { Flex } from '@chakra-ui/react';
 
 
 
-export default function Content() { 
+export default function Content() {
     const [modalShow, setModalShow] = useState(false);
     const [Data, setData] = useState()
     const [Render, setRender] = useState();
@@ -60,9 +61,8 @@ export default function Content() {
     //     }
     // })
     const { data: GetWorkspaceById } = useQuery(
-        ["GetWorkspaceById", workspaceId ? workspaceId : undefined],
-        () => GetWorkSpaceById(workspaceId),
-        { enabled: !!workspaceId }
+        ["GetWorkspaceById", workspaceId],
+        () => GetWorkSpaceById(workspaceId)
     );
 
     const { data: userWorkspace } = useQuery(
@@ -78,19 +78,22 @@ export default function Content() {
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
             {userWorkspace && userWorkspace.data.length > 0 ? (
-                GetWorkspaceById?.data &&  (
+                GetWorkspaceById?.data && (
                     <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
                         <div className={Style.contentTopNavBar}>
-                            <div className='d-flex align-items-center'>
-                                <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${GetWorkspaceById?.data?.title.slice(
-                                    0,
-                                    1
-                                )}`} rounded />
-                                <span className='ms-3'>
-                                    <h2 className='m-0'>{GetWorkspaceById.data?.title}</h2>
-                                    <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
-                                </span>
-                            </div>
+                            <Flex flexDir={'column'}>
+                                <div className='d-flex align-items-center'>
+                                    <Image className='workspace-pic' src={`https://placehold.co/512x512/d9e3da/1d2125?text=${GetWorkspaceById?.data?.title.slice(
+                                        0,
+                                        1
+                                    )}`} rounded />
+                                    <span className='ms-3'>
+                                        <h2 className='m-0'>{GetWorkspaceById?.data?.title}</h2>
+                                        <p className="small m-0"><FontAwesomeIcon className='me-1' icon={faLock} /> Private</p>
+                                    </span>
+                                </div>
+                                <p style={{padding:'0',margin:'0'}}>{GetWorkspaceById?.data?.description}</p>
+                            </Flex>
                         </div>
                         <div className={Style.contentMain}>
                             <h5 className="m-0 mb-3"><FontAwesomeIcon className='me-1' icon={faUser} /> Your Boards</h5>
@@ -216,7 +219,8 @@ export default function Content() {
                     <NavDropdown.Item style={{ fontSize: '20px', color: 'white', width: 'auto' }}>share the board with you or invite you to their Workspace.</NavDropdown.Item>
                     <p style={{ fontSize: '20px', color: 'white', paddingTop: '60px' }}>Not Brinsley Blackwood? Switch accounts</p>
                 </Container>
-            )}
+            )
+            }
             <CustomModal
                 type={'delete'}
                 object={'workspace'}
