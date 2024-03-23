@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import MainPage from "../Pages/MainPage/MainPage";
 import Members from "../Components/Members/Members";
 import Invite from "../Pages/Invite/Invite";
+import InviteBoard from "../Pages/InviteBoard/InviteBoard";
 
 export default function Routes() {
   const { token } = useSelector((x) => x.auth);
@@ -41,8 +42,12 @@ export default function Routes() {
           element: <RegisterPage />,
         },
         {
-          path: "/Invite",
-          element: < Invite />,
+          path: "/Invite/:generateGuidId/:linkSelectedWorkspaceId/:userId",
+          element: <Invite />,
+        },
+        {
+          path: "/InviteBoard/:generateGuidId/:linkSelectedWorkspaceId/:linkBoardId/:userId",
+          element: <InviteBoard />,
         },
       ],
     },

@@ -32,19 +32,22 @@ import {
 import { CreateBoard } from "../../Service/BoardService";
 import { checkIsAdmin } from "../../Service/AuthService";
 import SliderBarMenu from "../SideBarMenu/SideBarMenu";
-import { logoutAction } from '../../Redux/Slices/AuthSlice'
-import { faChevronDown, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { logoutAction } from "../../Redux/Slices/AuthSlice";
+import { faChevronDown, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuButton, MenuList, MenuItem, Flex } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
+import Styles from "./Header.module.css";
 import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Flex
-} from '@chakra-ui/react'
-import { ChakraProvider } from '@chakra-ui/react';
-import Styles from './Header.module.css'
-import { incrementRefresh, setData } from "../../Redux/Slices/WorkspaceAndBorderSlice";
-import { AlertIcon, FormLabel, Stack, useDisclosure, Alert } from '@chakra-ui/react';
+  incrementRefresh,
+  setData,
+} from "../../Redux/Slices/WorkspaceAndBorderSlice";
+import {
+  AlertIcon,
+  FormLabel,
+  Stack,
+  useDisclosure,
+  Alert,
+} from "@chakra-ui/react";
 import { GetUserById } from "../../Service/UserService";
 
 export default function Header() {
@@ -58,8 +61,8 @@ export default function Header() {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-    ]
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ]
     : null;
   const doNotClose = (e) => {
     e.stopPropagation();
@@ -90,7 +93,7 @@ export default function Header() {
       if (values.Title === null || values.Title === "") {
       } else {
         CreateWorkSpaceMutate(values);
-        dispatch(incrementRefresh())
+        dispatch(incrementRefresh());
         setShowAlert(true);
         const timer = setTimeout(() => {
           setShowAlert(false);
@@ -100,17 +103,15 @@ export default function Header() {
     onSuccess: () => {
       queryClient.invalidateQueries(["GetAllworkspaces"]);
       queryClient.invalidateQueries(["GetBoartsInWorkspace"]);
-    }
+    },
   });
 
   const { mutate: CreateWorkSpaceMutate, isLoading: Loginloading } =
-    useMutation((values) => CreateWorkSpace(values),{
-      onSuccess:()=>{
+    useMutation((values) => CreateWorkSpace(values), {
+      onSuccess: () => {
         queryClient.invalidateQueries("GetAllworkspaces");
-      }
+      },
     });
-
-
 
   const { data: ALlworkspaces } = useQuery(["GetAllworkspaces", userId], () =>
     GetAllWorkspaces(userId)
@@ -140,7 +141,7 @@ export default function Header() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries("GetBoartsInWorkspace");
-    }
+    },
   });
   const { mutate: CreateBoardMutation } = useMutation(
     (values) => CreateBoard(values),
@@ -154,15 +155,15 @@ export default function Header() {
           setShowAlert2(false);
         }, 2000);
       },
-      onError: (err) => { 
+      onError: (err) => {
         console.log(err);
       },
     }
   );
   const handeCreateBoard = () => {
-    setCreateBoardSlide2(!createBoardSlide2)
+    setCreateBoardSlide2(!createBoardSlide2);
     queryClient.invalidateQueries("GetAllworkspaces");
-  }
+  };
 
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
 
@@ -179,7 +180,6 @@ export default function Header() {
   const [showAlert, setShowAlert] = useState(false);
   const [showAlert2, setShowAlert2] = useState(false);
 
-
   const { data: isAdmin } = useQuery(
     ["CheckIsAdmin", userId ? userId : undefined],
     () => checkIsAdmin(userId),
@@ -189,17 +189,17 @@ export default function Header() {
   return (
     <Navbar className="navbar-custom" bg="dark" expand="sm">
       <ChakraProvider>
-        <Stack zIndex={1} top={0} right={0} position={'absolute'} spacing={3}>
+        <Stack zIndex={1} top={0} right={0} position={"absolute"} spacing={3}>
           {showAlert && (
-            <Alert status='success' variant='top-accent'>
+            <Alert status="success" variant="top-accent">
               <AlertIcon />
               Workspace is Succesfully Created!
             </Alert>
           )}
         </Stack>
-        <Stack zIndex={1} top={0} right={0} position={'absolute'} spacing={3}>
+        <Stack zIndex={1} top={0} right={0} position={"absolute"} spacing={3}>
           {showAlert2 && (
-            <Alert status='success' variant='top-accent'>
+            <Alert status="success" variant="top-accent">
               <AlertIcon />
               Board is Succesfully Created!
             </Alert>
@@ -334,17 +334,21 @@ export default function Header() {
                                     aria-label="Default select example"
                                   >
                                     <option value="">Select a Workspace</option>
-                                    <option value={ALlworkspaces?.data?.[0]?.id}>
+                                    <option
+                                      value={ALlworkspaces?.data?.[0]?.id}
+                                    >
                                       {ALlworkspaces?.data?.[0]?.title}
                                     </option>
-                                    {ALlworkspaces?.data?.slice(1).map((workspace, index) => (
-                                      <option
-                                        key={index}
-                                        value={workspace.id}
-                                      >
-                                        {workspace.title}
-                                      </option>
-                                    ))}
+                                    {ALlworkspaces?.data
+                                      ?.slice(1)
+                                      .map((workspace, index) => (
+                                        <option
+                                          key={index}
+                                          value={workspace.id}
+                                        >
+                                          {workspace.title}
+                                        </option>
+                                      ))}
                                   </Form.Select>
                                 </Form.Group>
                                 <Form.Group controlId="create-workspace-type">
@@ -409,7 +413,8 @@ export default function Header() {
                       </div>
                     </Card>
                   </Dropdown.Item>
-                  {Data?.data?.role === "GlobalAdmin" || Data?.data?.role === "Admin" ? (
+                  {Data?.data?.role === "GlobalAdmin" ||
+                  Data?.data?.role === "Admin" ? (
                     <>
                       <Dropdown.Item className="p-0">
                         <Card
@@ -435,9 +440,9 @@ export default function Header() {
                                 Create Workspace{" "}
                               </Card.Subtitle>
                               <Card.Text>
-                                A Workspace is a group of boards and people. Use it
-                                to organize your company, side hustle, family, or
-                                friends.
+                                A Workspace is a group of boards and people. Use
+                                it to organize your company, side hustle,
+                                family, or friends.
                               </Card.Text>
                             </Card.Body>
                           </div>
@@ -445,14 +450,23 @@ export default function Header() {
                       </Dropdown.Item>
                     </>
                   ) : null}
-
                 </div>
               )}
             </DropdownButton>
           </Nav>
-          {isAdmin?.data && isAdmin.data === true &&
-            <p style={{ color: 'whitesmoke', padding: '10px', paddingTop: '24px', paddingRight: '23px', fontFamily: 'sans-serif' }}><a href="/members">Share Workspace</a></p>
-          }
+          {isAdmin?.data && isAdmin.data === true && (
+            <p
+              style={{
+                color: "whitesmoke",
+                padding: "10px",
+                paddingTop: "24px",
+                paddingRight: "23px",
+                fontFamily: "sans-serif",
+              }}
+            >
+              <a href="/members">Share Workspace</a>
+            </p>
+          )}
           <Form className="d-flex input-custom">
             <Form.Control
               type="search"
@@ -470,28 +484,48 @@ export default function Header() {
                 />{" "}
               </Button>
             </Col>
-            <Col >
+            <Col>
               <FontAwesomeIcon icon={faEllipsis} />
               {/* <Image
                 className="profile-pic"
                 src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6"
                 roundedCircle
               /> */}
-              {email && <ChakraProvider>
-                <Menu >
-                  <MenuButton as={Button} righticon={<FontAwesomeIcon icon={faChevronDown} />} className={Styles.shareButton}>
-                    <Flex alignItems={"center "}>
-                      <Image className='profile-pic me-2' src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6" rounded />
-                      <p className="m-0" style={{ fontSize: "15px" }}>
-                        {email}
-                      </p>
-                    </Flex>
-                  </MenuButton>
-                  <MenuList zIndex={10} className={Styles.userAccount}>
-                    <MenuItem className='btn btn-primary default-submit mx-2' onClick={() => dispatch(logoutAction())}> <FontAwesomeIcon className='me-2' icon={faSignOut} /> Sign out</MenuItem>
-                  </MenuList>
-                </Menu>
-              </ChakraProvider>}
+              {email && (
+                <ChakraProvider>
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      righticon={<FontAwesomeIcon icon={faChevronDown} />}
+                      className={Styles.shareButton}
+                    >
+                      <Flex alignItems={"center "}>
+                        <Image
+                          className="profile-pic me-2"
+                          src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQcBR70-dRGg6OCJSvZ2xUzxQRN9F97n2CX2iekuDPjThLQQkt6"
+                          rounded
+                        />
+                        <p className="m-0" style={{ fontSize: "15px" }}>
+                          {email}
+                        </p>
+                      </Flex>
+                    </MenuButton>
+                    <MenuList zIndex={10} className={Styles.userAccount}>
+                      <MenuItem
+                        className="btn btn-primary default-submit mx-2"
+                        onClick={() => dispatch(logoutAction())}
+                      >
+                        {" "}
+                        <FontAwesomeIcon
+                          className="me-2"
+                          icon={faSignOut}
+                        />{" "}
+                        Sign out
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </ChakraProvider>
+              )}
             </Col>
           </Row>
         </Container>

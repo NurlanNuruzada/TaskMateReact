@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import Style from "./Invite.module.css";
+import Style from "./InviteBoard.module.css";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,10 +9,11 @@ import { getByToken } from "../../Service/TokenService";
 import { useQuery } from "react-query";
 import { useFormik } from "formik";
 
-export default function Invite() {
+export default function InviteBoard() {
   const [loginAccess, setLoginAccess] = useState(false);
   const navigate = useNavigate();
-  const { generateGuidId, linkSelectedWorkspaceId, userId } = useParams();
+  const { generateGuidId, linkSelectedWorkspaceId, linkBoardId, userId } =
+    useParams();
   const [tokenIsActive, setTokenIsActive] = useState(false);
 
   const { data: ByToken } = useQuery(["ByToken", generateGuidId], () =>
@@ -35,6 +36,7 @@ export default function Invite() {
   const Formik = useFormik({
     initialValues: {
       AdminId: userId ? userId : "",
+      BoardId: linkBoardId ? linkBoardId : "",
       WorkspaceId: linkSelectedWorkspaceId ? linkSelectedWorkspaceId : "",
       UsernameOrEmail: "",
       Password: "",
@@ -44,12 +46,13 @@ export default function Invite() {
 
       formData.append("AdminId", values.AdminId);
       formData.append("WorkspaceId", values.WorkspaceId);
+      formData.append("BoardId", values.BoardId);
       formData.append("UsernameOrEmail", values.UsernameOrEmail);
       formData.append("Password", values.Password);
 
       try {
         const response = await axios.post(
-          "https://localhost:7101/api/Workspaces/ShareLinkWorkspaceUser",
+          "https://localhost:7101/api/Boards/ShareLinkBoardUser",
           formData,
           {
             headers: {
