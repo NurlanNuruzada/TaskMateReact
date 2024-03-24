@@ -76,7 +76,7 @@ export default function Content() {
     }, [Render, workspaceId]);
     return (
         <div className='w-100' style={{ overflowY: 'hidden', minHeight: '95vh' }}>
-            {userWorkspace && userWorkspace.data.length > 0 ? (
+            {userWorkspace && userWorkspace?.data?.length > 0 ? (
                 GetWorkspaceById?.data && (
                     <div style={{ color: '#b6c2cf' }} className={Style.contentWrapper}>
                         <div className={Style.contentTopNavBar}>

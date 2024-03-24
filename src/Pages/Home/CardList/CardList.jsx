@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import Board, { BoardContainer } from "react-trello";
+import Board from "react-trello";
 import Styles from "./CardList.module.css";
-import { DataApi, transformBoardData } from "./Data";
+import { transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,23 +18,35 @@ import {
   faSquareCheck,
   faArrowRight,
   faShareNodes,
+  faXmark,
+  faX,
+  faEllipsis,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { FormControl, Input } from "@chakra-ui/react";
+import { Box, ChakraProvider, Flex, FormControl, Input, Portal, Text, useDisclosure, } from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
-import Container from "react-bootstrap/Container";
+import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverCloseButton, PopoverBody, PopoverFooter } from "@chakra-ui/react";
+
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
-import Button from "react-bootstrap/Button";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { getByBoard } from "../../../Service/BoardService";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
 import { getByCard, getCardDelete } from "../../../Service/CardService";
-import { useParams } from "react-router";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
+import {
+  MenuItem,
+  Menu,
+  MenuButton,
+  MenuList
+} from '@chakra-ui/react'
 import TextEditor from "./TextEditor/TextEditor";
+import { CreateChecklist, CreateChecklistitem, DeleteChecklist, DeleteChecklistItem, GetAllChecklist, UpdateChecklistItem } from "../../../Service/CheckListService";
+import { Progress } from '@chakra-ui/react'
+import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
+
 const data = require('./data.json')
 const ListStyle = {
   width: "280px",
@@ -100,27 +112,6 @@ const CardList = () => {
     });
     return dataCopy;
   };
-
-  const completeCard = () => {
-    if (eventBusRef.current) {
-      eventBusRef.current.publish({
-        type: "ADD_CARD",
-        laneId: "COMPLETED",
-        card: {
-          id: "Milk",
-          title: "Buy Milk",
-          label: "15 mins",
-          description: "Use Headspace app",
-        },
-      });
-      eventBusRef.current.publish({
-        type: "REMOVE_CARD",
-        laneId: "PLANNED",
-        cardId: "Milk",
-      });
-    }
-  };
-
   const [dragCardId, setDragCardId] = useState();
   const [dragLineId, setDragLineId] = useState();
 
@@ -312,7 +303,6 @@ const CardList = () => {
   const handleCardClick = (cardId, metadata, laneId) => {
     setModalShow(true);
     setCardId(cardId);
-
   };
 
   const { data: thisCard, isSuccess } = useQuery(
@@ -351,8 +341,6 @@ const CardList = () => {
     },
     // validationSchema: reservationScheme,
   });
-
-
   const { mutate } = useMutation(({ AppUserId, CardId }) => getCardDelete(AppUserId, CardId), {
     onSuccess: (data) => {
       queryClient.invalidateQueries(['BoardInCardList']);
@@ -361,26 +349,175 @@ const CardList = () => {
     }
   });
 
+  const [openModal, setOpenModal] = useState()
+  const HandeOpenModal = () => {
+    setOpenModal(!openModal)
+  }
+  const CreateChecklistFormik = useFormik({
+    initialValues: {
+      Name: "",
+      CardId: ""
+    },
+    onSubmit: async (values) => {
+      const formData2 = new FormData();
+      formData2.append("Name", values.Name);
+      formData2.append("CardId", values.CardId);
+      await AddChekclistMutation(formData2);
+      queryClient.cancelQueries(["getAllCheklist", cardId]);
+    }
+  });
+  const { mutate: AddChekclistMutation } = useMutation(
+    (data) => CreateChecklist(data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("getAllCheklist");
+      },
+      onError: (err) => {
+        console.log(err);
+      },
+    }
+  );
+  const { data: ChecklistData } = useQuery(["getAllCheklist", cardId], () => GetAllChecklist(cardId))
   const cardDelete = async (userId, cardId) => {
     mutate({ AppUserId: userId, CardId: cardId });
   };
-
   const handleCardDelete = (cardId) => {
     cardDelete(userId, cardId);
   };
-
-
   const handleOnLaneDelete = (laneId) => {
     if (eventBusRef.current) {
       eventBusRef.current.publish({ type: 'REMOVE_LANE', laneId: laneId });
     }
     console.log("LaneId--->", laneId);
   }
+  const handleCheckboxChange = async (data, isChecked) => {
+    console.log(data);
+    UpdateChecklistItemsFormik.setFieldValue("Check", isChecked);
+    UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
+    UpdateChecklistItemsFormik.setFieldValue("DueDate", data.dueDate);
+    UpdateChecklistItemsFormik.setFieldValue("Id", data.id);
+    await UpdateChecklistItemsFormik.submitForm();
+  };
 
-  const handleCardTitleAndDescriptionChange = (cardId, cardTitle, cardDescription) => {
+  const [dateInput, setDateInput] = useState('');
+  const [titleInput, setTitleInput] = useState('');
+  const [timeInput, setTimeInput] = useState('');
 
+  const handleCreateItem = async (id) => {
+    CreateChecklistItemFormik.setFieldValue("ChecklistId", id);
+    await CreateChecklistItemFormik.submitForm();
   }
+  const CreateChecklistItemFormik = useFormik({
+    initialValues: {
+      Text: "",
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append("Text", values.Text);
+      formData.append("ChecklistId", values.ChecklistId);
+      await AddChekclistitemMutation(formData);
+      queryClient.cancelQueries(["getAllCheklist", cardId]);
+    }
+  });
+  const { mutate: AddChekclistitemMutation } = useMutation(
+    (Id) => CreateChecklistitem(Id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("getAllCheklist");
+      },
+      onError: (err) => {
+        console.log(err);
+      },
+    }
+  );
+  const HandeUpdateCheckList = async (data) => {
+    const padZero = (num) => (num < 10 ? `0${num}` : num);
+    const now = new Date();
+    const selectedDate = dateInput ? new Date(dateInput) : now;
+    const selectedTime = timeInput ? timeInput.split(':') : [now.getHours(), now.getMinutes()];
+    const dueDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), parseInt(selectedTime[0]), parseInt(selectedTime[1]));
+    const formattedDueDate = `${dueDate.getFullYear()}-${padZero(dueDate.getMonth() + 1)}-${padZero(dueDate.getDate())}T${padZero(dueDate.getHours())}:${padZero(dueDate.getMinutes())}:${padZero(dueDate.getSeconds())}`;
+    UpdateChecklistItemsFormik.setFieldValue("Check", data.check);
+    UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
+    UpdateChecklistItemsFormik.setFieldValue("DueDate", formattedDueDate);
+    UpdateChecklistItemsFormik.setFieldValue("Id", data.id);
+    await UpdateChecklistItemsFormik.submitForm();
+  };
 
+  const HandeRemoveDateİnCheckList = async (data) => {
+    UpdateChecklistItemsFormik.setFieldValue("Check", data.check);
+    UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
+    UpdateChecklistItemsFormik.setFieldValue("DueDate", "");
+    UpdateChecklistItemsFormik.setFieldValue("Id", data.id);
+    await UpdateChecklistItemsFormik.submitForm();
+  };
+  const HandeTitleİnCheckList = async (data) => {
+    UpdateChecklistItemsFormik.setFieldValue("Check", data.check);
+    if (titleInput !== "" || titleInput !== null) {
+      UpdateChecklistItemsFormik.setFieldValue("Text", titleInput);
+    }
+    else {
+      UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
+    }
+    UpdateChecklistItemsFormik.setFieldValue("DueDate", data.dueDate);
+    UpdateChecklistItemsFormik.setFieldValue("Id", data.id);
+    await UpdateChecklistItemsFormik.submitForm();
+  };
+
+  const UpdateChecklistItemsFormik = useFormik({
+    initialValues: {
+      Id: "",
+      Text: "",
+      DueDate: "",
+      Check: ""
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append("Id", values.Id);
+      formData.append("Text", values.Text);
+      formData.append("DueDate", values.DueDate);
+      formData.append("Check", values.Check);
+      await UpdateChecklistItem(formData);
+      queryClient.invalidateQueries(["getAllCheklist", cardId]);
+    }
+  });
+  const HandeDeleteCheklistItem = (Id) => {
+    DeleteChekclistItem(Id)
+  }
+  const { mutate: DeleteChekclistItem } = useMutation(
+    (Id) => DeleteChecklistItem(Id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("getAllCheklist");
+      },
+      onError: (err) => {
+        console.log(err);
+      },
+    }
+  );
+  const [state, setState] = useState({ ShowUpdateInputsChecklistItem: false, selectedIndex: 0 });
+  const flexContainerRef = useRef(null);
+  const HandeOpenChecklistItem = (index) => {
+    setState({ ShowUpdateInputsChecklistItem: true, selectedIndex: index });
+  }
+  const CloseEditCheckList = () => {
+    setState({ ShowUpdateInputsChecklistItem: false, selectedIndex: null });
+  }
+  const [ShowAddItem, setShowAddItem] = useState(false)
+  const { onOpen, onClose, isOpen } = useDisclosure()
+  const initRef = React.useRef()
+  const { mutate: DeleteChekclist } = useMutation(
+    (Id) => DeleteChecklist(Id),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("getAllCheklist");
+      },
+      onError: (err) => {
+        console.log(err);
+      },
+    }
+  );
+  const [addItemIndex, setAddItemIndex] = useState(-1)
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -475,6 +612,162 @@ const CardList = () => {
                     </div>
                   </Card.Body>
                 </div>
+                <ChakraProvider>
+                  {ChecklistData?.map((Data, Index) => {
+                    return (
+                      <div key={Index} className={Styles.ChecklistMain}>
+                        <p>{Data.name}</p>
+                        <div className={Styles.ChecklistMainConatiner}>
+                          <div >
+                            <FontAwesomeIcon icon={faSquareCheck} />
+                          </div>
+                          <div className={Styles.ChecHeader}>
+                            <p editable={"true"}>{Data.name}</p>
+                            <button onClick={() => DeleteChekclist(Data.id)}>Delete</button>
+                          </div>
+                        </div>
+                        <Flex pt={3} gap={5} alignItems={'center'}>
+                          <Text fontSize={14} m={0}>{Data?.checkPercentage}%</Text>
+                          <Progress borderRadius={5} h={2} w={'100%'} value={Data?.checkPercentage} />
+                        </Flex>
+                        <Flex alignItems={'center'} w={"100%"} gap={1} justifyContent={'center'} flexDirection={'column'}>
+                          {Data?.getCheckitemDtos?.map((data, index) => (
+                            <>
+
+                              <Flex pl={3} w={"100%"} gap={3} alignItems={'center'} key={index}>
+                                {state.selectedIndex === data.id && state.ShowUpdateInputsChecklistItem === true ?
+                                  <>
+                                    <Flex backgroundColor={"#A1BDD914"} padding={3} borderRadius={14} gap={2} flexDir={'column'} w={"100%"}>
+                                      <Input
+                                        backgroundColor={"#22272B"}
+                                        border={'#579DFF 1px solid'}
+                                        w={"100%"}
+                                        defaultValue={data.text}
+                                        color={'white'}
+                                        onChange={(e) => setTitleInput(e.target.value)}
+                                        name="Text"
+                                      />
+                                      <Flex justifyContent={'space-between'} alignItems={'center'}>
+                                        <Flex gap={2} alignItems={'center'}>
+                                          <button onClick={() => { HandeTitleİnCheckList(data); CloseEditCheckList() }} style={{ backgroundColor: "#579DFF", color: "#1D2125", fontSize: "14px", fontWeight: "600" }}>Save</button>
+                                          <button style={{ backgroundColor: "rgb(231 240 249 / 8%)", color: "#acb6c1;", fontSize: "14px", fontWeight: "600" }} onClick={() => CloseEditCheckList()}>Close</button>
+                                        </Flex>
+                                        <Flex gap={10} alignItems={'center'}>
+                                          <Popover closeOnBlur={false} placement='left' initialFocusRef={initRef}>
+                                            {({ isOpen, onClose }) => (
+                                              <>
+                                                <PopoverTrigger>
+                                                  <Button className={Styles.MenuButton}>
+                                                    <Flex gap={2} alignItems={'center'}>
+                                                      {data.dueDate > "2000" ?
+                                                        <>
+                                                          <FontAwesomeIcon style={{ marginBottom: "2px" }} fontSize={"14px"} icon={faClock} />
+                                                          <p style={{ margin: "0" }}>{new Date(data.dueDate).toLocaleString('en-US', { year: "numeric", month: 'short', day: '2-digit', hour: 'numeric', minute: 'numeric' })}</p>
+                                                        </>
+                                                        :
+                                                        <>
+                                                          <Flex gap={2} alignItems={'center'}>
+                                                            <FontAwesomeIcon fontSize={"14px"} icon={faClock} />
+                                                            <p style={{ margin: "0" }}> Set due Date</p>
+                                                          </Flex>
+                                                        </>
+                                                      }
+                                                    </Flex>
+                                                  </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className={Styles.PopoverMain} border={"#3a3d41 1px solid"} backgroundColor={"#1D2125"}>
+                                                  <Flex alignItems={"center"}>
+                                                    <PopoverHeader border={"none"}>Change due date</PopoverHeader>
+                                                    <PopoverCloseButton style={{ marginTop: "2px", backgroundColor: "transparent" }} />
+                                                  </Flex>
+                                                  <PopoverBody border={"none"}>
+                                                    <Flex gap={2} alignItems={'center'}>
+                                                      <Input
+                                                        id="timeInput"
+                                                        onChange={(e) => setDateInput(e.target.value)}
+                                                        defaultValue={data.dueDate && new Date(data.dueDate).getFullYear() < 2000 ?
+                                                          new Date().toISOString().split('T')[0] :
+                                                          (data.dueDate ? data.dueDate.split('T')[0] : '')}
+                                                        className={Styles.DateInput}
+                                                        type="date"
+                                                      />
+                                                      <Input
+                                                        onChange={(e) => setTimeInput(e.target.value)}
+                                                        defaultValue={
+                                                          data.dueDate && new Date(data.dueDate).getFullYear() < 2000 ?
+                                                            "12:00" :
+                                                            (data.dueDate ? (data.dueDate.split('T')[1] ? data.dueDate.split('T')[1].split(':')[0] + ':' + data.dueDate.split('T')[1].split(':')[1] : '') : '')
+                                                        }
+                                                        className={Styles.DateInput}
+                                                        type="time"
+                                                      />
+                                                    </Flex>
+                                                  </PopoverBody>
+                                                  <PopoverFooter border={"none"}>
+                                                    <Flex gap={2} >
+                                                      <button onClick={() => { HandeUpdateCheckList(data); onClose() }} style={{ backgroundColor: "#579DFF", color: "#1D2125", fontSize: "14px", fontWeight: "600" }}>Save</button>
+                                                      <button onClick={() => { HandeRemoveDateİnCheckList(data); onClose() }}>Remove</button>
+                                                    </Flex>
+                                                  </PopoverFooter>
+                                                </PopoverContent>
+                                              </>
+                                            )}
+                                          </Popover>
+                                          <Menu>
+                                            <MenuButton className={Styles.MenuButton} as={Button} >
+                                              <FontAwesomeIcon icon={faEllipsis} />
+                                            </MenuButton>
+                                            <MenuList w={"100%"} backgroundColor={"#22272B"} border={'none'}>
+                                              <MenuItem onClick={() => { HandeDeleteCheklistItem(data.id); CloseEditCheckList() }} mt={"5px !important"} w={"100% !important"}>
+                                                <Flex gap={2} alignItems={'center'}>
+                                                  <FontAwesomeIcon fontSize={"14px"} icon={faTrash} />
+                                                  <p style={{ margin: "0", padding: '0' }}>Delete</p>
+                                                </Flex>
+                                              </MenuItem>
+                                            </MenuList>
+                                          </Menu>
+                                        </Flex>
+                                      </Flex>
+                                    </Flex>
+                                  </>
+                                  :
+                                  <>
+                                    <Checkbox mb={1} checked={data.check} isChecked={data.check} onChange={(e) => handleCheckboxChange(data, e.target.checked)} />
+                                    <Text userSelect={'none'} borderRadius={10} cursor={'pointer'} w={"100%"} p={"6px 12px"} _hover={{ background: "var(--ds-background-neutral, #A1BDD914)" }}
+                                      onClick={() => HandeOpenChecklistItem(data.id)} m={0}>{data.text}</Text>
+                                  </>
+                                }
+                              </Flex>
+
+                            </>
+                          ))}
+                        </Flex>
+                        {!ShowAddItem &&
+                          <button onClick={() => { setShowAddItem(!ShowAddItem); setAddItemIndex(Index) }} style={{ margin: '20px 10px' }}>Add an item</button>
+                        }
+                        {ShowAddItem && addItemIndex === Index &&
+                          <Flex padding={2} borderRadius={14} gap={2} flexDir={'column'} w={"100%"}>
+                            <Input
+                              backgroundColor={"#22272B"}
+                              border={'#579DFF 1px solid'}
+                              w={"100%"}
+                              color={'white'}
+                              placeholder="Add an Item"
+                              onChange={CreateChecklistItemFormik.handleChange}
+                              name="Text"
+                            />
+                            <Flex justifyContent={'space-between'} alignItems={'center'}>
+                              <Flex gap={2} alignItems={'center'}>
+                                <button onClick={() => { CloseEditCheckList(); handleCreateItem(Data.id) }} style={{ backgroundColor: "#579DFF", color: "#1D2125", fontSize: "14px", fontWeight: "600" }}>Add</button>
+                                <button style={{ backgroundColor: "rgb(231 240 249 / 8%)", color: "#acb6c1;", fontSize: "14px", fontWeight: "600" }} onClick={() => { setShowAddItem(!ShowAddItem) }}>Cancel</button>
+                              </Flex>
+                            </Flex>
+                          </Flex>
+                        }
+                      </div>
+                    )
+                  })}
+                </ChakraProvider>
                 <div className="position-relative mt-2">
                   <Card.Body className=" p-0 px-1 position-relative d-flex">
                     <span className="mt-1 me-3 fs-4">
@@ -538,13 +831,31 @@ const CardList = () => {
                         <FontAwesomeIcon className="me-2" icon={faTag} />
                         Labels
                       </button>
-                      <button className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      <button onClick={HandeOpenModal} className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon
                           className="me-2"
                           icon={faSquareCheck}
                         />
                         Checklist
                       </button>
+                      {openModal &&
+                        <div className={Styles.ChecklistModal}>
+                          <div >
+                            <h1 className={Styles.CheckListHeader}>Add checklist<FontAwesomeIcon onClick={HandeOpenModal} className={Styles.XmarkIcon} icon={faXmark} /></h1>
+                          </div>
+                          <label htmlFor="Name">Title</label>
+                          <input onChange={CreateChecklistFormik.handleChange} className={Styles.InputCheck} name="Name" type="text" />
+                          <button
+                            type="submit"
+                            onClick={() => {
+                              CreateChecklistFormik.handleSubmit();
+                              CreateChecklistFormik.setFieldValue("CardId", thisCard?.data.id);
+                            }}
+                          >
+                            Add
+                          </button>
+                        </div>
+                      }
                       <button className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon className="me-2" icon={faClock} />
                         Dates
@@ -577,11 +888,12 @@ const CardList = () => {
                 </div>
               </div>
             </div>
-          </Modal.Body>
+          </Modal.Body >
         ) : (
           ""
         )}
-      </Modal>
+      </Modal >
+
       <Modal
         show={moveModalShow}
         onHide={() => {
@@ -645,7 +957,8 @@ const CardList = () => {
           </div>
         </Modal.Body>
       </Modal>
-    </div>
+
+    </div >
   );
 };
 
