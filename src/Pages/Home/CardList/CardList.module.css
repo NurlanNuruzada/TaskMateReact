@@ -197,3 +197,80 @@ input:focus {
   outline-style: none;
   outline: none;
 }
+
+#CardAddDate {
+  width: 100%;
+  height: 600px;
+  overflow-y: scroll;
+}
+
+#CardAddDate::-webkit-scrollbar {
+  width: 10px;
+  margin-right: -20px !important;
+}
+
+#CardAddDate::-webkit-scrollbar-thumb {
+  background-color: #2b2e31;
+  border-radius: 12px;
+}
+
+.result {
+  color: whitesmoke;
+  font-size: 19px;
+  /* border-top: 1px solid wheat; */
+  text-align: center;
+}
+
+.result>span {
+  color: wheat;
+  margin-left: 10px;
+  border: 1px solid #0c66e4;
+  background-color: #22272B;
+  padding: 8.4px;
+}
+
+.DueDates {
+  width: 100%;
+  height: 80px;
+}
+
+.DueDates>div {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.DueDates>span {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.DueDates>div>div>button {
+  min-width: 130px;
+  height: 45px;
+  background-color: #4d4f50;
+  border-radius: 6px;
+  font-size: 18px;
+  margin-left: 10px;
+}
+
+.DueDates>div>div>button>span {
+  min-width: 70px;
+  height: 30px;
+  margin-left: 7px;
+  margin-right: 7px;
+  text-align: center;
+  border-radius: 4px;
+  color: white;
+  background-color: #ca3521;
+}
+
+/* #ca3521 */
+/* display: thisCard?.data?.dateColor==="transparent" ? 'none' : '', */
+
+.DueDates>div>div>input {
+  width: 22px;
+  height: 22px;
+  border: none;
+  margin-top: 5px !important;
+}

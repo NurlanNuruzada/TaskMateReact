@@ -46,6 +46,10 @@ import TextEditor from "./TextEditor/TextEditor";
 import { CreateChecklist, CreateChecklistitem, DeleteChecklist, DeleteChecklistItem, GetAllChecklist, UpdateChecklistItem } from "../../../Service/CheckListService";
 import { Progress } from '@chakra-ui/react'
 import { Checkbox, CheckboxGroup } from '@chakra-ui/react'
+import { Select } from '@chakra-ui/react'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Col } from "react-bootstrap";
 
 const data = require('./data.json')
 const ListStyle = {
@@ -74,6 +78,7 @@ const cardStyle = {
 const CardList = () => {
   const [modalShow, setModalShow] = useState(false);
   const [moveModalShow, setMoveModalShow] = useState(false);
+  const [cardDateModalShow, setCardDateModalShow] = useState(false);
 
 
   const [boardData, setBoardData] = useState({ lanes: [] });
@@ -388,7 +393,6 @@ const CardList = () => {
     if (eventBusRef.current) {
       eventBusRef.current.publish({ type: 'REMOVE_LANE', laneId: laneId });
     }
-    console.log("LaneId--->", laneId);
   }
   const handleCheckboxChange = async (data, isChecked) => {
     console.log(data);
@@ -518,6 +522,133 @@ const CardList = () => {
     }
   );
   const [addItemIndex, setAddItemIndex] = useState(-1)
+
+  //---------------------------------------------------------------
+
+
+  console.log("-----", thisCard?.data);
+  const [isCardDateStatus, setIsCardDateStatus] = useState(thisCard?.data?.isDateStatus);
+  const handleCardDateStatusCheckboxChange = (event) => {
+    setIsCardDateStatus((prev) => !prev);
+  };
+
+
+  const [isStartChecked, setIsStartChecked] = useState(false);
+  const [isDueChecked, setIsDueChecked] = useState(true);
+  const handleStartCheckboxChange = (event) => {
+    setIsStartChecked(true);
+    setIsDueChecked(false);
+  };
+
+  const handleDueCheckboxChange = (event) => {
+    setIsDueChecked(true);
+    setIsStartChecked(false);
+  };
+
+
+  const [startDate, setStartDate] = useState(null);
+
+  const handlStartDateChange = (date) => {
+    setStartDate(date);
+  };
+
+  const [dueDate, setDueDate] = useState(new Date());
+  const [reminderDate, setReminderDate] = useState(null);
+
+  const defaultOption = 'None';
+  const [selectedOption, setSelectedOption] = useState(defaultOption);
+
+  const handleDueDateChange = (date) => {
+    setDueDate(date);
+    calculateReminderDate(selectedOption);
+  };
+
+  const handleChange = (event) => {
+    setSelectedOption(event.target.value);
+    calculateReminderDate(event.target.value);
+  };
+
+  useEffect(() => {
+    calculateReminderDate(selectedOption);
+  }, [dueDate, selectedOption]);
+
+  const calculateReminderDate = (option) => {
+    let reminderTime = 0;
+    switch (option) {
+      case 'option1':
+        reminderTime = 0;
+        break;
+      case 'option2':
+        reminderTime = 5;
+        break;
+      case 'option3':
+        reminderTime = 10;
+        break;
+      case 'option4':
+        reminderTime = 15;
+        break;
+      case 'option5':
+        reminderTime = 60;
+        break;
+      case 'option6':
+        reminderTime = 120;
+        break;
+      case 'option7':
+        reminderTime = 1440;
+        break;
+      case 'option8':
+        reminderTime = 2880;
+        break;
+      default:
+        reminderTime = 0;
+    }
+    const millisecondsInMinute = 60000;
+    const newReminderDate = new Date(dueDate.getTime() - reminderTime * millisecondsInMinute);
+    setReminderDate(newReminderDate);
+  };
+
+  const cardAddDateFormik = useFormik({
+    initialValues: {
+      CardId: cardId ? cardId : '',
+      StartDate: startDate ? startDate : '',
+      EndDate: dueDate ? dueDate : '',
+      Reminder: reminderDate ? reminderDate : '',
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append("CardId", cardId ? cardId : '');
+      formData.append("StartDate", startDate ? startDate.toISOString() : '');
+      formData.append("EndDate", dueDate ? dueDate.toISOString() : '');
+      formData.append("Reminder", reminderDate ? reminderDate.toISOString() : '');
+      try {
+        const response = await axios.put(
+          "https://localhost:7101/api/Cards/UpdateCard",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 201) {
+          // queryClient.invalidateQueries(["BoardInCardList"]);
+        }
+      } catch (error) { }
+    },
+    // validationSchema: reservationScheme,
+  });
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+
+    const options = { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+  };
+
+
+
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -612,6 +743,21 @@ const CardList = () => {
                     </div>
                   </Card.Body>
                 </div>
+                <div className={Styles.DueDates}>
+                  <span>Due Date</span>
+                  <div>
+                    <div><input type="checkbox"
+                      checked={isCardDateStatus}
+                      onChange={handleCardDateStatusCheckboxChange} /></div>
+                    <div>
+                      <button onClick={() => setCardDateModalShow((prev) => !prev)}>{formatDate(thisCard?.data?.endDate)}
+                        <span style={{ display: thisCard?.data?.dateColor !== "red" ? '' : 'none', backgroundColor: isCardDateStatus === true && '#1f845a' }}>
+                          {isCardDateStatus ? 'Complate' : 'Overdue'}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <ChakraProvider>
                   {ChecklistData?.map((Data, Index) => {
                     return (
@@ -645,7 +791,7 @@ const CardList = () => {
                                         defaultValue={data.text}
                                         color={'white'}
                                         onChange={(e) => {
-                                          const newValue = e.target.value.trim(); 
+                                          const newValue = e.target.value.trim();
                                           setTitleInput(newValue !== "" ? newValue : data.text);
                                         }}
                                         name="Text"
@@ -859,7 +1005,7 @@ const CardList = () => {
                           </button>
                         </div>
                       }
-                      <button className="btn btn-primary default-submit mb-2 w-100 text-start">
+                      <button onClick={() => setCardDateModalShow((prev) => !prev)} className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon className="me-2" icon={faClock} />
                         Dates
                       </button>
@@ -956,6 +1102,125 @@ const CardList = () => {
               <div>
                 <Button variant="primary">Move</Button>
               </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={cardDateModalShow}
+        onHide={() => {
+          setCardDateModalShow(false);
+        }}
+        fullscreen="md-down"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        style={{ width: '370px' }}
+        id={Styles.MainMoveModelShow}
+      >
+        <Modal.Body
+          style={{
+            backgroundColor: '#1d2125',
+            width: '370px'
+          }}
+          id={Styles.MoveModelShow}
+        >
+          <div id={Styles.CardAddDate} className={`date-picker open`}>
+            <div style={{ width: '333px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px', backgroundColor: '#1d2125', position: 'fixed', zIndex: 10 }}>
+              <div></div>
+              <h1 style={{ fontSize: '24px', fontFamily: 'initial', color: 'white', display: 'flex', justifyContent: 'center' }}>
+                Dates
+              </h1>
+              <button onClick={() => setCardDateModalShow((pres) => !pres)} style={{ color: 'white', fontSize: '20px', marginRight: '5px' }}>X</button>
+            </div>
+            <div className="input" style={{ marginTop: '30px' }}>
+              <button><i className="zmdi zmdi-calendar"></i></button>
+            </div>
+            <div style={{ width: '100%', height: 'auto', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ display: isStartChecked ? 'block' : 'none', }}>
+                {true && (
+                  <DatePicker
+                    color={"red"}
+                    backgroundColor={"red"}
+                    selected={startDate}
+                    onChange={handlStartDateChange}
+                    dateFormat="dd/MM/yyyy"
+                    inline
+                    selectsStart
+                    startDate={startDate}
+                    endDate={dueDate}
+                  />
+                )}
+              </div>
+              <div style={{ display: isDueChecked ? 'block' : 'none' }}>
+                {true && (
+                  <DatePicker
+                    backgroundColor="blue"
+                    selected={dueDate}
+                    onChange={handleDueDateChange}
+                    inline
+                    dateFormat="dd/MM/yyyy h:mm aa"
+                    showTimeInput
+                    timeInputLabel="Hour:"
+                    timeFormat="h:mm aa"
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={dueDate}
+                    minDate={startDate}
+                  />
+                )}
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
+                <label>Start Date</label>
+                <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
+                  <input
+                    style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
+                    type="checkbox"
+                    checked={isStartChecked}
+                    onChange={handleStartCheckboxChange}
+                  />
+                  <div className={Styles.result}><span style={{ display: startDate ? 'block' : 'none' }}>{startDate ? startDate.toLocaleDateString() : ''}</span></div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
+                <label>Due Date</label>
+                <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
+                  <input
+                    style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
+                    type="checkbox"
+                    checked={isDueChecked}
+                    onChange={handleDueCheckboxChange}
+                  />
+                  <div className={Styles.result}><span style={{ display: dueDate ? '' : 'none' }}>{dueDate ? dueDate.toLocaleDateString() : ''}</span> <span style={{ display: dueDate ? '' : 'none' }}>{dueDate && dueDate.toLocaleTimeString()}</span></div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: '20px' }}>
+              <ChakraProvider>
+                <span style={{ color: 'white', fontWeight: '500' }}>Set due date reminder</span>
+                <Select id={Styles.SelectbeforeInfo} borderColor={'#0c66e4'} height={'50px'} color={'white'} backgroundColor={'#22272B'} value={selectedOption} onChange={handleChange}>
+                  <option style={{ backgroundColor: '#22272B' }} value={defaultOption}>{defaultOption}</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option1">At time of due date</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option2">5 Minutes before</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option3">10 Minutes before</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option4">15 Minutes before</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option5">1 Hour before</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option6">2 Hours before</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option7">1 Day before</option>
+                  <option style={{ backgroundColor: '#22272B' }} value="option8">2 Days before</option>
+                </Select>
+              </ChakraProvider>
+              <Col style={{ color: 'white', marginTop: '10px', fontSize: '18px' }}>Reminders will be sent to all members and watchers of this card.</Col>
+              <Col style={{ marginTop: '15px' }}>
+                <Button onClick={() => cardAddDateFormik.handleSubmit()} style={{ width: '100%' }}>Save</Button>
+                <Button style={{ width: '100%', marginTop: '20px', backgroundColor: '#1d2125' }}>Remove</Button>
+              </Col>
             </div>
           </div>
         </Modal.Body>
