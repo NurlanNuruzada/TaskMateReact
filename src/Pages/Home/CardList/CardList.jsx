@@ -22,6 +22,7 @@ import {
   faX,
   faEllipsis,
   faTrash,
+
 } from "@fortawesome/free-solid-svg-icons";
 import { Box, ChakraProvider, Flex, FormControl, Input, Portal, Text, useDisclosure, } from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
@@ -526,12 +527,27 @@ const CardList = () => {
   //---------------------------------------------------------------
 
 
-  console.log("-----", thisCard?.data);
   const [isCardDateStatus, setIsCardDateStatus] = useState(thisCard?.data?.isDateStatus);
   const handleCardDateStatusCheckboxChange = (event) => {
     setIsCardDateStatus((prev) => !prev);
+    sendRequest();
   };
 
+  useEffect(() => {
+    if (isSuccess && thisCard) {
+      setIsCardDateStatus(thisCard.data.isDateStatus);
+    }
+  }, [isSuccess, thisCard]);
+
+  const sendRequest = () => {
+    axios.put(`https://localhost:7101/api/Cards/EditCardDateStatus?CardId=${cardId ? cardId : ''}`)
+      .then(response => {
+        // console.log('PUT request successful:', response);
+      })
+      .catch(error => {
+        // console.error('Error making PUT request:', error);
+      });
+  };
 
   const [isStartChecked, setIsStartChecked] = useState(false);
   const [isDueChecked, setIsDueChecked] = useState(true);
@@ -647,7 +663,7 @@ const CardList = () => {
     return new Intl.DateTimeFormat('en-US', options).format(date);
   };
 
-
+  console.log("---<>", thisCard?.data);
 
   return (
     <div className="h-100">
@@ -743,21 +759,25 @@ const CardList = () => {
                     </div>
                   </Card.Body>
                 </div>
-                <div className={Styles.DueDates}>
-                  <span>Due Date</span>
-                  <div>
-                    <div><input type="checkbox"
-                      checked={isCardDateStatus}
-                      onChange={handleCardDateStatusCheckboxChange} /></div>
+                {thisCard?.data?.endDate !== null &&
+                  <div className={Styles.DueDates}>
+                    <span>Due Date</span>
                     <div>
-                      <button onClick={() => setCardDateModalShow((prev) => !prev)}>{formatDate(thisCard?.data?.endDate)}
-                        <span style={{ display: thisCard?.data?.dateColor !== "red" ? '' : 'none', backgroundColor: isCardDateStatus === true && '#1f845a' }}>
-                          {isCardDateStatus ? 'Complate' : 'Overdue'}
-                        </span>
-                      </button>
+                      <div>
+                        <input type="checkbox"
+                          checked={isCardDateStatus === true ? true : false}
+                          onChange={handleCardDateStatusCheckboxChange} />
+                      </div>
+                      <div>
+                        <button onClick={() => setCardDateModalShow((prev) => !prev)}>{formatDate(thisCard?.data?.endDate)}
+                          <span style={{ display: thisCard?.data?.dateColor !== "red" ? '' : 'none', backgroundColor: isCardDateStatus === true && '#1f845a' }}>
+                            {isCardDateStatus ? 'Complate' : 'Overdue'}
+                          </span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                }
                 <ChakraProvider>
                   {ChecklistData?.map((Data, Index) => {
                     return (
@@ -1109,6 +1129,7 @@ const CardList = () => {
 
       <Modal
         show={cardDateModalShow}
+        className={Styles.DateCardModal}
         onHide={() => {
           setCardDateModalShow(false);
         }}
@@ -1125,102 +1146,105 @@ const CardList = () => {
           }}
           id={Styles.MoveModelShow}
         >
-          <div id={Styles.CardAddDate} className={`date-picker open`}>
-            <div style={{ width: '333px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px', backgroundColor: '#1d2125', position: 'fixed', zIndex: 10 }}>
+          <div className={`date-picker open`}>
+            <div style={{ width: '350px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px', backgroundColor: '#1d2125', position: 'fixed', zIndex: 10 }}>
               <div></div>
               <h1 style={{ fontSize: '24px', fontFamily: 'initial', color: 'white', display: 'flex', justifyContent: 'center' }}>
                 Dates
               </h1>
-              <button onClick={() => setCardDateModalShow((pres) => !pres)} style={{ color: 'white', fontSize: '20px', marginRight: '5px' }}>X</button>
+              <button onClick={() => setCardDateModalShow((pres) => !pres)} style={{ color: 'white', fontSize: '20px', marginRight: '5px' }}><FontAwesomeIcon icon={faX} /></button>
             </div>
-            <div className="input" style={{ marginTop: '30px' }}>
-              <button><i className="zmdi zmdi-calendar"></i></button>
-            </div>
-            <div style={{ width: '100%', height: 'auto', display: 'flex', justifyContent: 'center' }}>
-              <div style={{ display: isStartChecked ? 'block' : 'none', }}>
-                {true && (
-                  <DatePicker
-                    color={"red"}
-                    backgroundColor={"red"}
-                    selected={startDate}
-                    onChange={handlStartDateChange}
-                    dateFormat="dd/MM/yyyy"
-                    inline
-                    selectsStart
-                    startDate={startDate}
-                    endDate={dueDate}
-                  />
-                )}
+
+            <div id={Styles.CardAddDate}>
+              <div className="input" style={{ marginTop: '30px' }}>
+                <button><i className="zmdi zmdi-calendar"></i></button>
               </div>
-              <div style={{ display: isDueChecked ? 'block' : 'none' }}>
-                {true && (
-                  <DatePicker
-                    backgroundColor="blue"
-                    selected={dueDate}
-                    onChange={handleDueDateChange}
-                    inline
-                    dateFormat="dd/MM/yyyy h:mm aa"
-                    showTimeInput
-                    timeInputLabel="Hour:"
-                    timeFormat="h:mm aa"
-                    timeIntervals={15}
-                    timeCaption="Time"
-                    selectsEnd
-                    startDate={startDate}
-                    endDate={dueDate}
-                    minDate={startDate}
-                  />
-                )}
-              </div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
-                <label>Start Date</label>
-                <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
-                  <input
-                    style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
-                    type="checkbox"
-                    checked={isStartChecked}
-                    onChange={handleStartCheckboxChange}
-                  />
-                  <div className={Styles.result}><span style={{ display: startDate ? 'block' : 'none' }}>{startDate ? startDate.toLocaleDateString() : ''}</span></div>
+              <div style={{ width: '100%', height: 'auto', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ display: isStartChecked ? 'block' : 'none', }}>
+                  {true && (
+                    <DatePicker
+                      color={"red"}
+                      backgroundColor={"red"}
+                      selected={startDate}
+                      onChange={handlStartDateChange}
+                      dateFormat="dd/MM/yyyy"
+                      inline
+                      selectsStart
+                      startDate={startDate}
+                      endDate={dueDate}
+                    />
+                  )}
+                </div>
+                <div style={{ display: isDueChecked ? 'block' : 'none' }}>
+                  {true && (
+                    <DatePicker
+                      backgroundColor="blue"
+                      selected={dueDate}
+                      onChange={handleDueDateChange}
+                      inline
+                      dateFormat="dd/MM/yyyy h:mm aa"
+                      showTimeInput
+                      timeInputLabel="Hour:"
+                      timeFormat="h:mm aa"
+                      timeIntervals={15}
+                      timeCaption="Time"
+                      selectsEnd
+                      startDate={startDate}
+                      endDate={dueDate}
+                      minDate={startDate}
+                    />
+                  )}
                 </div>
               </div>
-            </div>
-            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
-                <label>Due Date</label>
-                <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
-                  <input
-                    style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
-                    type="checkbox"
-                    checked={isDueChecked}
-                    onChange={handleDueCheckboxChange}
-                  />
-                  <div className={Styles.result}><span style={{ display: dueDate ? '' : 'none' }}>{dueDate ? dueDate.toLocaleDateString() : ''}</span> <span style={{ display: dueDate ? '' : 'none' }}>{dueDate && dueDate.toLocaleTimeString()}</span></div>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
+                  <label>Start Date</label>
+                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
+                    <input
+                      style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
+                      type="checkbox"
+                      checked={isStartChecked}
+                      onChange={handleStartCheckboxChange}
+                    />
+                    <div className={Styles.result}><span style={{ display: startDate ? 'block' : 'none' }}>{startDate ? startDate.toLocaleDateString() : ''}</span></div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div style={{ marginTop: '20px' }}>
-              <ChakraProvider>
-                <span style={{ color: 'white', fontWeight: '500' }}>Set due date reminder</span>
-                <Select id={Styles.SelectbeforeInfo} borderColor={'#0c66e4'} height={'50px'} color={'white'} backgroundColor={'#22272B'} value={selectedOption} onChange={handleChange}>
-                  <option style={{ backgroundColor: '#22272B' }} value={defaultOption}>{defaultOption}</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option1">At time of due date</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option2">5 Minutes before</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option3">10 Minutes before</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option4">15 Minutes before</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option5">1 Hour before</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option6">2 Hours before</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option7">1 Day before</option>
-                  <option style={{ backgroundColor: '#22272B' }} value="option8">2 Days before</option>
-                </Select>
-              </ChakraProvider>
-              <Col style={{ color: 'white', marginTop: '10px', fontSize: '18px' }}>Reminders will be sent to all members and watchers of this card.</Col>
-              <Col style={{ marginTop: '15px' }}>
-                <Button onClick={() => cardAddDateFormik.handleSubmit()} style={{ width: '100%' }}>Save</Button>
-                <Button style={{ width: '100%', marginTop: '20px', backgroundColor: '#1d2125' }}>Remove</Button>
-              </Col>
+              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', }}>
+                  <label>Due Date</label>
+                  <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginTop: '5px' }}>
+                    <input
+                      style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '38px', height: '38px', }}
+                      type="checkbox"
+                      checked={isDueChecked}
+                      onChange={handleDueCheckboxChange}
+                    />
+                    <div className={Styles.result}><span style={{ display: dueDate ? '' : 'none' }}>{dueDate ? dueDate.toLocaleDateString() : ''}</span> <span style={{ display: dueDate ? '' : 'none' }}>{dueDate && dueDate.toLocaleTimeString()}</span></div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginTop: '20px' }}>
+                <ChakraProvider>
+                  <span style={{ color: 'white', fontWeight: '500' }}>Set due date reminder</span>
+                  <Select id={Styles.SelectbeforeInfo} borderColor={'#0c66e4'} height={'50px'} width={"98%"} color={'white'} backgroundColor={'#22272B'} value={selectedOption} onChange={handleChange}>
+                    <option style={{ backgroundColor: '#22272B' }} value={defaultOption}>{defaultOption}</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option1">At time of due date</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option2">5 Minutes before</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option3">10 Minutes before</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option4">15 Minutes before</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option5">1 Hour before</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option6">2 Hours before</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option7">1 Day before</option>
+                    <option style={{ backgroundColor: '#22272B' }} value="option8">2 Days before</option>
+                  </Select>
+                </ChakraProvider>
+                <Col style={{ color: 'white', marginTop: '10px', fontSize: '18px' }}>Reminders will be sent to all members and watchers of this card.</Col>
+                <Col style={{ marginTop: '15px' }}>
+                  <Button onClick={() => cardAddDateFormik.handleSubmit()} style={{ width: '98%' }}>Save</Button>
+                  <Button style={{ width: '98%', marginTop: '20px', backgroundColor: '#1d2125' }}>Remove</Button>
+                </Col>
+              </div>
             </div>
           </div>
         </Modal.Body>

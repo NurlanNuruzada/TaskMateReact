@@ -206,7 +206,6 @@ input:focus {
 
 #CardAddDate::-webkit-scrollbar {
   width: 10px;
-  margin-right: -20px !important;
 }
 
 #CardAddDate::-webkit-scrollbar-thumb {
@@ -273,4 +272,10 @@ input:focus {
   height: 22px;
   border: none;
   margin-top: 5px !important;
+}
+
+.DateCardModal {
+  top: 42%;
+  left: 51%;
+  transform: translate(-50%, -50%);
 }
