@@ -46,12 +46,14 @@
   justify-content: center;
   border: 1px solid #2b2e31;
 }
+
 label {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   margin-top: 5px;
   font-size: 20px;
   color: white;
 }
+
 input {
   width: 100%;
   height: 30px;
@@ -63,6 +65,7 @@ input {
   box-shadow: inset 0 0 0 2px var(--ds-border-input, #091e4224);
   border: 1px solid #2b2e31;
 }
+
 input:focus {
   outline: #616466 1px solid;
 }
@@ -76,4 +79,121 @@ input:focus {
   color: #1d2125;
   background-color: #579DFF;
 
+}
+
+.ChecklistModal {
+  position: absolute;
+  padding: 12px;
+  width: 304px;
+  height: max-content;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-display: swap;
+  background-color: var(--ds-surface-overlay, #282e33);
+  border-radius: 8px;
+  color: var(--ds-text, #b6c2cf);
+  box-shadow: var(--ds-shadow-overlay, 0px 8px 12px #29282826, 0px 0px 1px #afb2b64f);
+  border: 1px solid #b6c2cf0c;
+  box-sizing: border-box;
+  outline: 0;
+  overflow: hidden;
+}
+
+.CheckListHeader {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: -0.003em;
+  text-align: center;
+  margin: 0;
+}
+
+.ChecklistModal label {
+  padding-top: 10px;
+  font-size: 14px !important;
+  font-weight: 600;
+  letter-spacing: -0.003em;
+  color: #9fadbc;
+}
+
+.ChecklistModal input {
+  background-color: #23282b;
+  outline: none;
+}
+
+.ChecklistModal button {
+  background-color: var(--ds-link, #579dff);
+  color: var(--ds-text-inverse, #1d2125);
+  padding: 8px 20px;
+  margin-top: 14px;
+  border-radius: 4px;
+}
+
+.XmarkIcon {
+  position: relative;
+  right: -90px;
+  top: 1px;
+  cursor: pointer;
+}
+
+.InputCheck {
+  padding: 17px 12px;
+}
+
+.ChecklistMainConatiner {
+  height: max-content;
+  align-items: center;
+  gap: 25PX;
+  width: 100%;
+  display: flex;
+}
+
+.ChecHeader {
+  display: flex;
+  align-items: center;
+  height: max-content;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ChecklistMain button {
+  margin: 0;
+  height: max-content;
+  width: max-content;
+  padding: 6px 12px;
+  background-color: var(--ds-background-neutral, #A1BDD914);
+  color: var(--ds-text, #b6c2cf);
+  border-radius: 3px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  user-select: none;
+}
+
+.ChecHeader p {
+  margin: 0;
+  user-select: none;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.MenuButton {
+  border: none;
+  background-color: transparent !important;
+}
+
+.ExitFromX {
+  position: relative;
+  right: -289px;
+  top: -25px;
+}
+
+.DateInput {
+  border: 1px solid #9fadbc;
+  width: 100%;
+  outline-style: none;
+  outline: none;
 }
