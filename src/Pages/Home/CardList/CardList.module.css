@@ -264,9 +264,6 @@ input:focus {
   background-color: #ca3521;
 }
 
-/* #ca3521 */
-/* display: thisCard?.data?.dateColor==="transparent" ? 'none' : '', */
-
 .DueDates>div>div>input {
   width: 22px;
   height: 22px;
@@ -278,4 +275,94 @@ input:focus {
   top: 42%;
   left: 51%;
   transform: translate(-50%, -50%);
+}
+
+/* ---------------------------------------------------------- */
+
+.cardCustomFeildmain {
+  width: 100%;
+  height: 440px;
+}
+
+.cardCustomFeildmain>div {
+  padding: 6px;
+  height: 100%;
+  color: #616466;
+}
+
+.cardCustomFeildmainHeader {
+  width: 100%;
+  height: 16%;
+  display: flex;
+  justify-content: space-between;
+  align-items: first baseline;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.cardCustomFeildmainCenter {
+  width: 100%;
+  height: 65%;
+  font-weight: 700;
+}
+
+.cardCustomFeildmainCenter>p {
+  height: 10%;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.cardCustomFeildmainCenter>div {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fieldGridItem {
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  height: 100%;
+}
+
+.fieldGridItem>div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.fieldGridItem>div>div {
+  width: 70%;
+  font-size: 20px;
+  background-color: #2c3235;
+  border-radius: 4px;
+  height: 100% !important;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.fieldGridItem>div>button {
+  width: 20%;
+  font-size: 22px;
+  background-color: #2c3235;
+  border-radius: 4px;
+  height: 100% !important;
+  font-weight: 700;
+}
+
+.cardCustomFeildmainNewField {
+  width: 100%;
+  height: 19%;
+  display: flex;
+  align-items:last baseline;
+}
+
+.FieldCreateTitileLabel{
+  font-size: 23px;
+  font-weight: 670;
+  color: #6d6f70;
 }

@@ -3,6 +3,7 @@ import Board from "react-trello";
 import Styles from "./CardList.module.css";
 import { transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
+import { Grid, GridItem } from '@chakra-ui/react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBarsProgress,
@@ -22,7 +23,7 @@ import {
   faX,
   faEllipsis,
   faTrash,
-
+  faClipboard
 } from "@fortawesome/free-solid-svg-icons";
 import { Box, ChakraProvider, Flex, FormControl, Input, Portal, Text, useDisclosure, } from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
@@ -36,7 +37,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
 import { getByCard, getCardDelete } from "../../../Service/CardService";
-import { Button, Dropdown } from "react-bootstrap";
+import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
 import {
   MenuItem,
   Menu,
@@ -80,7 +81,7 @@ const CardList = () => {
   const [modalShow, setModalShow] = useState(false);
   const [moveModalShow, setMoveModalShow] = useState(false);
   const [cardDateModalShow, setCardDateModalShow] = useState(false);
-
+  const [cardCustomField, setCardCustomField] = useState(false);
 
   const [boardData, setBoardData] = useState({ lanes: [] });
   const [cardListId, SetCardListId] = useState("");
@@ -524,8 +525,6 @@ const CardList = () => {
   );
   const [addItemIndex, setAddItemIndex] = useState(-1)
 
-  //---------------------------------------------------------------
-
 
   const [isCardDateStatus, setIsCardDateStatus] = useState(thisCard?.data?.isDateStatus);
   const handleCardDateStatusCheckboxChange = (event) => {
@@ -663,7 +662,9 @@ const CardList = () => {
     return new Intl.DateTimeFormat('en-US', options).format(date);
   };
 
-  console.log("---<>", thisCard?.data);
+  // console.log("---<>", thisCard?.data);
+
+  // ----------------------------------------------------------
 
   return (
     <div className="h-100">
@@ -1037,6 +1038,10 @@ const CardList = () => {
                         <FontAwesomeIcon className="me-2" icon={faPalette} />
                         Cover
                       </button>
+                      <button onClick={() => setCardCustomField((prev) => !prev)} className="btn btn-primary default-submit mb-2 w-100 text-start">
+                        <FontAwesomeIcon className="me-2" icon={faClipboard} />
+                        Custom Fields
+                      </button>
                     </div>
                     <p className="mt-5 mb-2 small fw-bold">Actions</p>
                     <div>
@@ -1249,7 +1254,73 @@ const CardList = () => {
           </div>
         </Modal.Body>
       </Modal>
+      <Modal
+        show={cardCustomField}
+        onHide={() => {
+          setCardCustomField(false);
+        }}
+        fullscreen="md-down"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        id={Styles.MainMoveModelShow}
+      >
+        <Modal.Body
+          id={Styles.MoveModelShow}
+          style={{ backgroundColor: '#23282b' }}
+        >
+          <div className={Styles.cardCustomFeildmain}>
+            <div>
+              <div className={Styles.cardCustomFeildmainHeader}>
+                <div></div>
+                <div>Custom Fields</div>
+                <button><FontAwesomeIcon icon={faX} /></button>
+              </div>
+              <div style={{ display: 'none' }} className={Styles.cardCustomFeildmainCenter}>
+                <p>SUGGESTED FIELDS</p>
+                <div>
+                  <div className={Styles.fieldGridItem}>
+                    <div>
+                      <div>^ Priority</div>
+                      <button>Add</button>
+                    </div>
+                  </div>
+                  <div className={Styles.fieldGridItem}>
+                    <div>
+                      <div>^ Priority</div>
+                      <button>Add</button>
+                    </div>
+                  </div>
+                  <div className={Styles.fieldGridItem}>
+                    <div>
+                      <div>^ Priority</div>
+                      <button>Add</button>
+                    </div>
+                  </div>
+                  <div className={Styles.fieldGridItem}>
+                    <div>
+                      <div>^ Priority</div>
+                      <button>Add</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'none' }} className={Styles.cardCustomFeildmainNewField}>
+                <ButtonGroup style={{ width: '100%', height: '52px', backgroundColor: '#2f363b', fontSize: '28px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>+ New field</ButtonGroup>
+              </div>
 
+              <div>
+                <ChakraProvider>
+                  <span className={Styles.FieldCreateTitileLabel}>Title</span>
+                  <Input placeholder='Add a title...' size='lg' />
+                  <span className={Styles.FieldCreateTitileLabel}>Type</span>
+                </ChakraProvider>
+
+
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div >
   );
 };
