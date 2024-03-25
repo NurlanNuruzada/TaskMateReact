@@ -502,3 +502,17 @@ border: 2px solid rgb(87, 157, 255);
   border-top-left-radius: 0.5rem;
   border-top-right-radius:0.5rem;
 }
+.PopoverMember{
+  inset: 0px 420px auto auto !important;
+  background-color: #282e33 !important;
+  border: none !important;
+}
+.BoardMembersHeader{
+  font-size: 16px;
+}
+.userSvgConatiner{
+  width: 30px;
+  border-radius: 50%;
+  background-color: #d9e3da;
+  user-select: none;
+}

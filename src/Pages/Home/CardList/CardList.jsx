@@ -5,6 +5,7 @@ import { transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
 import { FocusLock, Grid, GridItem } from '@chakra-ui/react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import userSvg from '../../../Images/user.svg'
 import {
   faBarsProgress,
   faEye,
@@ -44,7 +45,7 @@ import { getByBoard } from "../../../Service/BoardService";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { useFormik } from "formik";
-import { getByCard, getCardDelete } from "../../../Service/CardService";
+import { GetUsersInBoard, getByCard, getCardDelete } from "../../../Service/CardService";
 import { Button, ButtonGroup, Dropdown } from "react-bootstrap";
 import {
   MenuItem,
@@ -825,6 +826,13 @@ const CardList = () => {
     await CreateCover(data);
     await queryClient.invalidateQueries(['ModalCardDetails']);
   };
+  const { data: BoardMembers } = useQuery(
+    ["GetAllBoardMembers", BoardId],
+    () => GetUsersInBoard(BoardId),
+    {
+      enabled: !!BoardId,
+    }
+  );
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -1229,10 +1237,44 @@ const CardList = () => {
                   <Card.Body className=" p-0 py-3 px-1 position-relative">
                     <p className="mb-2 small fw-bold">Add to Card</p>
                     <div>
-                      <button className="btn btn-primary default-submit mb-2 w-100 text-start">
-                        <FontAwesomeIcon className="me-2" icon={faUser} />
-                        Members
-                      </button>
+                      <ChakraProvider>
+
+                        <Popover
+                          isOpen={isOpen}
+                          initialFocusRef={firstFieldRef}
+                          onOpen={onOpen}
+                          onClose={onClose}
+                          placement='right'
+                          closeOnBlur={false}
+                        >
+                          <PopoverTrigger>
+                            <button className="btn btn-primary default-submit mb-2 w-100 text-start">
+                              <FontAwesomeIcon className="me-2" icon={faUser} />
+                              Members
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className={Styles.PopoverMember} p={5}>
+                            <FocusLock returnFocus persistentFocus={false}>
+                              <PopoverCloseButton />
+                              <Form firstFieldRef={firstFieldRef} onCancel={onClose} />
+                            </FocusLock>
+                            <h6 className={Styles.BoardMembersHeader}>Board Members</h6>
+                            {BoardMembers?.data?.map((data, index) => {
+                              return (
+                                <div key={index}>
+
+                                  <div className={Styles.userSvgConatiner}>
+                                    <Flex marginTop={2} gap={2} alignItems={'center'}>
+                                      <img src={userSvg} alt="" srcset="" />
+                                      {data.userName}
+                                    </Flex>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </PopoverContent>
+                        </Popover>
+                      </ChakraProvider>
                       <button className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon className="me-2" icon={faTag} />
                         Labels
@@ -1327,10 +1369,6 @@ const CardList = () => {
                       <button className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon className="me-2" icon={faCopy} />
                         Copy
-                      </button>
-                      <button className="btn btn-primary default-submit mb-2 w-100 text-start">
-                        <FontAwesomeIcon className="me-2" icon={faShareNodes} />
-                        Share
                       </button>
                     </div>
                   </Card.Body>
