@@ -10,6 +10,7 @@ import {
   faEye,
   faAlignLeft,
   faListUl,
+  faChevronLeft,
   faUser,
   faTag,
   faClock,
@@ -52,6 +53,7 @@ import { Select } from '@chakra-ui/react'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Col } from "react-bootstrap";
+import { CirclePicker, HuePicker } from "react-color";
 
 const data = require('./data.json')
 const ListStyle = {
@@ -630,6 +632,7 @@ const CardList = () => {
       Reminder: reminderDate ? reminderDate : '',
     },
     onSubmit: async (values) => {
+      setCardDateModalShow(false);
       const formData = new FormData();
       formData.append("CardId", cardId ? cardId : '');
       formData.append("StartDate", startDate ? startDate.toISOString() : '');
@@ -643,10 +646,10 @@ const CardList = () => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
-        if (response.status === 201) {
-          // queryClient.invalidateQueries(["BoardInCardList"]);
+        if (response.status === 200 || response.status === 204) {
+          queryClient.invalidateQueries(["ModalCardDetails"]);
         }
       } catch (error) { }
     },
@@ -662,10 +665,112 @@ const CardList = () => {
     return new Intl.DateTimeFormat('en-US', options).format(date);
   };
 
-  // console.log("---<>", thisCard?.data);
 
   // ----------------------------------------------------------
+  const [createViewShow, setCreateViewShow] = useState(false);
+  const [viewAddDripdownItemShow, setViewAddDripdownItemShow] = useState(false);
 
+  const [isFieldChecked, setIsFieldChecked] = useState(true);
+  const handleFieldCheckboxChange = (event) => {
+    setIsFieldChecked(false);
+  };
+
+  const [selectedFieldTypeOption, setSelectedFieldTypeOption] = useState(null);
+
+  const handleFieldTypeChange = (event) => {
+    if (event.target.value === "option1") {
+      setSelectedFieldTypeOption(0);
+      setViewAddDripdownItemShow(false);
+    }
+    if (event.target.value === "option2") {
+      setSelectedFieldTypeOption(1);
+      setViewAddDripdownItemShow(false);
+    }
+    if (event.target.value === "option3") {
+      setSelectedFieldTypeOption(2);
+      setViewAddDripdownItemShow(true);
+    }
+    if (event.target.value === "option4") {
+      setSelectedFieldTypeOption(3);
+      setViewAddDripdownItemShow(false);
+    }
+    if (event.target.value === "option5") {
+      setSelectedFieldTypeOption(4);
+      setViewAddDripdownItemShow(false);
+    }
+  };
+  const [titleField, setTitleField] = useState('');
+
+  const handleFieldTitleInputChange = (e) => {
+    setTitleField(e.target.value);
+  };
+
+
+  const [dropdownItem, setDropdownItem] = useState('');
+  const handleDropdownItemChange = (e) => {
+    setDropdownItem(e.target.value);
+  };
+
+  const [selectedColor, setSelectedColor] = useState("#000000");
+  const [showColorModal, setShowColorModal] = useState(false);
+  const toggleColorModal = () => {
+    setShowColorModal(!showColorModal);
+  };
+  const handleColorChange = (color, index) => {
+    setSelectedColor(color.hex);
+    addDropdownItemColor(index);
+    console.log("index", index);
+  };
+
+
+
+  const [options, setOptions] = useState([]);
+  const handleAddDropdownItemButtonClick = () => {
+    if (dropdownItem.trim() === '') return;
+
+    const newOption = {
+      Option: dropdownItem,
+      Color: selectedColor,
+    };
+    setOptions([...options, newOption]);
+    setDropdownItem('');
+  };
+
+  const addDropdownItemColor = (index) => {
+    const updatedOptions = options.map((option, i) => {
+      if (i === index) {
+        return {
+          ...option,
+          Color: selectedColor
+        };
+      }
+      return option;
+    });
+    setOptions(updatedOptions);
+  };
+
+  const handleRemoveDropwItemButtonClick = (index) => {
+    const newOptions = options.filter((_, i) => i !== index);
+    setOptions(newOptions);
+  };
+
+  console.log("Bu", options);
+  const createCustomField = async () => {
+    const data = {
+      Title: titleField ? titleField : '',
+      Type: selectedFieldTypeOption ? selectedFieldTypeOption : '',
+      CardId: cardId ? cardId : '',
+      CardFrontOff: isFieldChecked,
+      CreateCustomFieldDropdownOptions: selectedFieldTypeOption === 2 ? (options ? options : null) : null
+    };
+
+    try {
+      const response = await axios.post('https://localhost:7101/api/CustomFields', data);
+    } catch (error) {
+    }
+  }
+
+  console.log("---", thisCard?.data);
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -772,7 +877,7 @@ const CardList = () => {
                       <div>
                         <button onClick={() => setCardDateModalShow((prev) => !prev)}>{formatDate(thisCard?.data?.endDate)}
                           <span style={{ display: thisCard?.data?.dateColor !== "red" ? '' : 'none', backgroundColor: isCardDateStatus === true && '#1f845a' }}>
-                            {isCardDateStatus ? 'Complate' : 'Overdue'}
+                            {thisCard?.data?.dateColor !== 'transparent' ? (isCardDateStatus ? 'Complate' : 'Overdue') : ''}
                           </span>
                         </button>
                       </div>
@@ -1268,14 +1373,14 @@ const CardList = () => {
           id={Styles.MoveModelShow}
           style={{ backgroundColor: '#23282b' }}
         >
-          <div className={Styles.cardCustomFeildmain}>
+          <div style={{ height: createViewShow ? 'auto' : '' }} className={Styles.cardCustomFeildmain}>
             <div>
               <div className={Styles.cardCustomFeildmainHeader}>
-                <div></div>
+                <div><span style={{ display: createViewShow ? '' : 'none' }}><FontAwesomeIcon style={{ cursor: 'pointer' }} onClick={() => setCreateViewShow((prev) => !prev)} icon={faChevronLeft} /></span></div>
                 <div>Custom Fields</div>
-                <button><FontAwesomeIcon icon={faX} /></button>
+                <button><FontAwesomeIcon icon={faX} onClick={() => setCardCustomField((prev) => !prev)} /></button>
               </div>
-              <div style={{ display: 'none' }} className={Styles.cardCustomFeildmainCenter}>
+              <div style={{ display: createViewShow ? 'none' : '' }} className={Styles.cardCustomFeildmainCenter}>
                 <p>SUGGESTED FIELDS</p>
                 <div>
                   <div className={Styles.fieldGridItem}>
@@ -1304,15 +1409,89 @@ const CardList = () => {
                   </div>
                 </div>
               </div>
-              <div style={{ display: 'none' }} className={Styles.cardCustomFeildmainNewField}>
-                <ButtonGroup style={{ width: '100%', height: '52px', backgroundColor: '#2f363b', fontSize: '28px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>+ New field</ButtonGroup>
+              <div style={{ display: createViewShow ? 'none' : '' }} className={Styles.cardCustomFeildmainNewField}>
+                <ButtonGroup onClick={() => setCreateViewShow((prev) => !prev)} style={{ width: '100%', height: '52px', backgroundColor: '#2f363b', cursor: 'pointer', fontSize: '28px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  + New field
+                </ButtonGroup>
               </div>
 
-              <div>
+              <div style={{ display: createViewShow ? '' : 'none' }}>
                 <ChakraProvider>
                   <span className={Styles.FieldCreateTitileLabel}>Title</span>
-                  <Input placeholder='Add a title...' size='lg' />
-                  <span className={Styles.FieldCreateTitileLabel}>Type</span>
+                  <Input value={titleField} onChange={handleFieldTitleInputChange} placeholder='Add a title...' size='lg' />
+                  <div style={{ marginTop: '15px' }}>
+                    <span className={Styles.FieldCreateTitileLabel}>Type</span>
+                    <Select size={'lg'} value={selectedFieldTypeOption} onChange={handleFieldTypeChange}>
+                      <option style={{ backgroundColor: '#22272B' }} value="option1">Checkbox</option>
+                      <option style={{ backgroundColor: '#22272B' }} value="option2">Date</option>
+                      <option style={{ backgroundColor: '#22272B' }} value="option3">Dropdown</option>
+                      <option style={{ backgroundColor: '#22272B' }} value="option4">Number</option>
+                      <option style={{ backgroundColor: '#22272B' }} value="option5">Text</option>
+                    </Select>
+                  </div>
+                  <div style={{ marginTop: '10px' }}>
+
+                    {viewAddDripdownItemShow && (
+                      <div>
+                        <p style={{ marginTop: '20px' }}></p>
+                        <span style={{ marginBottom: '-20px' }} className={Styles.FieldCreateTitileLabel}>Options</span>
+                        {options.map((item, index) => (
+                          <div className={Styles.indropdownItems} key={index}>
+                            <div>
+                              <button style={{ backgroundColor: item.Color }} onClick={toggleColorModal} className={Styles.colorBtn}></button>
+                              {showColorModal &&
+                                <div
+                                  style={{
+                                    position: "fixed",
+                                    top: 0,
+                                    left: 0,
+                                    width: "100%",
+                                    height: "100%",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                  onClick={toggleColorModal}
+                                >
+                                  <div
+                                    style={{
+                                      backgroundColor: "#4d4f50",
+                                      padding: 20,
+                                      borderRadius: 10,
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <CirclePicker color={selectedColor} onChange={(color) => handleColorChange(color, index)} />
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                            <input value={item.Option} />
+                            <button onClick={() => handleRemoveDropwItemButtonClick(index)}>
+                              <FontAwesomeIcon fontSize={"25px"} icon={faTrash} />
+                            </button>
+                          </div>
+                        ))}
+                        <div style={{ marginTop: '20px' }} className={Styles.fieldTypeDropDown}>
+                          <Input value={dropdownItem} onChange={handleDropdownItemChange} placeholder='Add a title...' size='lg' />
+                          <button onClick={handleAddDropdownItemButtonClick}>Add</button>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+
+
+                  <Col style={{ marginTop: '30px', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      style={{ border: 'none', border: 'none', color: '#0c66e4', backgroundColor: '#0c66e4', width: '32px', height: '32px', }}
+                      type="checkbox"
+                      checked={isFieldChecked}
+                      onChange={handleFieldCheckboxChange}
+                    /><span style={{ marginLeft: '20px' }} className={Styles.FieldCreateTitileLabel}>Show field on front of card</span>
+                  </Col>
+                  <button disabled={titleField === null && selectedFieldTypeOption === null ? true : false} onClick={createCustomField} className={Styles.createFieldBtn}>Create</button>
                 </ChakraProvider>
 
 

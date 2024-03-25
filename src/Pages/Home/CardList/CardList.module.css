@@ -287,7 +287,7 @@ input:focus {
 .cardCustomFeildmain>div {
   padding: 6px;
   height: 100%;
-  color: #616466;
+  color: #777a7c;
 }
 
 .cardCustomFeildmainHeader {
@@ -358,11 +358,68 @@ input:focus {
   width: 100%;
   height: 19%;
   display: flex;
-  align-items:last baseline;
+  align-items: last baseline;
 }
 
-.FieldCreateTitileLabel{
+.FieldCreateTitileLabel {
   font-size: 23px;
   font-weight: 670;
   color: #6d6f70;
+}
+
+.createFieldBtn {
+  width: 100%;
+  height: 50px;
+  border-radius: 6px;
+  background-color: #282e33;
+  margin-top: 30px;
+}
+
+
+.fieldTypeDropDown {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fieldTypeDropDown>input {
+  width: 72%;
+  height: 40px;
+}
+
+.fieldTypeDropDown>button {
+  width: 20%;
+  height: 40px;
+  border-radius: 6px;
+  background-color: #282e33;
+}
+
+.indropdownItems {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.indropdownItems>div{
+  width: 14%;
+  height: 40px;
+}
+.indropdownItems>input{
+  width: 74%;
+  height: 40px;
+  border: 1px solid #0c66e4;
+}
+.indropdownItems>button{
+  width: 10%;
+  height: 40px;
+}
+
+.colorBtn{
+  width: 70%;
+  height: 38px;
 }
