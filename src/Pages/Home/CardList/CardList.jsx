@@ -15,6 +15,14 @@ import {
   faTag,
   faClock,
   faPaperclip,
+  faCalendarDays,
+  faHashtag,
+  faT,
+  faGrip,
+  faTrowelBricks,
+  faSquarePollHorizontal,
+  faAnglesUp,
+  faSquareCaretDown,
   faPalette,
   faCopy,
   faSquareCheck,
@@ -29,7 +37,6 @@ import {
 import { Box, ChakraProvider, Flex, FormControl, Input, Portal, Text, useDisclosure, } from "@chakra-ui/react";
 import Card from "react-bootstrap/Card";
 import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverCloseButton, PopoverBody, PopoverFooter } from "@chakra-ui/react";
-
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import { useSelector } from "react-redux";
@@ -54,6 +61,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Col } from "react-bootstrap";
 import { CirclePicker, HuePicker } from "react-color";
+import { getCardInCustomFields } from '../../../Service/CustomFieldService'
+
+
 
 const data = require('./data.json')
 const ListStyle = {
@@ -754,7 +764,16 @@ const CardList = () => {
     setOptions(newOptions);
   };
 
-  console.log("Bu", options);
+  // console.log("Bu", options);
+
+  const { data: cardInCustomFields } = useQuery(
+    ["CardInCustomFields", thisCard?.data?.id],
+    () => getCardInCustomFields(thisCard?.data?.id),
+    {
+      enabled: !!thisCard?.data?.id,
+    }
+  );
+
   const createCustomField = async () => {
     const data = {
       Title: titleField ? titleField : '',
@@ -766,11 +785,23 @@ const CardList = () => {
 
     try {
       const response = await axios.post('https://localhost:7101/api/CustomFields', data);
+      queryClient.invalidateQueries("CardInCustomFields");
+      setCardCustomField(false);
+      setTitleField('');
+      setSelectedFieldTypeOption(null);
     } catch (error) {
     }
   }
+  // const [customFieldDropdownItem, setCustomFieldDropdownItem] = useState({
+  //   color: '',
+  //   customFieldsId: '',
+  //   id: '',
+  //   option: ''
+  // });
 
-  console.log("---", thisCard?.data);
+  const [customFieldDate, setCustomFieldDate] = useState();
+
+
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -814,7 +845,7 @@ const CardList = () => {
         onHide={() => {
           setModalShow(false);
         }}
-        size="lg"
+        size="xl"
         fullscreen="md-down"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -1063,6 +1094,71 @@ const CardList = () => {
                     </div>
                   </Card.Body>
                 </div>
+
+                <div className={Styles.CardInCustomFieldss}>
+                  <div className={Styles.CardInCustomFieldssTitle}>
+                    <span>
+                      <FontAwesomeIcon fontSize={"24px"} className="me-2" icon={faClipboard} />
+                    </span>
+                    <h4>Custom Fields</h4>
+                  </div>
+
+                  {cardInCustomFields?.data && cardInCustomFields?.data?.map((customField, index) => {
+                    return (
+                      <div className={Styles.CustomFieldes}>
+                        {customField.type === 2 &&
+                          <div className={Styles.CustomFieldDropdown}>
+                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faSquareCaretDown} /></span>Dropdown</div>
+                            <ChakraProvider>
+                              <Select size={'lg'}>
+                                {customField?.getCustomFieldDropdownOptions && customField.getCustomFieldDropdownOptions.map((dropdownItem, dropdownItemIndex) => {
+                                  return (
+                                    <option style={{ backgroundColor: dropdownItem.color ? dropdownItem.color : '#22272B' }} value={dropdownItem.option}>{dropdownItem.option}</option>
+                                  )
+                                })}
+                              </Select>
+                            </ChakraProvider>
+                          </div>
+                        }
+                        {customField.type === 4 &&
+                          <div className={Styles.CustomFieldText}>
+                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faT} /></span>Text</div>
+                            <ChakraProvider>
+                              <Input size={'lg'} type="text" value={''} placeholder='Text' />
+                            </ChakraProvider>
+                          </div>
+                        }
+                        {customField.type === 3 &&
+                          <div className={Styles.CustomFieldNumber}>
+                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faHashtag} /></span>Number</div>
+                            <ChakraProvider>
+                              <Input size={'lg'} type="number" placeholder='number' />
+                            </ChakraProvider>
+                          </div>
+                        }
+                        {customField.type === 0 &&
+                          <div style={{ display: customField.type === 0 ? '' : 'none' }} className={Styles.CustomFieldCheckbox}>
+                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faSquareCheck} /></span>Checkbox</div>
+                            <input type="checkbox" placeholder='Text' size='lg' />
+                          </div>
+                        }
+                        {customField.type === 1 &&
+                          <div style={{ display: customField.type === 1 ? '' : 'none' }} className={Styles.CustomFieldDate}>
+                            <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faCalendarDays} /></span>Date</div>
+                            <DatePicker
+                              selected={customFieldDate}
+                              onChange={(date) => setCustomFieldDate(date)}
+                              showTimeInput
+                              dateFormat="dd/MM/yyyy h:mm aa"
+                              placeholderText="+ Add date..."
+                            />
+                          </div>
+                        }
+                      </div>
+                    )
+                  })}
+                </div>
+
                 <div className="position-relative mt-2">
                   <Card.Body className=" p-0 px-1 position-relative d-flex">
                     <span className="mt-1 me-3 fs-4">
@@ -1385,25 +1481,25 @@ const CardList = () => {
                 <div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div>^ Priority</div>
+                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faAnglesUp} /> Priority</div>
                       <button>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div>^ Priority</div>
+                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faSquarePollHorizontal} /> Status</div>
                       <button>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div>^ Priority</div>
+                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faTrowelBricks} /> Risk</div>
                       <button>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div>^ Priority</div>
+                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faGrip} /> Effort</div>
                       <button>Add</button>
                     </div>
                   </div>
