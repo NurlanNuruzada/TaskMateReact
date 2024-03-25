@@ -3,7 +3,7 @@ import Board from "react-trello";
 import Styles from "./CardList.module.css";
 import { transformBoardData } from "./Data";
 import Modal from "react-bootstrap/Modal";
-import { Grid, GridItem } from '@chakra-ui/react'
+import { FocusLock, Grid, GridItem } from '@chakra-ui/react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBarsProgress,
@@ -62,6 +62,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Col } from "react-bootstrap";
 import { CirclePicker, HuePicker } from "react-color";
 import { getCardInCustomFields } from '../../../Service/CustomFieldService'
+import { CreateCover } from "../../../Service/CoverService";
 
 
 
@@ -471,11 +472,11 @@ const CardList = () => {
   };
   const HandeTitleİnCheckList = async (data) => {
     UpdateChecklistItemsFormik.setFieldValue("Check", data.check);
-    if (titleInput !== "" || titleInput !== null || titleInput.length > 0) {
+    if (titleInput !== undefined && titleInput && titleInput.trim() !== "") {
       UpdateChecklistItemsFormik.setFieldValue("Text", titleInput);
-    }
-    else {
-      UpdateChecklistItemsFormik.setFieldValue("Text", data.Text);
+    } else {
+      UpdateChecklistItemsFormik.setFieldValue("Text", data.text);
+      console.log(data.text);
     }
     UpdateChecklistItemsFormik.setFieldValue("DueDate", data.dueDate);
     UpdateChecklistItemsFormik.setFieldValue("Id", data.id);
@@ -801,7 +802,29 @@ const CardList = () => {
 
   const [customFieldDate, setCustomFieldDate] = useState();
 
-
+  const { onOpen: onPopoverOpen, onClose: onPopoverClose, isOpen: isPopoverOpen } = useDisclosure();
+  const firstFieldRef = React.useRef(null);
+  const ColorArr = [
+    "#216E4E", "#7F5F01", "#A54800", "#AE2E24", "#5e4dd7",
+    "#0055cc", "#206a83", "#4c6b1f", "#943d73", "#596773"
+  ];
+  const [selectedColor2, setSelectedColor2] = useState()
+  const HandleSaveCover = async (ThisCard, isRemove) => {
+    let data;
+    if (isRemove) {
+      data = {
+        color: "0",
+        cardId: ThisCard
+      };
+    } else {
+      data = {
+        color: selectedColor2,
+        cardId: ThisCard
+      };
+    }
+    await CreateCover(data);
+    await queryClient.invalidateQueries(['ModalCardDetails']);
+  };
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -815,7 +838,7 @@ const CardList = () => {
           eventBusHandle={setEventBus}
           handleDragStart={handleDragStart}
           handleDragEnd={handleDragEnd}
-          onCardClick={handleCardClick}
+          onCardClick={handleCardClick} CreateCover
           onCardDelete={handleCardDelete}
           onLaneDelete={handleOnLaneDelete}
         >
@@ -856,6 +879,14 @@ const CardList = () => {
             className="p-3 mb-3 position-relative"
             id="contained-modal-title-vcenter"
           >
+            {thisCard.data.coverColor && thisCard.data.coverColor !== "0" ?
+              <div className={Styles.Cover} style={{ backgroundColor: thisCard.data.coverColor }}>
+                <Button
+                  className="create-workspace-close btn-close black"
+                  onClick={() => setModalShow(false)}
+                ></Button>
+              </div>
+              : ""}
             <Modal.Title>
               <div className="container-fluid position-relative mt-2">
                 <Card.Body className=" p-0px-1 position-relative d-flex">
@@ -874,10 +905,12 @@ const CardList = () => {
                       </a>
                     </Card.Text>
                   </div>
-                  <Button
-                    className="create-workspace-close btn-close position-absolute top-50 end-0 translate-middle-y"
-                    onClick={() => setModalShow(false)}
-                  ></Button>
+                  {!thisCard.data.coverColor || thisCard.data.coverColor === "0" ?
+                    <Button
+                      className="create-workspace-close btn-close position-absolute top-50 end-0 translate-middle-y"
+                      onClick={() => setModalShow(false)}
+                    ></Button>
+                    : ""}
                 </Card.Body>
               </div>
             </Modal.Title>
@@ -936,11 +969,11 @@ const CardList = () => {
                         <Flex alignItems={'center'} w={"100%"} gap={1} justifyContent={'center'} flexDirection={'column'}>
                           {Data?.getCheckitemDtos?.map((data, index) => (
                             <>
-
                               <Flex pl={3} w={"100%"} gap={3} alignItems={'center'} key={index}>
                                 {state.selectedIndex === data.id && state.ShowUpdateInputsChecklistItem === true ?
                                   <>
                                     <Flex backgroundColor={"#A1BDD914"} padding={3} borderRadius={14} gap={2} flexDir={'column'} w={"100%"}>
+                                      {/* // change-------------------------------------------------------------- */}
                                       <Input
                                         backgroundColor={"#22272B"}
                                         border={'#579DFF 1px solid'}
@@ -949,7 +982,9 @@ const CardList = () => {
                                         color={'white'}
                                         onChange={(e) => {
                                           const newValue = e.target.value.trim();
-                                          setTitleInput(newValue !== "" ? newValue : data.text);
+                                          if (newValue !== data.text) {
+                                            setTitleInput(newValue);
+                                          }
                                         }}
                                         name="Text"
                                       />
@@ -1235,10 +1270,49 @@ const CardList = () => {
                         <FontAwesomeIcon className="me-2" icon={faPaperclip} />
                         Attachment
                       </button>
-                      <button className="btn btn-primary default-submit mb-2 w-100 text-start">
-                        <FontAwesomeIcon className="me-2" icon={faPalette} />
-                        Cover
-                      </button>
+
+                      <>
+                        <ChakraProvider>
+                          <Popover
+                            isOpen={isPopoverOpen}
+                            initialFocusRef={firstFieldRef}
+                            onOpen={onPopoverOpen}
+                            onClose={onPopoverClose}
+                            closeOnBlur={false}
+                          >
+                            <PopoverTrigger >
+                              <button className="btn btn-primary default-submit mb-2 w-100 text-start">
+                                <FontAwesomeIcon className="me-2" icon={faPalette} />
+                                Cover
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className={Styles.CoverPopover} p={5}>
+                              <FocusLock returnFocus persistentFocus={false}>
+                                <PopoverCloseButton />
+                                <h5>Select a cover</h5>
+                                <Flex pb={3} gap={1} flexWrap={'wrap'}>
+                                  {ColorArr.map((color, index) => (
+                                    <div
+                                      key={index}
+                                      onClick={() => setSelectedColor2(color)}
+                                      style={{
+                                        backgroundColor: color,
+                                        borderRadius: "2px",
+                                        border: selectedColor2 === color ? "2px solid rgb(87, 157, 255)" : "none"
+                                      }}
+                                      className={Styles.ColorContaier}
+                                    ></div>
+                                  ))}
+                                </Flex>
+                                <Flex gap={2}>
+                                  <Button style={{ backgroundColor: "#6c757d", color: "white", border: "none" }} onClick={() => { HandleSaveCover(thisCard?.data?.id, true); onPopoverClose(); }}>Remove</Button>
+                                  <Button style={{ backgroundColor: "#579dff", color: "white", border: "none" }} onClick={() => { HandleSaveCover(thisCard?.data?.id); onPopoverClose(); }}>Save</Button>
+                                </Flex>
+                              </FocusLock>
+                            </PopoverContent>
+                          </Popover>
+                        </ChakraProvider>
+                      </>
                       <button onClick={() => setCardCustomField((prev) => !prev)} className="btn btn-primary default-submit mb-2 w-100 text-start">
                         <FontAwesomeIcon className="me-2" icon={faClipboard} />
                         Custom Fields
@@ -1481,25 +1555,25 @@ const CardList = () => {
                 <div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faAnglesUp} /> Priority</div>
+                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faAnglesUp} /> Priority</div>
                       <button>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faSquarePollHorizontal} /> Status</div>
+                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faSquarePollHorizontal} /> Status</div>
                       <button>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faTrowelBricks} /> Risk</div>
+                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faTrowelBricks} /> Risk</div>
                       <button>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
-                      <div><FontAwesomeIcon style={{marginRight: '10px'}} icon={faGrip} /> Effort</div>
+                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faGrip} /> Effort</div>
                       <button>Add</button>
                     </div>
                   </div>
