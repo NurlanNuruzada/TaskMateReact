@@ -49,11 +49,14 @@ import {
   Alert,
 } from "@chakra-ui/react";
 import { GetUserById } from "../../Service/UserService";
+import { getUserAllNotifications } from "../../Service/NotificationService";
+import axios from "axios";
 
 export default function Header() {
   const dispatch = useDispatch();
   const [createBoardSlide2, setCreateBoardSlide2] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const [notificationModalShow, setNotificationModalShow] = useState(false);
   const [modalShow2, setWorkspaceModal1] = useState(true);
   const [modalShow3, setWorkspaceModal2] = useState(false);
   const [inputResult, setInputResult] = useState(false);
@@ -61,8 +64,8 @@ export default function Header() {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken
     ? decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ]
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ]
     : null;
   const doNotClose = (e) => {
     e.stopPropagation();
@@ -76,6 +79,28 @@ export default function Header() {
   const resetFormValues = () => {
     CreateWorkSpaceFormik.resetForm();
   };
+
+  //--------Notification---------//
+  const { data: AllNotification } = useQuery(["GetAllNotifications", userId], () =>
+    getUserAllNotifications(userId)
+  );
+
+
+  const handleNotification = () => {
+    setNotificationModalShow(!notificationModalShow);
+    if (AllNotification?.data?.length > 0) {
+      axios.put(`https://localhost:7101/api/Notifactions/SeenUserNotifaction?AppUserId=${userId}`)
+        .then(response => {
+          setTimeout(() => {
+            queryClient.invalidateQueries(["GetAllNotifications"]);
+          }, 30000);
+        })
+        .catch(error => {
+        });
+    }
+  }
+  // queryClient.invalidateQueries(["GetAllNotifications"]);
+  //--------Notification---------//
 
   const handleContinue = () => {
     setWorkspaceModal1(false);
@@ -414,7 +439,7 @@ export default function Header() {
                     </Card>
                   </Dropdown.Item>
                   {Data?.data?.role === "GlobalAdmin" ||
-                  Data?.data?.role === "Admin" ? (
+                    Data?.data?.role === "Admin" ? (
                     <>
                       <Dropdown.Item className="p-0">
                         <Card
@@ -476,11 +501,14 @@ export default function Header() {
           </Form>
           <Row className="ms-1 d-flex align-items-center">
             <Col className="col-2">
-              <Button className="custom-notification">
-                {" "}
+              <Button onClick={() => handleNotification()} className="custom-notification">
+                <span style={{ display: AllNotification?.data?.length > 0 ? 'flex' : 'none', position: 'absolute', marginTop: '0px', zIndex: 2, color: 'white', justifyContent: 'center', alignItems: 'center', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: 'red' }}>
+                  {AllNotification?.data && AllNotification.data.length}
+                </span>
                 <FontAwesomeIcon
                   icon={faBell}
-                  style={{ color: "#cacaca", transform: "rotate(45deg)" }}
+                  fontSize={"30px"}
+                  style={{ color: "#cacaca", marginTop: '5px', transform: "rotate(45deg)" }}
                 />{" "}
               </Button>
             </Col>
@@ -772,6 +800,43 @@ export default function Header() {
       <div style={{ display: "none" }}>
         <SliderBarMenu workspaceId={selectedWorkspaceId} />
       </div>
+      <Modal
+        show={notificationModalShow}
+        onHide={() => {
+          setNotificationModalShow(false);
+        }}
+        size="sm"
+        className="create-workspace-modal"
+        id={Styles.NotificationModal}
+      >
+        <Modal.Body
+        >
+          <div className={Styles.mainnotifaction}>
+            <p>
+              <h1>Notifications</h1>
+              <span style={{ display: AllNotification?.data?.length > 0 ? '' : 'none' }}>You have {AllNotification?.data && AllNotification.data.length}  unread messages</span>
+            </p>
+            <div>
+              {AllNotification?.data && AllNotification.data.map((notification, index) => {
+                return (
+                  <div>
+                    <div className={Styles.workAndBoardImage}>B</div>
+                    <div className={Styles.notificationMessage}>{notification.text}</div>
+                    <div className={Styles.goToWorkspaceAndBoard}>
+                      <button className={Styles.ntcBtnGotoB}>
+                        <a href={notification.boardId !== null ? "/Boards/72cc096e-d9b4-4def-462e-08dc4e977386" : ''}>Go To {notification.boardId !== null ? "Board" : "Workspace"}</a>
+                        <div className={Styles.arrowWrapper}>
+                          <div className={Styles.arrow}></div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </Navbar>
   );
 }

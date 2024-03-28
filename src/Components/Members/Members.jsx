@@ -34,6 +34,7 @@ import {
 import { getbyWokrspaceInBoard } from "../../Service/BoardService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useQueryClient } from "react-query";
 
 export default function Members() {
   const dispatch = useDispatch();
@@ -56,6 +57,8 @@ export default function Members() {
   const handleLinkWorkspaceSelect = (Id) => {
     setLinkSelectedWorkspaceId(Id);
   };
+
+  const queryClient = useQueryClient();
 
   const generateLink = () => {
     axios
@@ -117,7 +120,7 @@ export default function Members() {
 
   const [inputResult, setInputResult] = useState(true);
   const [Workspaces, setWorkspaces] = useState();
-
+  console.log("Workspaces",Workspaces);
   const { mutate: GetUsersAllWorkSpaces } = useMutation(
     (userId) => GetAllWorkspaces(userId),
     {
@@ -140,7 +143,6 @@ export default function Members() {
 
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState(null);
-  console.log(searchResult);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -203,7 +205,7 @@ export default function Members() {
         );
         if (response.status === 201) {
           setSuccesMessage(true);
-          // queryClient.invalidateQueries(["BoardInCardList"]);
+          queryClient.invalidateQueries("GetAllNotifications");
         }
       } catch (error) {}
     },

@@ -24,6 +24,7 @@ import {
   faSquarePollHorizontal,
   faAnglesUp,
   faSquareCaretDown,
+  faChevronRight,
   faPalette,
   faCopy,
   faSquareCheck,
@@ -687,7 +688,7 @@ const CardList = () => {
     setIsFieldChecked(false);
   };
 
-  const [selectedFieldTypeOption, setSelectedFieldTypeOption] = useState(null);
+  const [selectedFieldTypeOption, setSelectedFieldTypeOption] = useState(0);
 
   const handleFieldTypeChange = (event) => {
     if (event.target.value === "option1") {
@@ -801,7 +802,6 @@ const CardList = () => {
   //   option: ''
   // });
 
-  const [customFieldDate, setCustomFieldDate] = useState();
 
   const { onOpen: onPopoverOpen, onClose: onPopoverClose, isOpen: isPopoverOpen } = useDisclosure();
   const firstFieldRef = React.useRef(null);
@@ -833,6 +833,214 @@ const CardList = () => {
       enabled: !!BoardId,
     }
   );
+
+  //--------------------------------------------------------
+  const [staticCustomFieldId, setStaticCustomFieldId] = useState();
+
+  const createStaticCustomField = (staticFeieldId) => {
+    console.log("staticFeieldId>>>", staticFeieldId);
+    setStaticCustomFieldId(staticFeieldId);
+    staticCustomField.submitForm();
+  }
+
+  const staticCustomField = useFormik({
+    initialValues: {
+      staticFieldId: staticCustomFieldId ? staticCustomFieldId : '',
+      CardId: cardId ? cardId : ''
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+
+      formData.append("staticFieldId", staticCustomFieldId ? staticCustomFieldId : '');
+      formData.append("CardId", cardId ? cardId : '');
+
+      try {
+        const response = await axios.post(
+          "https://localhost:7101/api/CustomFields/CreateStaticFields",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 201) {
+          queryClient.invalidateQueries(["CardInCustomFields"]);
+        }
+      } catch (error) { }
+    },
+  });
+
+  //Update CustomFields
+  const [ctmFieldId, setCtmFieldId] = useState(); //Generl
+
+
+  //---Number
+  const [number, setNumber] = useState();
+
+  const handleCustomFieldNumberChange = (event) => {
+    setNumber(event.target.value);
+  };
+  const [numberHandle, setNumberHandle] = useState(false);
+
+  const handlefieldNumber = (dataNumber, customFieldId) => {
+    setNumberHandle(true);
+    setNumber(dataNumber);
+    setCtmFieldId(customFieldId);
+  }
+
+
+  useEffect(() => {
+    if (numberHandle === true) {
+      const timer = setTimeout(() => {
+        numberFieldUpdate.submitForm();
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [number]);
+
+  const numberFieldUpdate = useFormik({
+    initialValues: {
+      Id: ctmFieldId ? ctmFieldId : '',
+      Number: number ? number : ''
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+
+      formData.append("Id", ctmFieldId ? ctmFieldId : '');
+      formData.append("Number", number ? number : '');
+
+      try {
+        const response = await axios.put(
+          "https://localhost:7101/api/CustomFieldsNumbers",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 200 || response.status === 204) {
+          queryClient.invalidateQueries(["CardInCustomFields"]);
+          setCtmFieldId(null);
+        }
+      } catch (error) { }
+    },
+  });
+
+  //---Number
+
+  //---Text
+  const [customText, setCustomText] = useState();
+
+  const handleCustomFieldTextChange = (event) => {
+    setCustomText(event.target.value);
+  };
+  const [customTextHandle, setCustomTextHandle] = useState(false);
+
+  const handlefieldText = (dataText, customFieldId) => {
+    setCustomTextHandle(true);
+    setCustomText(dataText);
+    setCtmFieldId(customFieldId);
+  }
+
+  useEffect(() => {
+    if (customTextHandle === true) {
+      const timer = setTimeout(() => {
+        textFieldUpdate.submitForm();
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [customText]);
+
+
+  const textFieldUpdate = useFormik({
+    initialValues: {
+      Id: ctmFieldId ? ctmFieldId : '',
+      Number: customText ? customText : ''
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+
+      formData.append("Id", ctmFieldId ? ctmFieldId : '');
+      formData.append("Text", customText ? customText : '');
+
+      try {
+        const response = await axios.put(
+          "https://localhost:7101/api/CustomFieldTexts",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 200 || response.status === 204) {
+          queryClient.invalidateQueries(["CardInCustomFields"]);
+          setCtmFieldId(null);
+        }
+      } catch (error) { }
+    },
+  });
+
+  //---Text
+
+
+  //---Date
+  const [customFieldDate, setCustomFieldDate] = useState();
+
+  const [customDateHandle, setCustomDateHandle] = useState(false);
+
+  const handlefieldDate = (date, customFieldId) => {
+    setCustomFieldDate(date);
+    setCustomDateHandle(true);
+    setCtmFieldId(customFieldId);
+  }
+
+  useEffect(() => {
+    if(customDateHandle===true){
+      const timer = setTimeout(() => {
+        dateFieldUpdate.submitForm();
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [customFieldDate]);
+
+  //Burdan devam eliyersen. demeli update meselesinde ey state;e gore 
+  //bir coxu birden update olur bug var yeni
+
+  const dateFieldUpdate = useFormik({
+    initialValues: {
+      Id: ctmFieldId ? ctmFieldId : '',
+      DateTime: customFieldDate ? customFieldDate.toISOString() : ''
+    },
+    onSubmit: async (values) => {
+      const formData = new FormData();
+
+      formData.append("Id", ctmFieldId ? ctmFieldId : '');
+      formData.append("DateTime", customFieldDate ? customFieldDate.toISOString() : '');
+
+      try {
+        const response = await axios.put(
+          "https://localhost:7101/api/CustomFieldDates",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 200 || response.status === 204) {
+          queryClient.invalidateQueries(["CardInCustomFields"]);
+          setCtmFieldId(null);
+        }
+      } catch (error) { }
+    },
+  });
+
+
+
+  console.log("cardInCustomFields", cardInCustomFields?.data);
   return (
     <div className="h-100">
       <div style={{ display: "flex" }}>
@@ -1167,7 +1375,7 @@ const CardList = () => {
                           <div className={Styles.CustomFieldText}>
                             <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faT} /></span>Text</div>
                             <ChakraProvider>
-                              <Input size={'lg'} type="text" value={''} placeholder='Text' />
+                              <Input onClick={() => handlefieldText(customField?.getCustomFieldTextDto?.text, customField?.getCustomFieldTextDto?.id)} value={customTextHandle === false ? customField?.getCustomFieldTextDto?.text : customText} onChange={handleCustomFieldTextChange} size={'lg'} type="text" placeholder='Text' />
                             </ChakraProvider>
                           </div>
                         }
@@ -1175,7 +1383,7 @@ const CardList = () => {
                           <div className={Styles.CustomFieldNumber}>
                             <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faHashtag} /></span>Number</div>
                             <ChakraProvider>
-                              <Input size={'lg'} type="number" placeholder='number' />
+                              <Input onClick={() => handlefieldNumber(customField?.getCustomFieldNumberDto?.number, customField?.getCustomFieldNumberDto?.id)} value={customTextHandle === false ? customField?.getCustomFieldNumberDto?.number : number} onChange={handleCustomFieldNumberChange} size={'lg'} type="number" placeholder='number' />
                             </ChakraProvider>
                           </div>
                         }
@@ -1189,8 +1397,9 @@ const CardList = () => {
                           <div style={{ display: customField.type === 1 ? '' : 'none' }} className={Styles.CustomFieldDate}>
                             <div className={Styles.CustomFieldHeader}><span><FontAwesomeIcon icon={faCalendarDays} /></span>Date</div>
                             <DatePicker
-                              selected={customFieldDate}
-                              onChange={(date) => setCustomFieldDate(date)}
+                              // onClick={() => handlefieldDate(customField?.getCustomFieldDateDto?.dateTime, customField?.getCustomFieldDateDto?.id)}
+                              selected={customDateHandle===false ? customField?.getCustomFieldDateDto?.dateTime : customFieldDate}
+                              onChange={(date) => handlefieldDate(date, customField?.getCustomFieldDateDto?.id)}
                               showTimeInput
                               dateFormat="dd/MM/yyyy h:mm aa"
                               placeholderText="+ Add date..."
@@ -1588,31 +1797,48 @@ const CardList = () => {
                 <div>Custom Fields</div>
                 <button><FontAwesomeIcon icon={faX} onClick={() => setCardCustomField((prev) => !prev)} /></button>
               </div>
+
+              {/* ------------------------ */}
+              {/* 
+              <div style={{ display: createViewShow ? 'none' : '' }} className={Styles.cardCustomFeildmainCenter}>
+                <div>
+
+                  <div className={Styles.fieldGridItem}>
+                    <div>
+                      <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faAnglesUp} /> Priority</div>
+                      <button><FontAwesomeIcon icon={faChevronRight} /></button>
+                    </div>
+                  </div>
+
+                </div>
+              </div> */}
+
+              {/* ------------------------ */}
               <div style={{ display: createViewShow ? 'none' : '' }} className={Styles.cardCustomFeildmainCenter}>
                 <p>SUGGESTED FIELDS</p>
                 <div>
                   <div className={Styles.fieldGridItem}>
                     <div>
                       <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faAnglesUp} /> Priority</div>
-                      <button>Add</button>
+                      <button onClick={() => createStaticCustomField(1)}>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
                       <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faSquarePollHorizontal} /> Status</div>
-                      <button>Add</button>
+                      <button onClick={() => createStaticCustomField(2)}>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
                       <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faTrowelBricks} /> Risk</div>
-                      <button>Add</button>
+                      <button onClick={() => createStaticCustomField(3)}>Add</button>
                     </div>
                   </div>
                   <div className={Styles.fieldGridItem}>
                     <div>
                       <div><FontAwesomeIcon style={{ marginRight: '10px' }} icon={faGrip} /> Effort</div>
-                      <button>Add</button>
+                      <button onClick={() => createStaticCustomField(4)}>Add</button>
                     </div>
                   </div>
                 </div>

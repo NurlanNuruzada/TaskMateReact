@@ -8,6 +8,8 @@ import axios from "axios";
 import { getByToken } from "../../Service/TokenService";
 import { useQuery } from "react-query";
 import { useFormik } from "formik";
+import { useQueryClient } from "react-query";
+
 
 export default function InviteBoard() {
   const [loginAccess, setLoginAccess] = useState(false);
@@ -31,6 +33,8 @@ export default function InviteBoard() {
       setTokenIsActive(ByToken.data);
     }
   }, [ByToken]);
+  const queryClient = useQueryClient();
+
 
   const [error, setError] = useState(null);
   const Formik = useFormik({
@@ -60,7 +64,8 @@ export default function InviteBoard() {
             },
           }
         );
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200 || response.status === 204) {
+          queryClient.invalidateQueries("GetAllNotifications");
           navigate("/SignIn");
         }
       } catch (error) {
